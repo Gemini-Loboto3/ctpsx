@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="inject.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="vm.h" />
+    <ClInclude Include="unk.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="tim.h" />
+    <ClInclude Include="dib.h" />
+    <ClInclude Include="spr_ent.h" />
+    <ClInclude Include="tmap.h" />
+    <ClInclude Include="console.h" />
+    <ClInclude Include="render_d3d9.h" />
+    <ClInclude Include="bg.h" />
+    <ClInclude Include="input_di8.h" />
+    <ClInclude Include="item.h" />
+    <ClInclude Include="text.h" />
+    <ClInclude Include="program.h" />
+    <ClInclude Include="sound.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="hacks.cpp" />
+    <ClCompile Include="util.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="wmain.cpp" />
+    <ClCompile Include="vm.cpp" />
+    <ClCompile Include="unk.cpp" />
+    <ClCompile Include="api.cpp" />
+    <ClCompile Include="tim.cpp" />
+    <ClCompile Include="dib.cpp" />
+    <ClCompile Include="spr_ent.cpp" />
+    <ClCompile Include="tmap.cpp" />
+    <ClCompile Include="console.cpp" />
+    <ClCompile Include="draw.cpp" />
+    <ClCompile Include="render_d3d9.cpp" />
+    <ClCompile Include="bg.cpp" />
+    <ClCompile Include="input_di8.cpp" />
+    <ClCompile Include="item.cpp" />
+    <ClCompile Include="text.cpp" />
+    <ClCompile Include="sound.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dsound.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

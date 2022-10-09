@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dsound", "dsound.vcxproj", "{A5C5EA77-3350-48E8-8AD0-4D9D6A036AA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5C5EA77-3350-48E8-8AD0-4D9D6A036AA5}.Debug|x86.ActiveCfg = Debug|Win32
+		{A5C5EA77-3350-48E8-8AD0-4D9D6A036AA5}.Debug|x86.Build.0 = Debug|Win32
+		{A5C5EA77-3350-48E8-8AD0-4D9D6A036AA5}.Release|x86.ActiveCfg = Release|Win32
+		{A5C5EA77-3350-48E8-8AD0-4D9D6A036AA5}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {82F24240-8445-4CB9-BA78-C107247DCBA6}
+	EndGlobalSection
+EndGlobal
