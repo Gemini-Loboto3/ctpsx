@@ -1631,7 +1631,7 @@ void VM::op_tmwait()
 	updateIndex();
 	wait_tbl2[vm_evt_pos + 5] = read16();
 	field_2736[vm_evt_pos] = read16();
-	wait_tbl[vm_evt_pos] = (DWORD)getTime();
+	wait_tbl[vm_evt_pos] = getTime();
 	vm_index3[0] = 0;
 }
 
@@ -1653,7 +1653,6 @@ void VM::op_box_fill()
 	WORD g = read16();
 	WORD b = read16();
 	RenderTile(x0, y0, x1 - x0, y1 - y0, (BYTE)r, (BYTE)g, (BYTE)b);
-	//GameDrawRect(game, game->hDC, x0, y0, x1, y1, r, g, b);
 }
 
 void VM::op_bg_load()
@@ -1717,11 +1716,16 @@ void VM::op_bg_spr_ent(int is_abs)
 {
 	updateIndex();
 	WORD id = read16();
-	short x = read16();
-	short y = read16();
+	short x = read16s();
+	short y = read16s();
 	WORD flag = read16();
 	WORD bank_id = read16() + 1;
 	WORD v3 = read16() != 0;
+
+	if (x < 0)
+		x = 64;
+	if (y < 0)
+		y = 0;
 
 	byte unk = bank_id >> 8;
 	bank_id &= 0xff;
@@ -1865,10 +1869,10 @@ void VM::op_map_disp()
 			&& vm_rects[i].left >= scrl_x
 			&& vm_rects[i].top >= scrl_y)
 		{
-			int x0 = scroll_x + LOWORD(vm_rects[i].left) - scrl_x;
-			int y0 = scroll_y + LOWORD(vm_rects[i].top) - scrl_y;
-			int x1 = LOWORD(vm_rects[i].right) - LOWORD(vm_rects[i].left) + x0;
-			int y1 = LOWORD(vm_rects[i].bottom) - LOWORD(vm_rects[i].top) + y0;
+			int x0 = scroll_x + vm_rects[i].left - scrl_x;
+			int y0 = scroll_y + vm_rects[i].top - scrl_y;
+			int x1 = vm_rects[i].right - vm_rects[i].left + x0;
+			int y1 = vm_rects[i].bottom - vm_rects[i].top + y0;
 			//GameDrawFrame(this, this->hDC, x0, y0, x1, y1, 0, 0xFFu, 0);
 		}
 	}
@@ -2007,6 +2011,7 @@ void VM::op_bgm_req()
 	WORD r1 = read16();
 	getstr(path);
 
+	Midi_load(path);
 	//Vm_bgm_req(path, r1);
 }
 
@@ -2852,7 +2857,7 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_SNDSTOP:
 			vm->updateIndex();
-			//MidiUnload
+			Midi_unload();
 			Sound_stop("ALL");
 			break;
 		case EVT_SESTOP:
@@ -2860,7 +2865,7 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_BGMSTOP:
 			vm->updateIndex();
-			//MidiUnload();
+			Midi_unload();
 			break;
 		case EVT_DOORNOSET:
 			vm->updateIndex();

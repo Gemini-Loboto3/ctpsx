@@ -159,9 +159,9 @@ void SwapBuffer()
 		d3d9dev->SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
 
 		p[0].x = x0, p[0].y = y0, p[0].z = 0.5f, p[0].w = 1.f, p[0].tu = u0, p[0].tv = v0, p[0].diffuse = diffuse;
-		p[1].x = x1, p[1].y = y0, p[1].z = 0.5f, p[1].w = 1.f, p[1].tu = u1, p[1].tv = v0, p[0].diffuse = diffuse;
-		p[2].x = x0, p[2].y = y1, p[2].z = 0.5f, p[2].w = 1.f, p[2].tu = u0, p[2].tv = v1, p[0].diffuse = diffuse;
-		p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].tu = u1, p[3].tv = v1, p[0].diffuse = diffuse;
+		p[1].x = x1, p[1].y = y0, p[1].z = 0.5f, p[1].w = 1.f, p[1].tu = u1, p[1].tv = v0, p[1].diffuse = diffuse;
+		p[2].x = x0, p[2].y = y1, p[2].z = 0.5f, p[2].w = 1.f, p[2].tu = u0, p[2].tv = v1, p[2].diffuse = diffuse;
+		p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].tu = u1, p[3].tv = v1, p[3].diffuse = diffuse;
 		d3d9dev->SetTexture(0, d3d9rend);
 		d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 
@@ -226,4 +226,13 @@ void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b)
 
 	d3d9dev->SetTexture(0, nullptr);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
+}
+
+static const float fx = (float)GAME_W / (float)GAME_REALW;
+
+int GETX(int x)
+{
+	float f = (float)(x + 320) * fx;
+
+	return (int)(f - 128.f);
 }

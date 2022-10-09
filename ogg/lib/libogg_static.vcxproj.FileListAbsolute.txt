@@ -1,0 +1,1 @@
+D:\Program Files\BIOHAZARD 2 PC\dx9\ogg\libogg-master\win32\VS2010\Win32\Release\libogg_static.lib

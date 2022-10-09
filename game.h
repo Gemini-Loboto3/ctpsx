@@ -17,6 +17,9 @@
 
 DWORD getTime();
 
+void Midi_load(const char* filename);
+void Midi_unload();
+
 #include <pshpack1.h>
 struct RENDER_PIC
 {

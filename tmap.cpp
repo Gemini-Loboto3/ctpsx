@@ -141,18 +141,18 @@ void TMapGetRect(TMAP* tmap, RECT* lprcDst)
 	CopyRect(lprcDst, &tmap->clip);
 }
 
-void TMapRenderScroll(TMAP* s, int x0, int y0, int w, int h, int x1, int y1)
+void TMapRenderScroll(TMAP* tmap, int wx0, int wy0, int ww, int wh, int xpos, int ypos)
 {
-	SetRect(&s->clip, x0, y0, w + x0 - 1, h + y0 - 1);
-	s->x1 = x1;
-	s->y1 = y1;
-	TMapRender(s);
+	SetRect(&tmap->clip, wx0, wy0, ww + wx0 - 1, wh + wy0 - 1);
+	tmap->x1 = xpos;
+	tmap->y1 = ypos;
+	TMapRender(tmap);
 }
 
-void TMapRenderScroll2(TMAP* s, int x, int y, int w, int h)
+void TMapRenderScroll2(TMAP* tmap, int x, int y, int w, int h)
 {
-	SetRect(&s->clip, x, y, w + x - 1, h + y - 1);
-	TMapRender(s);
+	SetRect(&tmap->clip, x, y, w + x - 1, h + y - 1);
+	TMapRender(tmap);
 }
 
 void TMapRender(TMAP* tmap)
@@ -186,18 +186,18 @@ void TMapRender(TMAP* tmap)
 				//	frame = tmap->data->frame;
 				//else
 				//	frame = 1 << tmap->data->frame_bit;
-				//RenderToOffScreen(tmap->clip.left - (tmap->x1 - rdst.left), tmap->clip.top - (tmap->y1 - rdst.top),
+				//RenderToOffScreen(tmap->clip.left - (tmap->xpos - rdst.left), tmap->clip.top - (tmap->ypos - rdst.top),
 				//	rdst.left, rdst.top,
-				//	tmap->w, tmap->h,
-				//	(tmap->data->w + 3) & ~3u,
+				//	tmap->ww, tmap->wh,
+				//	(tmap->data->ww + 3) & ~3u,
 				//	rdst.right - rdst.left + 1,
 				//	rdst.bottom - rdst.top + 1,
 				//	(BYTE*)&tmap->data->ptr[frame],
 				//	0, 0, 0);
 			}
 
-			//x = tmap->x1;
-			//y = tmap->y1;
+			//x = tmap->xpos;
+			//y = tmap->ypos;
 			int u = rdst.left / 2;
 			int v = rdst.top / 2;
 			int w = (rdst.right - rdst.left) / 2;
@@ -264,7 +264,7 @@ int TMapOpenAll(TMAP* tmap, LPCSTR filename_dib, LPCSTR filename_map)
 	{
 		if (!TMapOpenDIB(tmap, filename_dib))
 			return 0;
-		//if (filename_map && !TMapOpen(tmap, filename_map))	// there's no .map on psx
+		//if (filename_map && !TMapOpen(tmap, filename_map))	// there'tmap no .map on psx
 		//	return 0;
 	}
 	else
@@ -314,17 +314,17 @@ int Vm_bg_scrolling()
 }
 
 int dword_42557C, dword_425580;
-__int16 word_425584[16];
-__int16 word_4255A4[16];
+__int16 tmap_xscroll_tbl[16];
+__int16 tmap_yscroll_tbl[16];
 
-void Vm_tmap_set_scroll(int cnt1, WORD* data1, int cnt2, WORD* data2)
+void Vm_tmap_set_scroll(int xscroll_cnt, WORD* xscroll_data, int yscroll_cnt, WORD* yscroll_data)
 {
-	word_425584[0] = cnt1;
+	tmap_xscroll_tbl[0] = xscroll_cnt;
 	for (int i = 1; i < 16; ++i)
-		word_425584[i] = data1[i - 1];
-	word_4255A4[0] = cnt2;
+		tmap_xscroll_tbl[i] = xscroll_data[i - 1];
+	tmap_yscroll_tbl[0] = yscroll_cnt;
 	for (int i = 1; i < 16; ++i)
-		word_4255A4[i] = data2[i - 1];
+		tmap_yscroll_tbl[i] = yscroll_data[i - 1];
 }
 
 void TMapScrollX_cond(int x, int speed)
@@ -332,7 +332,7 @@ void TMapScrollX_cond(int x, int speed)
 	int scrl;
 
 	scrl = 0;
-	if (sprt_ent[0].x0 - prog.screen_x <= speed || word_425584[0] <= dword_42557C)
+	if (sprt_ent[0].x0 - prog.screen_x <= speed || tmap_xscroll_tbl[0] <= dword_42557C)
 	{
 		if (sprt_ent[0].x0 - prog.screen_x < x && dword_42557C > 1)
 		{
@@ -347,7 +347,7 @@ void TMapScrollX_cond(int x, int speed)
 	}
 
 	if (scrl)
-		TMap_scrollX(&tmap, word_425584[dword_42557C], 4);
+		TMap_scrollX(&tmap, tmap_xscroll_tbl[dword_42557C], 4);
 }
 
 void TMapScrollY_cond(int y, int speed)
@@ -355,7 +355,7 @@ void TMapScrollY_cond(int y, int speed)
 	int scrl;
 
 	scrl = 0;
-	if ((sprt_ent[0].y0 - prog.screen_y - 56) <= speed || word_4255A4[0] <= dword_425580)
+	if ((sprt_ent[0].y0 - prog.screen_y - 56) <= speed || tmap_yscroll_tbl[0] <= dword_425580)
 	{
 		if ((sprt_ent[0].y0 - prog.screen_y - 56) < y && dword_425580 > 1)
 		{
@@ -370,20 +370,20 @@ void TMapScrollY_cond(int y, int speed)
 	}
 
 	if (scrl)
-		TMap_scrollY(&tmap, word_4255A4[dword_425580], 2);
+		TMap_scrollY(&tmap, tmap_yscroll_tbl[dword_425580], 2);
 }
 
-void SetScrollBlock(int a1, int a2)
+void SetScrollBlock(int x, int y)
 {
 	int v2;
 	int v3;
 	int i;
 	int j;
 
-	v2 = word_425584[0];
-	for (i = word_425584[0]; i; v2 = i--)
+	v2 = tmap_xscroll_tbl[0];
+	for (i = tmap_xscroll_tbl[0]; i; v2 = i--)
 	{
-		if (word_425584[i] < a1)
+		if (tmap_xscroll_tbl[i] < x)
 			break;
 	}
 
@@ -392,10 +392,10 @@ void SetScrollBlock(int a1, int a2)
 	else
 	{
 		dword_42557C = i + 1;
-		v3 = word_4255A4[0];
-		for (j = word_4255A4[0]; j; v3 = j--)
+		v3 = tmap_yscroll_tbl[0];
+		for (j = tmap_yscroll_tbl[0]; j; v3 = j--)
 		{
-			if (word_4255A4[j] < a2)
+			if (tmap_yscroll_tbl[j] < y)
 				break;
 		}
 		if (v3 == j)
@@ -405,11 +405,11 @@ void SetScrollBlock(int a1, int a2)
 	}
 }
 
-int TMapGetSize(TMAP* a1, RECT* lprc)
+int TMapGetSize(TMAP* tmap, RECT* lprc)
 {
-	if (!a1->w || !a1->h)
+	if (!tmap->w || !tmap->h)
 		return 0;
-	SetRect(lprc, 0, 0, a1->w - 1, a1->h - 1);
+	SetRect(lprc, 0, 0, tmap->w - 1, tmap->h - 1);
 	return 1;
 }
 
@@ -423,14 +423,14 @@ void TMapSetScrolling(TMAP* tmap, int x, int y)
 	tmap->speedY = 0;
 }
 
-void TMapSetClipArea(TMAP* tmap, int xLeft, int yTop, int a4, int a5)
+void TMapSetClipArea(TMAP* tmap, int x, int y, int w, int h)
 {
-	SetRect(&tmap->clip, xLeft, yTop, a4 + xLeft - 1, a5 + yTop - 1);
+	SetRect(&tmap->clip, x, y, w + x - 1, h + y - 1);
 }
 
-void TMapGetDstRect(TMAP* a1, RECT* dst)
+void TMapGetDstRect(TMAP* tmap, RECT* dst)
 {
-	SetRect(dst, a1->x1, a1->y1, a1->clip.right + a1->x1 - a1->clip.left, a1->clip.bottom + a1->y1 - a1->clip.top);
+	SetRect(dst, tmap->x1, tmap->y1, tmap->clip.right + tmap->x1 - tmap->clip.left, tmap->clip.bottom + tmap->y1 - tmap->clip.top);
 }
 
 void SetWorldPos(int x, int y)
@@ -452,14 +452,14 @@ void SetWorldPos(int x, int y)
 	}
 }
 
-void Vm_scroll_world(int xLeft, int yTop, int a3, int a4, int a5, int a6)
+void Vm_scroll_world(int wx, int wy, int ww, int wh, int xpos, int ypos)
 {
-	TMapRenderScroll(&tmap, xLeft, yTop, a3, a4, a5, a6);
+	TMapRenderScroll(&tmap, wx, wy, ww, wh, xpos, ypos);
 }
 
 void TMap_scroller()
 {
-	int xy[2]; // [esp+0h] [ebp-8h] BYREF
+	int xy[2];
 
 	TMapScrollUpdate(&tmap);
 	TMap_GetXY1(&tmap, xy);
@@ -476,7 +476,7 @@ void TMap_scroller()
 		TMapScrollY_cond(38, 266);
 }
 
-void sub_4036C5()
+void TMap_scroller2()
 {
 	if (vm_index5[46])
 	{

@@ -42,11 +42,11 @@ int TMapOpenAll(TMAP* tmap, LPCSTR filename_dib, LPCSTR filename_map);
 
 void TMapCache(LPCSTR dib_name, LPCSTR map_name);
 
-void TMapSetClipArea(TMAP* tmap, int xLeft, int yTop, int a4, int a5);
+void TMapSetClipArea(TMAP* tmap, int x, int y, int w, int h);
 void TMapGetRect(TMAP* tmap, RECT* lprcDst);
 void TMapGetDstRect(TMAP* a1, RECT* dst);
 int TMapGetSize(TMAP* tmap, RECT* dst);
-void TMapRenderScroll(TMAP* s, int x0, int y0, int w, int h, int x1, int y1);
+void TMapRenderScroll(TMAP* s, int wx, int wy, int ww, int wh, int xpos, int ypos);
 void TMapRenderScroll2(TMAP* s, int x, int y, int w, int h);
 void TMapRender(TMAP* tmap);
 
@@ -54,8 +54,8 @@ void SetWorldPos(int x, int y);
 
 void Vm_map_scroll(__int16 scrlx, __int16 scrly, __int16 speed);
 int Vm_bg_scrolling();
-void Vm_tmap_set_scroll(int cnt1, WORD* data1, int cnt2, WORD* data2);
-void Vm_scroll_world(int xLeft, int yTop, int a3, int a4, int a5, int a6);
+void Vm_tmap_set_scroll(int xscroll_cnt, WORD* xscroll_data, int yscroll_cnt, WORD* yscroll_data);
+void Vm_scroll_world(int wx, int wy, int ww, int wh, int xpos, int ypos);
 
 void TMap_scroller();
-void sub_4036C5();
+void TMap_scroller2();

@@ -5,6 +5,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="xaudio">
+      <UniqueIdentifier>{55131bf9-ddc1-40d1-9b3f-68c40cd45e46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -25,6 +28,20 @@
     <ClInclude Include="text.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="tmc.h" />
+    <ClInclude Include="tml.h" />
+    <ClInclude Include="tsf.h" />
+    <ClInclude Include="xaudio\audio_bgm.h">
+      <Filter>xaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="xaudio\sndfmt.h">
+      <Filter>xaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="file_ex.h" />
+    <ClInclude Include="xaudio\audio.h">
+      <Filter>xaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="FileHandle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hacks.cpp" />
@@ -46,6 +63,19 @@
     <ClCompile Include="item.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="tmc.cpp" />
+    <ClCompile Include="midi.cpp" />
+    <ClCompile Include="xaudio\sndfmt.cpp">
+      <Filter>xaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="xaudio\audio_bgm.cpp">
+      <Filter>xaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="file_ex.cpp" />
+    <ClCompile Include="xaudio\audio.cpp">
+      <Filter>xaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="FileHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc">

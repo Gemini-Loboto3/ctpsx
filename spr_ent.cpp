@@ -2,6 +2,7 @@
 #include "game.h"
 
 SPRT_ENT sprt_ent[21];
+SPRT_DAT sprt_dat[2];
 
 void SPRT_ENT::Link()
 {
@@ -683,28 +684,40 @@ void sub_40243A()
 	}
 }
 
-void __cdecl sub_401DB5()
+void sub_401DB5()
 {
-	//if (sprt_ent[0].lmx >= 0
-		/*&& (sprt_dat[0].type == 1 || sprt_dat[0].type == 2)*/
-		//&& sprt_ent[0].x0 <= sprt_ent[0].lmx
-		///*&& sprt_dat[0].type0 == 1*/)
-	//{
-		//sprt_dat[0].field_10 = 1;
-		//sprt_dat[0].type2 = 0;
-		//sprt_dat[0].field_1C = 0;
-		//sprt_dat[0].type3 = 1;
-	//}
-	//if (sprt_ent[0].lmy >= 0
-	//	&& (sprt_dat[0].type == 1 || sprt_dat[0].type == 2)
-	//	&& sprt_ent[0].x0 >= sprt_ent[0].lmy
-	//	&& !sprt_dat[0].type0)
-	//{
-	//	sprt_dat[0].field_10 = 1;
-	//	sprt_dat[0].type2 = 0;
-	//	sprt_dat[0].field_1C = 0;
-	//	sprt_dat[0].type3 = 0;
-	//}
+	if (sprt_ent[0].lmx >= 0
+		&& (sprt_dat[0].type == 1 || sprt_dat[0].type == 2)
+		&& sprt_ent[0].x0 <= sprt_ent[0].lmx
+		&& sprt_dat[0].type0 == 1)
+	{
+		sprt_dat[0].field_10 = 1;
+		sprt_dat[0].type2 = 0;
+		sprt_dat[0].field_1C = 0;
+		sprt_dat[0].type3 = 1;
+	}
+	if (sprt_ent[0].lmy >= 0
+		&& (sprt_dat[0].type == 1 || sprt_dat[0].type == 2)
+		&& sprt_ent[0].x0 >= sprt_ent[0].lmy
+		&& !sprt_dat[0].type0)
+	{
+		sprt_dat[0].field_10 = 1;
+		sprt_dat[0].type2 = 0;
+		sprt_dat[0].field_1C = 0;
+		sprt_dat[0].type3 = 0;
+	}
+}
+
+void __cdecl sub_401EB7(unsigned int a1)
+{
+	if (sprt_ent[a1].field_8D)
+	{
+		if (sprt_dat[a1].field_14)
+		{
+			//SprAnim(a1, sprt_dat[a1].field_14, 0, 0);
+			sprt_dat[a1].field_14 = 0;
+		}
+	}
 }
 
 int EntGetPan(int a1)

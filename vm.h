@@ -248,7 +248,6 @@ struct VM
 	void op_se_pan();
 	void op_se_req_spr();
 	void op_se_req_pv();
-	//void op_snd_stop(char* str);
 
 	// maps
 	void op_map_load();

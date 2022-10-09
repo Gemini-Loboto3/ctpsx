@@ -80,6 +80,8 @@ void Init()
 
 }
 
+void LoadSf2();
+
 void InitApp()
 {
 	error_no = 0;
@@ -97,6 +99,8 @@ void InitApp()
 
 	InitItem();
 	LoadFaces();
+
+	LoadSf2();
 }
 
 void InitInstance()
@@ -122,7 +126,7 @@ void draw_func1()
 {
 	//sub_40266A();
 	TMap_scroller();
-	sub_4036C5();
+	TMap_scroller2();
 	//sub_401D32();
 	//sub_401D74();
 	//sub_4021DC();

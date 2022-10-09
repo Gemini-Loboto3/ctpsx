@@ -90,6 +90,8 @@
     <ClInclude Include="bg.h" />
     <ClInclude Include="dib.h" />
     <ClInclude Include="console.h" />
+    <ClInclude Include="FileHandle.h" />
+    <ClInclude Include="file_ex.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="inject.h" />
     <ClInclude Include="input_di8.h" />
@@ -103,8 +105,14 @@
     <ClInclude Include="text.h" />
     <ClInclude Include="tim.h" />
     <ClInclude Include="tmap.h" />
+    <ClInclude Include="tmc.h" />
+    <ClInclude Include="tml.h" />
+    <ClInclude Include="tsf.h" />
     <ClInclude Include="unk.h" />
     <ClInclude Include="vm.h" />
+    <ClInclude Include="xaudio\audio.h" />
+    <ClInclude Include="xaudio\audio_bgm.h" />
+    <ClInclude Include="xaudio\sndfmt.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="api.cpp" />
@@ -114,8 +122,11 @@
     </ClCompile>
     <ClCompile Include="dib.cpp" />
     <ClCompile Include="console.cpp" />
+    <ClCompile Include="FileHandle.cpp" />
+    <ClCompile Include="file_ex.cpp" />
     <ClCompile Include="input_di8.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="midi.cpp" />
     <ClCompile Include="render_d3d9.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="game.cpp">
@@ -128,10 +139,14 @@
     <ClCompile Include="text.cpp" />
     <ClCompile Include="tim.cpp" />
     <ClCompile Include="tmap.cpp" />
+    <ClCompile Include="tmc.cpp" />
     <ClCompile Include="unk.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="vm.cpp" />
     <ClCompile Include="wmain.cpp" />
+    <ClCompile Include="xaudio\audio.cpp" />
+    <ClCompile Include="xaudio\audio_bgm.cpp" />
+    <ClCompile Include="xaudio\sndfmt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc" />

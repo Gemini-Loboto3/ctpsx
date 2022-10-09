@@ -1,5 +1,21 @@
 #pragma once
 
+struct SPRT_DAT
+{
+	DWORD type0;
+	DWORD type;
+	DWORD type3;
+	DWORD type2;
+	DWORD field_10;
+	WORD field_14;
+	WORD type4;
+	WORD field_18;
+	WORD field_1A;
+	DWORD field_1C;
+	DWORD field_20;
+	WORD field_24;
+};
+
 struct SPRT_ENT
 {
 	void SetList();
@@ -61,6 +77,7 @@ struct SPRT_ENT
 };
 
 extern SPRT_ENT sprt_ent[21];
+extern SPRT_DAT sprt_dat[2];
 
 void Vm_spr_lmt(int a1, int lmx, int lmy);
 void sub_404346(int a1, int a2);
