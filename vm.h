@@ -400,7 +400,7 @@ struct VM
 	WORD map_right;
 	WORD map_bottom;
 	__int16 field_3432;
-	__int16 field_3434;
+	WORD field_3434;
 	WORD texcol_r;
 	WORD texcol_g;
 	WORD texcol_b;

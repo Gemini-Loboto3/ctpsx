@@ -283,7 +283,7 @@ void TMapCache(LPCSTR dib_name, LPCSTR map_name)
 	TMapOpenAll(&tmap, map, map);
 }
 
-void Vm_map_scroll(__int16 scrlx, __int16 scrly, __int16 speed)
+void Vm_map_scroll(int scrlx, int scrly, int speed)
 {
 	if (scrlx != -1)
 		TMap_scrollX(&tmap, scrlx, speed);
@@ -296,7 +296,7 @@ int Vm_bg_scrolling()
 	return TMap_is_scrolling(&tmap) ? 0 : 1;
 }
 
-int dword_42557C, dword_425580;
+int tmap_xscroll_index, tmap_yscroll_index;
 __int16 tmap_xscroll_tbl[16];
 __int16 tmap_yscroll_tbl[16];
 
@@ -315,22 +315,22 @@ void TMapScrollX_cond(int x, int speed)
 	int scrl;
 
 	scrl = 0;
-	if (sprt_ent[0].x0 - prog.screen_x <= speed || tmap_xscroll_tbl[0] <= dword_42557C)
+	if (sprt_ent[0].x0 - prog.screen_x <= speed || tmap_xscroll_tbl[0] <= tmap_xscroll_index)
 	{
-		if (sprt_ent[0].x0 - prog.screen_x < x && dword_42557C > 1)
+		if (sprt_ent[0].x0 - prog.screen_x < x && tmap_xscroll_index > 1)
 		{
-			--dword_42557C;
+			--tmap_xscroll_index;
 			scrl = 1;
 		}
 	}
 	else
 	{
-		++dword_42557C;
+		++tmap_xscroll_index;
 		scrl = 1;
 	}
 
 	if (scrl)
-		TMap_scrollX(&tmap, tmap_xscroll_tbl[dword_42557C], 4);
+		TMap_scrollX(&tmap, tmap_xscroll_tbl[tmap_xscroll_index], 4);
 }
 
 void TMapScrollY_cond(int y, int speed)
@@ -338,22 +338,22 @@ void TMapScrollY_cond(int y, int speed)
 	int scrl;
 
 	scrl = 0;
-	if ((sprt_ent[0].y0 - prog.screen_y - 56) <= speed || tmap_yscroll_tbl[0] <= dword_425580)
+	if ((sprt_ent[0].y0 - prog.screen_y - 56) <= speed || tmap_yscroll_tbl[0] <= tmap_yscroll_index)
 	{
-		if ((sprt_ent[0].y0 - prog.screen_y - 56) < y && dword_425580 > 1)
+		if ((sprt_ent[0].y0 - prog.screen_y - 56) < y && tmap_yscroll_index > 1)
 		{
-			--dword_425580;
+			--tmap_yscroll_index;
 			scrl = 1;
 		}
 	}
 	else
 	{
-		++dword_425580;
+		++tmap_yscroll_index;
 		scrl = 1;
 	}
 
 	if (scrl)
-		TMap_scrollY(&tmap, tmap_yscroll_tbl[dword_425580], 2);
+		TMap_scrollY(&tmap, tmap_yscroll_tbl[tmap_yscroll_index], 2);
 }
 
 void SetScrollBlock(int x, int y)
@@ -374,7 +374,7 @@ void SetScrollBlock(int x, int y)
 		printf("SetScrollBlock");
 	else
 	{
-		dword_42557C = i + 1;
+		tmap_xscroll_index = i + 1;
 		v3 = tmap_yscroll_tbl[0];
 		for (j = tmap_yscroll_tbl[0]; j; v3 = j--)
 		{
@@ -384,7 +384,7 @@ void SetScrollBlock(int x, int y)
 		if (v3 == j)
 			printf("SetScrollBlock");
 		else
-			dword_425580 = v3;
+			tmap_yscroll_index = v3;
 	}
 }
 
@@ -418,18 +418,18 @@ void TMapGetDstRect(TMAP* tmap, RECT* dst)
 
 void SetWorldPos(int x, int y)
 {
-	RECT v2;
-	RECT rc;
+	RECT size;
+	RECT dest;
 
 	TMapSetScrolling(&tmap, x, y);
 	prog.screen_x = x;
 	prog.screen_y = y;
-	if (TMapGetSize(&tmap, &v2))
+	if (TMapGetSize(&tmap, &size))
 	{
 		if (prog.vm_func == 1)
 		{
 			TMapSetClipArea(&tmap, 40 * 2, 8 * 2 /*0*/, 240 * 2, 152 * 2);
-			TMapGetDstRect(&tmap, &rc);
+			TMapGetDstRect(&tmap, &dest);
 			SetScrollBlock(x, y);
 		}
 	}
@@ -448,14 +448,14 @@ void TMap_scroller()
 	TMap_GetXY1(&tmap, xy);
 	prog.screen_x = xy[0];
 	prog.screen_y = xy[1];
-	if ((prog.field_132 & 1) != 0)
+	if ((prog.map_attr & 1) != 0)
 	{
 		if (TMapCanXScrol(&tmap))
 			TMapScrollX_cond(180, 300);
 		if (!TMapIsSpeedXSet(&tmap))
 			TMapScrollX_cond(120, 360);
 	}
-	if ((prog.field_132 & 2) != 0 && !TMapIsSpeedYSet(&tmap))
+	if ((prog.map_attr & 2) != 0 && !TMapIsSpeedYSet(&tmap))
 		TMapScrollY_cond(38, 266);
 }
 

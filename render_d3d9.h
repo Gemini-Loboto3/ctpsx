@@ -23,4 +23,5 @@ extern D3DFORMAT d3dfmttex;
 void InitRender();
 void SwapBuffer();
 void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
+void RenderRect(LPDIRECT3DTEXTURE9 tex, int x, int y, int real_w, int real_h, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
 void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b);

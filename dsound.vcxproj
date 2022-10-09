@@ -92,6 +92,7 @@
     <ClInclude Include="console.h" />
     <ClInclude Include="FileHandle.h" />
     <ClInclude Include="file_ex.h" />
+    <ClInclude Include="font.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="inject.h" />
     <ClInclude Include="input_di8.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="console.cpp" />
     <ClCompile Include="FileHandle.cpp" />
     <ClCompile Include="file_ex.cpp" />
+    <ClCompile Include="font.cpp" />
     <ClCompile Include="input_di8.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="midi.cpp" />

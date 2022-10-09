@@ -52,7 +52,7 @@ void TMapRender(TMAP* tmap);
 
 void SetWorldPos(int x, int y);
 
-void Vm_map_scroll(__int16 scrlx, __int16 scrly, __int16 speed);
+void Vm_map_scroll(int scrlx, int scrly, int speed);
 int Vm_bg_scrolling();
 void Vm_tmap_set_scroll(int xscroll_cnt, WORD* xscroll_data, int yscroll_cnt, WORD* yscroll_data);
 void Vm_scroll_world(int wx, int wy, int ww, int wh, int xpos, int ypos);

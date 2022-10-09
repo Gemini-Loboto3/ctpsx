@@ -43,6 +43,7 @@
     </ClInclude>
     <ClInclude Include="FileHandle.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="font.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hacks.cpp" />
@@ -78,6 +79,7 @@
     </ClCompile>
     <ClCompile Include="FileHandle.cpp" />
     <ClCompile Include="timer.cpp" />
+    <ClCompile Include="font.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc">

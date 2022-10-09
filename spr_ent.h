@@ -95,3 +95,5 @@ void sub_40245E();
 void sub_40243A();
 
 int EntGetPan(int a1);
+
+void Vm_spr_dir(int id, __int16 a2, __int16 a3, __int16 a4, __int16 a5);

@@ -554,9 +554,9 @@ int Vm_wait_ck(int index)
 	return 1;
 }
 
-void Vm_map_attr(__int16 a1)
+void Vm_map_attr(WORD attr)
 {
-	prog.field_132 = a1;
+	prog.map_attr = attr;
 }
 
 void __cdecl Vm_user_ctr(__int16 a1)
@@ -564,7 +564,7 @@ void __cdecl Vm_user_ctr(__int16 a1)
 	prog.field_12E = a1 & 1;
 	prog.field_130 = a1 & 2;
 	vm_index5[45] = a1 & 1;
-	//Vm_spr_dir(0, -1, 0, -1, -1);
+	Vm_spr_dir(0, -1, 0, -1, -1);
 }
 
 void Vm_work_clr()
@@ -610,26 +610,31 @@ void __cdecl Vm_mes_print(VM* game)
 				{
 					game->msg_x = game->msg_basex;
 					game->msg_y += game->msg_basey + game->msg_v;
-					if (++game->msg_pos[0] > 512u)
+					if (++game->msg_pos[0] > 512)
 						printf("MSG pointer exceeded buffer capacity\n");
 				}
 				else
 				{
 					glyph[0] = chr;
 					glyph[1] = 0;
-					if (chr > 0x7Fu)
+					if (chr > 0x7F)
 					{
 						glyph[1] = game->msg_buf[0][game->msg_pos[0] + 1];
 						glyph[2] = 0;
 						v3 = 0;
 						++game->msg_pos[0];
 					}
-					if (++game->msg_pos[0] > 512u)
+					if (++game->msg_pos[0] > 512)
 						printf("MSG pointer exceeded buffer capacity\n");
-					w = 8;//GamePrintChar(game, game->hDC, game->msg_x, game->msg_y, glyph);
+
+					wchar_t wide[2];
+					MultiByteToWideChar(932, 0, glyph, 3, wide, 2);
+
+					w = GamePrintChar(game->msg_x, game->msg_y, wide[0]);
 					v3 = w;
 					game->msg_x += (WORD)w;
-					if (game->msg_w + game->msg_basex - game->msg_v <= game->msg_x)
+					// auto line carry
+					if (game->msg_w + game->msg_basex - game->msg_v <= game->msg_x - TEXT_XDIFF * 2)
 					{
 						game->msg_x = game->msg_basex;
 						game->msg_y += game->msg_basey + game->msg_v;
@@ -1753,7 +1758,7 @@ void VM::op_bg_file_disp()
 	WORD v4 = read16();
 	WORD v3 = read16();
 	getstr(path);
-	//Game_LoadBmp(a1, loop_end, ret, Destination);
+	//Game_LoadBmp(attr, loop_end, ret, Destination);
 }
 
 void VM::op_bg_anim()
@@ -1837,7 +1842,7 @@ void VM::op_map_load()
 void VM::op_map_attr()
 {
 	updateIndex();
-	field_3434 = read16s();
+	field_3434 = read16();
 	Vm_map_attr(field_3434 & 3);
 }
 
@@ -1970,6 +1975,7 @@ void VM::op_msg_out()
 	}
 
 	strcpy_s(msg_buf[field_3370[0]], 512, buf);
+
 	field_3370[0] += (WORD)strlen(buf);
 	wait_timer[0] = msg_base_wait;
 	field_2948[0] = 1;
@@ -1993,6 +1999,7 @@ void VM::op_msg_clr()
 	updateIndex();
 
 	// do clearing here
+	RenderTile(48, 160, 256 - 48, 240 - 160, 0, 0, 0);
 
 	msg_x = msg_basex;
 	msg_y = msg_basex2;
@@ -2152,7 +2159,7 @@ void VM::op_sce_reset()
 		field_28B8[vm_evt_pos] = 0;
 		auto v4 = field_2944;
 		field_2944 = 1;
-		Vm_mes_print(this);//GamePrintSjis(a1);
+		Vm_mes_print(this);
 		field_2944 = v4;
 		Game_BgDispTrn_1(this);
 		Game_RedrawAll(this);
@@ -2200,7 +2207,7 @@ void VM::op_bg_spr_set()
 		//else
 		//	v1 = 1 << bank_no[v2]->bitframe;
 		v1 = bank_no[v2]->bpp;
-		//BgSprAnim(a1, arg0->bank_no[v2]->w, arg0->bank_no[v2]->h, (DWORD)&arg0->bank_no[v2]->frame_ptr[v1]);
+		//BgSprAnim(attr, arg0->bank_no[v2]->w, arg0->bank_no[v2]->h, (DWORD)&arg0->bank_no[v2]->frame_ptr[v1]);
 	}
 }
 
@@ -2261,8 +2268,8 @@ void VM::op_bg_spr_anim()
 		field_2912[vm_evt_pos] = 0;
 	if (!field_28B8[vm_evt_pos + 5])
 	{
-		//for (int i = 0; a1->field_28B8[vm_evt_pos] > i; ++i)
-		//	Game_RedrawScene(a1);
+		//for (int i = 0; attr->field_28B8[vm_evt_pos] > i; ++i)
+		//	Game_RedrawScene(attr);
 		field_28B8[vm_evt_pos] = 0;
 	}
 }
@@ -2317,7 +2324,7 @@ void VM::op_spr_dir()
 	WORD v3 = read16();
 	WORD v2 = read16();
 	WORD v1 = read16();
-	//Vm_spr_dir(v5, v4, v3, v2, v1);
+	Vm_spr_dir(v5, v4, v3, v2, v1);
 }
 
 void VM::op_spr_lmt()

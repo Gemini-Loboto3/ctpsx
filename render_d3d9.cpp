@@ -1,5 +1,4 @@
 #include <stdafx.h>
-#include <d3d9.h>
 #include "game.h"
 
 RENDER_BMP render_bmp;
@@ -113,6 +112,7 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 		return 0;
 
 	d3d9dev->CreateTexture(GAME_W, GAME_H, 1, D3DUSAGE_RENDERTARGET, d3dfmttex, D3DPOOL_DEFAULT, &d3d9rend, nullptr);
+	d3d9dev->CreateTexture(12, 12, 1, 0, d3dfmttex, D3DPOOL_MANAGED, &d3d9text, nullptr);
 
 	d3d9dev->SetFVF(FVF);
 
@@ -207,6 +207,30 @@ void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYT
 	p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].tu = u1, p[3].tv = v1, p[3].diffuse = diffuse;
 
 	d3d9dev->SetTexture(0, tim->tex);
+	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
+}
+
+void RenderRect(LPDIRECT3DTEXTURE9 tex, int x, int y, int real_w, int real_h, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b)
+{
+	const float ofs = -0.5f;
+	float x0 = (float)x + ofs, y0 = (float)y + ofs,
+		x1 = x0 + (float)w, y1 = y0 + (float)h;
+
+	float uw = 1.f / real_w;
+	float vh = 1.f / real_h;
+
+	float u0 = (float)u * uw, v0 = (float)v * vh,
+		u1 = u0 + w * uw, v1 = v0 + h * vh;
+
+	DWORD diffuse = D3DCOLOR_XRGB(r, g, b);
+
+	fvf p[4];
+	p[0].x = x0, p[0].y = y0, p[0].z = 0.5f, p[0].w = 1.f, p[0].tu = u0, p[0].tv = v0, p[0].diffuse = diffuse;
+	p[1].x = x1, p[1].y = y0, p[1].z = 0.5f, p[1].w = 1.f, p[1].tu = u1, p[1].tv = v0, p[1].diffuse = diffuse;
+	p[2].x = x0, p[2].y = y1, p[2].z = 0.5f, p[2].w = 1.f, p[2].tu = u0, p[2].tv = v1, p[2].diffuse = diffuse;
+	p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].tu = u1, p[3].tv = v1, p[3].diffuse = diffuse;
+
+	d3d9dev->SetTexture(0, tex);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 }
 

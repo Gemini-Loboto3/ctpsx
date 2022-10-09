@@ -14,6 +14,8 @@
 #include "bg.h"
 #include "item.h"
 #include "sound.h"
+#include "font.h"
+#include "text.h"
 
 DWORD getTime();
 

@@ -725,3 +725,33 @@ int EntGetPan(int a1)
 	return Sound_get_pan(sprt_ent[a1].x0 - prog.screen_x);
 }
 
+void sub_4042C0(int id)
+{
+	sprt_dat[id].field_14 = 0;
+	sprt_dat[id].type4 = 0;
+	sprt_dat[id].field_10 = 0;
+	sprt_dat[id].field_1C = 0;
+	sprt_dat[id].field_20 = 0;
+	sprt_dat[id].field_24 = 0;
+}
+
+void Vm_spr_dir(int id, __int16 a2, __int16 a3, __int16 a4, __int16 a5)
+{
+	DWORD v5; // ecx
+
+	if (a2 != -1)
+		sprt_dat[id].type0 = a2 >> 3;
+	if (a4 == -1)
+		v5 = sprt_dat[id].type0;
+	else
+		v5 = a4 >> 3;
+	sprt_dat[id].type3 = v5;
+	if (a3 != -1)
+		sprt_dat[id].type = a3;
+	if (a5 == -1)
+		sprt_dat[id].type2 = sprt_dat[id].type;
+	else
+		sprt_dat[id].type2 = a5;
+	sub_4042C0(id);
+}
+

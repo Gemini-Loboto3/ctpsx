@@ -10,7 +10,6 @@
 #include "timer.h"
 
 PROGRAM prog;
-int update_speed = 1;
 FrameLimiter fps;
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -35,14 +34,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			Vm_mark_event(0x190, 1);
 			return 1;
 		case VK_F5:
-			update_speed++;
-			if (update_speed > 8)
-				update_speed = 8;
+			fps.NextSpeed();
 			return 1;
 		case VK_F6:
-			update_speed--;
-			if (update_speed < 1)
-				update_speed = 1;
+			fps.PrevSpeed();
 			return 1;
 		}
 	}
@@ -100,6 +95,7 @@ void InitApp()
 	InputInit();
 
 	InitItem();
+	InitFont();
 	LoadFaces();
 
 	LoadSf2();
@@ -166,7 +162,7 @@ void startTime()
 
 DWORD getTime()
 {
-	return ((DWORD)GetTickCount64() - start) * update_speed;
+	return ((DWORD)GetTickCount64() - start);
 }
 
 int Game()

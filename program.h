@@ -19,7 +19,7 @@ struct PROGRAM
 		field_184 = 431;
 		//sprt = 0;
 		screen_on = 0;
-		field_132 = 0;
+		map_attr = 0;
 		field_134 = 0;
 		field_14C = 0;
 		ShowCursor(0);
@@ -56,7 +56,7 @@ struct PROGRAM
 	DWORD screen_on;
 	__int16 field_12E;
 	__int16 field_130;
-	__int16 field_132;
+	WORD map_attr;
 	int field_134;
 	int field_138;
 	int field_13C;
