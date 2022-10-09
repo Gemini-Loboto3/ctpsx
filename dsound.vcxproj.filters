@@ -42,6 +42,7 @@
       <Filter>xaudio</Filter>
     </ClInclude>
     <ClInclude Include="FileHandle.h" />
+    <ClInclude Include="timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hacks.cpp" />
@@ -76,6 +77,7 @@
       <Filter>xaudio</Filter>
     </ClCompile>
     <ClCompile Include="FileHandle.cpp" />
+    <ClCompile Include="timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc">

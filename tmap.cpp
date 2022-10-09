@@ -172,32 +172,15 @@ void TMapRender(TMAP* tmap)
 			
 			if (tmap->scroll)
 			{
-				x = rdst.left;// tmap->clip.left;
-				y = rdst.top; // tmap->clip.top;
-				//TMapRenderScroll_0(tmap, tmap->clip.left, tmap->clip.top,
-				//	rdst.right - rdst.left + 1, rdst.bottom - rdst.top + 1,
-				//	rdst.left, rdst.top);
+				x = tmap->clip.left;
+				y = tmap->clip.top;
 			}
 			else
 			{
 				x = tmap->clip.left + (tmap->x1 - rdst.left);
 				y = tmap->clip.top  + (tmap->y1 - rdst.top);
-				//if (tmap->data->frame)
-				//	frame = tmap->data->frame;
-				//else
-				//	frame = 1 << tmap->data->frame_bit;
-				//RenderToOffScreen(tmap->clip.left - (tmap->xpos - rdst.left), tmap->clip.top - (tmap->ypos - rdst.top),
-				//	rdst.left, rdst.top,
-				//	tmap->ww, tmap->wh,
-				//	(tmap->data->ww + 3) & ~3u,
-				//	rdst.right - rdst.left + 1,
-				//	rdst.bottom - rdst.top + 1,
-				//	(BYTE*)&tmap->data->ptr[frame],
-				//	0, 0, 0);
 			}
 
-			//x = tmap->xpos;
-			//y = tmap->ypos;
 			int u = rdst.left / 2;
 			int v = rdst.top / 2;
 			int w = (rdst.right - rdst.left) / 2;
@@ -445,7 +428,7 @@ void SetWorldPos(int x, int y)
 	{
 		if (prog.vm_func == 1)
 		{
-			TMapSetClipArea(&tmap, 40 * 2, 0, 240 * 2, 152 * 2);
+			TMapSetClipArea(&tmap, 40 * 2, 8 * 2 /*0*/, 240 * 2, 152 * 2);
 			TMapGetDstRect(&tmap, &rc);
 			SetScrollBlock(x, y);
 		}

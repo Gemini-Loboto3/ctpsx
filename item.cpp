@@ -66,7 +66,7 @@ void ItemUpdate()
 	vm_index5[24] = inventory[itemptr2_index];
 }
 
-void ItemRender()
+void ItemListDisp()
 {
 	static short xy[][2] =
 	{
@@ -106,5 +106,16 @@ void ItemRender()
 			v = 7 / 8 * 16;
 			RenderRect(item_tim, x, y, 16, 16, u, v, 0xff, 0xff, 0xff);
 		}
+	}
+}
+
+void ItemRender()
+{
+	prog.field_148 = 1;
+	if (prog.field_13C)
+	{
+		ItemListDisp();
+		prog.field_13C = 0;
+		prog.field_148 = 1;
 	}
 }

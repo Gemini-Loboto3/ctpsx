@@ -7,9 +7,11 @@
 #ifdef _WINDOWS
 #include "render_d3d9.h"
 #endif
+#include "timer.h"
 
 PROGRAM prog;
 int update_speed = 1;
+FrameLimiter fps;
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -172,7 +174,10 @@ int Game()
 	if (prog.field_120 == 0)
 	{
 		auto tick = (DWORD)getTime();
-		if (tick >= prog.tick_now)
+
+		if (!fps.Sync(2)) return 0;
+
+		//if (tick >= prog.tick_now)
 		{
 			prog.tick_now = tick + prog.tick_delta;
 			if (prog.vm_func != 1)
@@ -198,6 +203,7 @@ int Game()
 void WinLoop()
 {
 	MSG Msg;
+	fps.Init();
 
 	while (1)
 	{

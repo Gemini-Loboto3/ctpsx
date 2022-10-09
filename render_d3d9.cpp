@@ -227,12 +227,3 @@ void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b)
 	d3d9dev->SetTexture(0, nullptr);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 }
-
-static const float fx = (float)GAME_W / (float)GAME_REALW;
-
-int GETX(int x)
-{
-	float f = (float)(x + 320) * fx;
-
-	return (int)(f - 128.f);
-}

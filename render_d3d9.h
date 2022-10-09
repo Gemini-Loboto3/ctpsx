@@ -9,9 +9,7 @@
 #define GAME_X		((GAME_REALW / 2 - GAME_W) / 2)
 #define GAME_Y		0
 
-//#define GETX(x)		((x) / 2 - GAME_X)	// center
-
-int GETX(int x);
+#define GETX(x)		((x) / 2 - GAME_X)	// center
 
 #define GETY(y)		((y) / 2 - GAME_Y)
 #define GETXR(x)	((x) / 2 - 8)	// push the right

@@ -104,6 +104,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="tim.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="tmap.h" />
     <ClInclude Include="tmc.h" />
     <ClInclude Include="tml.h" />
@@ -138,6 +139,7 @@
     <ClCompile Include="spr_ent.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="tim.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClCompile Include="tmap.cpp" />
     <ClCompile Include="tmc.cpp" />
     <ClCompile Include="unk.cpp" />

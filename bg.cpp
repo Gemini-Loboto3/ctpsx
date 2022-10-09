@@ -180,6 +180,6 @@ void Render_bank(int x, int y, int w, int h, int srcx, int srcy, CTim* bank, int
 	//result = IntersectRect(&dst_rect, &dst_rect, &rcSrc2);
 	//if (result)
 	{
-		RenderRect(bank, GETXR(x), GETY(y), bank->real_w, bank->pix_h, 0, 0, 0xff, 0xff, 0xff);
+		RenderRect(bank, GETX(x), GETY(y), bank->real_w, bank->pix_h, 0, 0, 0xff, 0xff, 0xff);
 	}
 }
