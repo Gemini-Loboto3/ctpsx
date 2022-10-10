@@ -152,7 +152,24 @@ void SwapBuffer()
 			x1 = (float)render_bmp.w + ofs, y1 = (float)render_bmp.h + ofs;
 		float u0 = 0.f, v0 = 0.f,
 			u1 = 1.f, v1 = 1.f;
-		DWORD diffuse = D3DCOLOR_XRGB(255, 255, 255);
+
+		
+		BYTE rgb;
+
+		switch (prog.pal_obj.type)
+		{
+		default:	// normal
+			rgb = 255;
+			break;
+		case 1:	// fade in
+			rgb = prog.pal_obj.fade;
+			break;
+		case 2:	// fade out
+			rgb = 255 - prog.pal_obj.fade;
+			break;
+		}
+
+		DWORD diffuse = D3DCOLOR_XRGB(rgb, rgb, rgb);
 
 		d3d9dev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 		d3d9dev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);

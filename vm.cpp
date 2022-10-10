@@ -129,9 +129,10 @@ void Vm_spr_clr(WORD index)
 	sprt_ent[index].Release();
 }
 
-void Vm_spr_ent(int, DWORD, DWORD, DWORD, __int16, __int16, __int16, DWORD, WORD)
+void Vm_spr_ent(int a1, DWORD a2, DWORD a3, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD a9)
 {
-
+	SprEnt(a1, a2, a3, a4, a5, a6, a7, a8, a9);
+	sprt_ent[a1].SetList();
 }
 
 void Vm_func_call(WORD r)
@@ -178,14 +179,14 @@ void Vm_map_set_clip(int left, int top, int right, int bottom)
 
 void Vm_pal_set(int type, int index, int count, int delta, WORD id)
 {
-	//PalObj_404C7F(&prog.pal_obj, type, index, count, delta, id);
+	prog.pal_obj.set_fade(type, index, count, delta, id);
 }
 
 void Vm_sce_init()
 {
 	//int v0;
 	//int v1;
-	//__int16 v2;
+	//__int16 id;
 	//int ret;
 
 	prog.field_14C = 0;
@@ -194,9 +195,9 @@ void Vm_sce_init()
 	prog.field_148 = 0;
 	prog.field_138 = 1;
 	prog.field_13C = 1;
-	//PalObjReset(&prog.pal_obj);
-	int v2 = sub_4035DC();
-	//PalObj4091AD(&prog.pal_obj, v2);
+	prog.pal_obj.reset();
+	int id = sub_4035DC();
+	prog.pal_obj.f4091AD(id);
 	Vm_slant_clr();
 	vm_index5[28] = 0;
 }
@@ -550,8 +551,8 @@ int Vm_ent_wait(int id)
 
 int Vm_wait_ck(int index)
 {
-	//return index >= 2 || sprt_dat[index].type4 == 0;
-	return 1;
+	return index >= 2 || sprt_dat[index].type4 == 0;
+	//return 1;
 }
 
 void Vm_map_attr(WORD attr)
@@ -1644,20 +1645,20 @@ void VM::op_screen_clr()
 {
 	updateIndex();
 	//clear the screen here
-	RenderTile(0, 0, 640, 480, 0, 0, 0);
+	RenderTile(0, 0, GAME_W, GAME_H, 0, 0, 0);
 }
 
 void VM::op_box_fill()
 {
 	updateIndex();
-	WORD x0 = read16();
-	WORD y0 = read16();
-	WORD x1 = read16();
-	WORD y1 = read16();
+	int x0 = read16s();
+	int y0 = read16s();
+	int x1 = read16s();
+	int y1 = read16s();
 	WORD r = read16();
 	WORD g = read16();
 	WORD b = read16();
-	RenderTile(x0, y0, x1 - x0, y1 - y0, (BYTE)r, (BYTE)g, (BYTE)b);
+	RenderTile(GETX(x0), GETY(y0), (x1 - x0) / 2, (y1 - y0) / 2, (BYTE)r, (BYTE)g, (BYTE)b);
 }
 
 void VM::op_bg_load()
@@ -1691,30 +1692,30 @@ void VM::op_bg_load()
 void VM::op_bg_disp()
 {
 	updateIndex();
-	WORD Index = read16();
-	WORD v5 = read16();
+	int x = read16s();
+	int y = read16s();
 	WORD id = read16() + 1;
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v1 = read16();
+	int w = read16();
+	int h = read16();
+	WORD type = read16();
 	if (id >= 21)
 		id = _id;
-	Game_BgDispTrn(this, Index, v5, v4, v3, 0, 0, id, v1 != 0, 0);
+	Game_BgDispTrn(this, x, y, w, h, 0, 0, id, type != 0, 0);
 }
 
 void VM::op_bg_disp_trn()
 {
 	updateIndex();
-	WORD v7 = read16();
-	WORD v6 = read16();
+	int x = read16s();
+	int y = read16s();
 	WORD id = read16() + 1;
-	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v2 = read16();
+	int w = read16();
+	int h = read16();
+	WORD type = read16();
 	WORD v1 = read16();
-	if (id >= 0x15u)
+	if (id >= 21)
 		id = _id;
-	Game_BgDispTrn(this, v7, v6, v5, v4, 0, 0, id, v2 != 0, v1 != 0);
+	Game_BgDispTrn(this, x, y, w, h, 0, 0, id, type != 0, v1 != 0);
 }
 
 void VM::op_bg_spr_ent(int is_abs)
@@ -1878,7 +1879,8 @@ void VM::op_map_disp()
 			int y0 = scroll_y + vm_rects[i].top - scrl_y;
 			int x1 = vm_rects[i].right - vm_rects[i].left + x0;
 			int y1 = vm_rects[i].bottom - vm_rects[i].top + y0;
-			//GameDrawFrame(this, this->hDC, x0, y0, x1, y1, 0, 0xFFu, 0);
+
+			RenderTile(GETX(x0), GETY(y0), (x1 - x0) / 2, (y1 - y0) / 2, 0, 255, 0);
 		}
 	}
 }
@@ -1983,7 +1985,7 @@ void VM::op_msg_out()
 	{
 		v4 = field_2944;
 		field_2944 = 1;
-		Vm_mes_print(this);//GamePrintSjis(g);
+		Vm_mes_print(this);
 		field_2944 = v4;
 	}
 }
@@ -2125,28 +2127,6 @@ void VM::op_se_req_pv()
 	Sound_play(path, loops, pan, vol);
 }
 
-//void VM::op_snd_stop(char *str)
-//{
-//	auto v1 = _strupr(str);
-//	if (!strcmp(v1, "ALL"))
-//	{
-//		for (int i = 0; i < 6; ++i)
-//			Sound_clear(i);
-//	}
-//	else
-//	{
-//		for (int j = 0; j < 6; ++j)
-//		{
-//			//if (pDS_buf_tbl[j])
-//			{
-//				auto ret = _strupr(str);
-//				//if (!strcmp(ret, DS_buf_names[j]))
-//				//	return DSoundRelIndex(j) == 0;
-//			}
-//		}
-//	}
-//}
-
 void VM::op_sce_reset()
 {
 	WORD posbk = vm_evt_pos;
@@ -2181,33 +2161,40 @@ void VM::op_sce_reset()
 void VM::op_pal_set()
 {
 	updateIndex();
-	Vm_pal_set(read16(), read16(), read16(), read16(), read16());
+
+	WORD type = read16();
+	WORD index = read16();
+	WORD count = read16();
+	WORD delta = read16();
+	WORD id = read16();
+
+	Vm_pal_set(type, index, count, delta, id);
 }
 
 void VM::op_bg_spr_pos()
 {
 	updateIndex();
-	WORD Index = read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v2 = read16();
-	//BgSprPos(Index, v4, v3, v2);
+	WORD id = read16();
+	int x = read16s();
+	int y = read16s();
+	WORD flags = read16();
+	BgSprPos(id, x, y, flags);
 }
 
 void VM::op_bg_spr_set()
 {
 	updateIndex();
-	WORD a1 = read16();
-	WORD v2 = read16() + 1;
-	if (bank_no[v2])
+	WORD attr = read16();
+	WORD id = read16() + 1;
+	if (bank_no[id])
 	{
 		int v1;
-		//if (bank_no[v2]->frame)
-		//	v1 = bank_no[v2]->frame;
+		//if (bank_no[id]->frame)
+		//	v1 = bank_no[id]->frame;
 		//else
-		//	v1 = 1 << bank_no[v2]->bitframe;
-		v1 = bank_no[v2]->bpp;
-		//BgSprAnim(attr, arg0->bank_no[v2]->w, arg0->bank_no[v2]->h, (DWORD)&arg0->bank_no[v2]->frame_ptr[v1]);
+		//	v1 = 1 << bank_no[id]->bitframe;
+		v1 = bank_no[id]->bpp;
+		BgSprAnim(attr, bank_no[id]->real_w, bank_no[id]->pix_h, bank_no[id]);
 	}
 }
 
@@ -2268,8 +2255,8 @@ void VM::op_bg_spr_anim()
 		field_2912[vm_evt_pos] = 0;
 	if (!field_28B8[vm_evt_pos + 5])
 	{
-		//for (int i = 0; attr->field_28B8[vm_evt_pos] > i; ++i)
-		//	Game_RedrawScene(attr);
+		for (int i = 0; field_28B8[vm_evt_pos] > i; ++i)
+			Game_RedrawScene(this);
 		field_28B8[vm_evt_pos] = 0;
 	}
 }
@@ -2299,11 +2286,11 @@ void VM::op_spr_ent(int is_abs)
 void VM::op_spr_pos()
 {
 	updateIndex();
-	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v2 = read16();
-	//SprPos(ret, v4, ret, v2);
+	WORD id = read16();
+	int x = read16s();
+	int y = read16s();
+	WORD flags = read16();
+	SprPos(id, x, y, flags);
 }
 
 void VM::op_spr_anim()
@@ -2313,36 +2300,34 @@ void VM::op_spr_anim()
 	WORD v4 = read16();
 	WORD v3 = read16();
 	WORD v2 = read16();
-	//SprAnim(v5, v4, v3, v2);
+	SprAnim(v5, v4, v3, v2);
 }
 
 void VM::op_spr_dir()
 {
 	updateIndex();
 	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v2 = read16();
-	WORD v1 = read16();
+	int v4 = read16s();
+	int v3 = read16s();
+	int v2 = read16s();
+	int v1 = read16s();
 	Vm_spr_dir(v5, v4, v3, v2, v1);
 }
 
 void VM::op_spr_lmt()
 {
 	updateIndex();
-	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v1 = read16();
+	WORD id = read16();
+	WORD x = read16();
+	WORD y = read16();
 
-	WORD v3;
-	if (v4 < 0x8000)
-		v3 = v4 & 0x7FFF;
-	else
-		v3 = (unsigned __int16)(v4 + 0x8000) - 0x8000;
-	//if ((unsigned __int16)v1 < 0x8000u)
-		//Vm_spr_lmt(v5, v3, v1 & 0x7FFF);
-	//else
-		//Vm_spr_lmt(v5, v3, (unsigned __int16)(v1 + 0x8000) - 0x8000);
+	int lmx, lmy;
+	if (x < 0x8000) lmx = x & 0x7FFF;
+	else lmx = (unsigned __int16)(x + 0x8000) - 0x8000;
+	if (y < 0x8000) lmy = y & 0x7FFF;
+	else lmy = (unsigned __int16)(y + 0x8000) - 0x8000;
+
+	Vm_spr_lmt(id, lmx, lmy);
 }
 
 void VM::op_spr_walkx()
@@ -2353,7 +2338,7 @@ void VM::op_spr_walkx()
 	WORD v4 = read16();
 	WORD v3 = read16();
 	WORD v2 = read16();
-	//Vm_spr_walk_x(v6, v5, v4, v3, v2);
+	//Vm_spr_walk_x(v6, v5, v4, v3, id);
 }
 
 void VM::op_spr_wait()
@@ -2383,36 +2368,42 @@ void VM::op_abs_obj_anim()
 {
 	updateIndex();
 	WORD id = read16();
-	WORD v7 = read16();
-	WORD v6 = read16();
-	WORD v5 = read16();
+	int x = read16s();
+	int y = read16s();
+	WORD flags = read16();
 	read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v2 = read16();
-	//SprAnim(id, v4, ret, v2);
-	//SprPos(id, v7, v6, ret);
+	WORD a2 = read16();
+	WORD a3 = read16();
+	WORD a4 = read16();
+	SprAnim(id, a2, a3, a4);
+	SprPos(id, x, y, flags);
 }
 
 void VM::op_obj_anim()
 {
 	updateIndex();
 	WORD id = read16();
-	WORD v7 = read16();
-	WORD v6 = read16();
-	WORD v5 = read16();
+	int x = read16s();
+	int y = read16s();
+	WORD flags = read16();
 	read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v2 = read16();
-	//SprAnim(id, v4, ret, v2);
-	//SprPos(id, v7, v6, ret);
+	WORD a2 = read16();
+	WORD a3 = read16();
+	WORD a4 = read16();
+	SprAnim(id, a2, a3, a4);
+	SprPos(id, x, y, flags);
 }
 
 void VM::op_slant_set()
 {
 	updateIndex();
-	Vm_slant_set(read16(), read16(), read16(), read16());
+
+	WORD a = read16();
+	WORD b = read16();
+	WORD c = read16();
+	WORD d = read16();
+
+	Vm_slant_set(a, b, c, d);
 	stop();
 }
 

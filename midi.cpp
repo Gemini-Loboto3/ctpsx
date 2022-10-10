@@ -3,7 +3,7 @@
 
 XAudio xa;
 
-void LoadSf2()
+void Midi_init()
 {
 	XAudio2_IsPresent();
 

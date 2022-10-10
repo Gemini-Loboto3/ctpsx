@@ -428,7 +428,7 @@ void SetWorldPos(int x, int y)
 	{
 		if (prog.vm_func == 1)
 		{
-			TMapSetClipArea(&tmap, 40 * 2, 8 * 2 /*0*/, 240 * 2, 152 * 2);
+			TMapSetClipArea(&tmap, 40 * 2, 8 * 2 /*0*/, 240 * 2, (152) * 2);
 			TMapGetDstRect(&tmap, &dest);
 			SetScrollBlock(x, y);
 		}

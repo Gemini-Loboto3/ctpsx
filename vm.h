@@ -200,6 +200,7 @@ struct VM
 
 	void op_user_ctr();
 	void op_spc_func();
+	void op_sce_reset();
 	void op_sce_init();
 	void op_sce_end();
 	void op_game_init();
@@ -266,8 +267,6 @@ struct VM
 	void op_msg_clr();
 	void op_msg_spd(int size);
 
-	void op_sce_reset();
-
 	// sprites
 	void op_spr_clr();
 	void op_spr_ent(int is_abs);
@@ -282,8 +281,6 @@ struct VM
 	// objects
 	void op_abs_obj_anim();
 	void op_obj_anim();
-
-	// sprites
 
 	void op_avi_play();
 
@@ -305,7 +302,7 @@ struct VM
 	__int16 field_1F7A;
 	PT rects[21];
 	WORD msg_basex;
-	__int16 msg_basex2;
+	short msg_basex2;
 	WORD msg_w;
 	__int16 field_207E;
 	__int16 msg_basey;
@@ -481,6 +478,7 @@ void Vm_update(VM* vm, int mode);
 void Vm_screen_off();
 void Vm_work_clr();
 void Vm_set_proc(WORD p);
+void Vm_pal_set(int type, int index, int count, int delta, WORD id);
 
 int Vm_mark_event(WORD index, WORD a2);
 void Vm_set_63();

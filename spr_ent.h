@@ -25,6 +25,7 @@ struct SPRT_ENT
 	void Update();
 	void SetXY(int x, int y, DWORD a4, int flip);
 	void SetX0();
+	void CalcPan();
 
 	DWORD flip;
 	DWORD field_4;
@@ -83,12 +84,16 @@ void Vm_spr_lmt(int a1, int lmx, int lmy);
 void sub_404346(int a1, int a2);
 void sub_402FAF();
 void sub_403252();
-void BgSprAnim(int id, __int16 w, __int16 h, BYTE* ptr);
+void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr);
 void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag);
 void SprtTblDeinit();
+void SprPos(int id, int x, int y, DWORD flags);
+void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs);
 
 void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc);
+
+void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 
 __int16 sub_4035DC();
 void sub_40245E();

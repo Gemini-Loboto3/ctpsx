@@ -77,7 +77,7 @@ void Init()
 
 }
 
-void LoadSf2();
+void Midi_init();
 
 void InitApp()
 {
@@ -98,7 +98,7 @@ void InitApp()
 	InitFont();
 	LoadFaces();
 
-	LoadSf2();
+	Midi_init();
 }
 
 void InitInstance()
@@ -131,7 +131,7 @@ void draw_func1()
 	sub_40243A();
 	sub_40245E();
 	int pal = sub_4035DC();
-	//PalObj4091C0(&prog.pal_obj, pal);
+	prog.pal_obj.f4091AD(pal);
 	DrawQSprites();
 	SwapBuffer();
 	sub_403252();

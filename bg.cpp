@@ -109,8 +109,8 @@ void Game_BgDispTrn(VM* game, int x, int y, int w, int h, __int16 a6, __int16 a7
 {
 	if (game->bank_no[id])
 	{
-		//if (type == 1)
-		//	Vm_pal_set(0, 0, 0, 0, 0);
+		if (type == 1)
+			Vm_pal_set(0, 0, 0, 0, 0);
 		if (!w)
 			w = game->bank_no[id]->real_w;
 		if (!h)

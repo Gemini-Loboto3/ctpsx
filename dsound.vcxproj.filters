@@ -29,8 +29,6 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="tmc.h" />
-    <ClInclude Include="tml.h" />
-    <ClInclude Include="tsf.h" />
     <ClInclude Include="xaudio\audio_bgm.h">
       <Filter>xaudio</Filter>
     </ClInclude>
@@ -44,6 +42,7 @@
     <ClInclude Include="FileHandle.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="font.h" />
+    <ClInclude Include="palette.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hacks.cpp" />
@@ -80,6 +79,7 @@
     <ClCompile Include="FileHandle.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="font.cpp" />
+    <ClCompile Include="palette.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc">
