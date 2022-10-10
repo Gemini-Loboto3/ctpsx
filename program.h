@@ -2,7 +2,9 @@ struct PROGRAM
 {
 	PROGRAM()
 	{
-		srand(_statcvt_i64(0));
+		memset(this, 0, sizeof(*this));
+
+		_srand(_statcvt_i64());
 		field_120 = 0;
 		vm_func = 0;
 		field_128 = 0;

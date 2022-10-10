@@ -1,4 +1,5 @@
 #include <stdafx.h>
+#include <time.h>
 #include "game.h"
 #include "vm.h"
 
@@ -92,89 +93,14 @@ void Render_frame()
 }
 
 // ========================================================
-int __cdecl _totalsec(int year, int month, int day, int hour, int minute, int second)
+LONGLONG _statcvt_i64()
 {
-	int _seconds, _days, _hours,
-		_min_ex,
-		_days_base, _days_month,
-		_hour_ex,
-		_month_src, _moth_pos,
-		_odd;
-	BYTE* pdays; // eax
-	int time;
-
-	static BYTE days_in_month[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-	static WORD days_to_month[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
-
-	if (year < 70 || year > 138)
-		return -1;
-	_min_ex = second / 60 + minute;
-	_seconds = second % 60;
-	_hour_ex = _min_ex / 60 + hour;
-	_hours = _min_ex % 60;
-	_days_base = _hour_ex / 24 + day;
-	_days = _hour_ex % 24;
-	_month_src = month / 12 + year;
-	_days_month = month % 12;
-	pdays = &days_in_month[month % 12];
-	while (_days_base >= (char)*pdays)
-	{
-		if ((_month_src & 3) != 0 || _days_month != 1)
-		{
-			_days_base -= (char)*pdays;
-			++_days_month;
-			++pdays;
-		}
-		else
-		{
-			if (_days_base <= 28)
-				break;
-			_days_base -= 29;
-			_days_month = 2;
-			++pdays;
-		}
-		if (_days_month >= 12)
-		{
-			_days_month -= 12;
-			pdays -= 12;
-			++_month_src;
-		}
-	}
-	_moth_pos = _month_src - 70;
-	_odd = _moth_pos + 2;
-	if (_moth_pos + 2 < 0)
-		_odd = _moth_pos + 5;
-	_odd >>= 2;
-	if (((_moth_pos + 70) & 3) == 0 && _days_month < 2)
-		--_odd;
-	time = _seconds + 60 * _hours + 3600 * _days + 86400 * (_days_base + days_to_month[_days_month] + 365 * _moth_pos + _odd) - 32400;
-	if (time <= 0)
-		return -1;
-	else
-		return time;
-}
-
-int _statcvt_i64(DWORD* a1)
-{
-	int ret;
-	SYSTEMTIME SystemTime;
-
-	GetLocalTime(&SystemTime);
-	ret = _totalsec(
-		SystemTime.wYear - 1900,
-		SystemTime.wMonth - 1,
-		SystemTime.wDay - 1,
-		SystemTime.wHour,
-		SystemTime.wMinute,
-		SystemTime.wSecond);
-	if (a1)
-		*a1 = ret;
-	return ret;
+	return (LONGLONG)time(nullptr);
 }
 
 LARGE_INTEGER rand_seed;
 
-void _srand(DWORD seed)
+void _srand(LONGLONG seed)
 {
 	rand_seed.QuadPart = seed;
 }

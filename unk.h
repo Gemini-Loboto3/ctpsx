@@ -9,7 +9,7 @@ void Render_frame();
 
 long lrand();
 
-int _statcvt_i64(DWORD* a1);
+LONGLONG _statcvt_i64();
 long _rand();
 long _lrand();
-void _srand(DWORD seed);
+void _srand(LONGLONG seed);
