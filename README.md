@@ -3,10 +3,13 @@ A decompilation project of the PC version of the game, but using PlayStation ass
 
 ## Working
 * Main virtual machine commands;
-* General API.
+* Most general routines for maps, entities, etc;
+* General API via DirectX (should make porting rather trivial);
+* OGG playback for music.
 
 ## Not working
 * Controls (only left-right clicks are recognized via DInput8);
 * Sprite code not fully done;
-* No TMC (compressed sprites) support;
-* Missing PSX specific code.
+* No TMC (compressed sprites with coordinate information) support;
+* Missing PSX specific code (i.e. fully controllable title screen and context menu);
+* Missing STR (compressed videos) support.
