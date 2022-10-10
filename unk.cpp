@@ -93,12 +93,15 @@ void Render_frame()
 }
 
 // ========================================================
+// BORLAND randomizer
+// ========================================================
+
+static LARGE_INTEGER rand_seed;
+
 LONGLONG _statcvt_i64()
 {
 	return (LONGLONG)time(nullptr);
 }
-
-LARGE_INTEGER rand_seed;
 
 void _srand(LONGLONG seed)
 {
