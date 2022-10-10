@@ -551,8 +551,8 @@ int Vm_ent_wait(int id)
 
 int Vm_wait_ck(int index)
 {
-	return index >= 2 || sprt_dat[index].type4 == 0;
-	//return 1;
+	//return index >= 2 || sprt_dat[index].type4 == 0;
+	return 1;
 }
 
 void Vm_map_attr(WORD attr)

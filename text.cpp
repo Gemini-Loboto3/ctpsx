@@ -67,11 +67,11 @@ int GamePrintChar(int x, int y, wchar_t glyph)
 
 	// border
 	RenderRect(d3d9text, x - 1, y + g->y, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
-	RenderRect(d3d9text, x, y + g->y - 1, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
+	RenderRect(d3d9text, x,     y + g->y - 1, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
 	RenderRect(d3d9text, x + 1, y + g->y, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
-	RenderRect(d3d9text, x, y + g->y + 1, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
+	RenderRect(d3d9text, x,     y + g->y + 1, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
 	// glyph
 	RenderRect(d3d9text, x, y + g->y, 12, 12, g->w, g->h, 0, 0, (BYTE)prog.vm->texcol_r, (BYTE)prog.vm->texcol_g, (BYTE)prog.vm->texcol_b);
 
-	return (g->w + 2) * 2;
+	return (g->w + 1) * 2;
 }
