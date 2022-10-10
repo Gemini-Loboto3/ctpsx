@@ -11,7 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="inject.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="vm.h" />
     <ClInclude Include="unk.h" />
@@ -45,7 +44,6 @@
     <ClInclude Include="palette.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hacks.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="wmain.cpp" />

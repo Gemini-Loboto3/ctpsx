@@ -62,36 +62,3 @@ std::string WideToMulti_s(std::wstring& multi)
 {
 	return WideToMulti_s(multi.c_str());
 }
-
-ULONG_PTR EnableVisualStyles()
-{
-	TCHAR dir[MAX_PATH];
-	ULONG_PTR ulpActivationCookie = FALSE;
-	ACTCTX actCtx =
-	{
-		sizeof(actCtx),
-		ACTCTX_FLAG_RESOURCE_NAME_VALID
-		| ACTCTX_FLAG_SET_PROCESS_DEFAULT
-		| ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID,
-		TEXT("shell32.dll"), 0, 0, dir, (LPCTSTR)124
-	};
-	UINT cch = GetSystemDirectory(dir, sizeof(dir) / sizeof(*dir));
-	if (cch >= sizeof(dir) / sizeof(*dir))
-		return FALSE;
-	dir[cch] = TEXT('\0');
-	ActivateActCtx(CreateActCtx(&actCtx), &ulpActivationCookie);
-	return ulpActivationCookie;
-}
-
-void MakePageWritable(unsigned long ulAddress, unsigned long ulSize)
-{
-	MEMORY_BASIC_INFORMATION* mbi = new MEMORY_BASIC_INFORMATION;
-	VirtualQuery((void*)ulAddress, mbi, ulSize);
-	if (mbi->Protect != PAGE_EXECUTE_READWRITE)
-	{
-		unsigned long* ulProtect = new unsigned long;
-		VirtualProtect((void*)ulAddress, ulSize, PAGE_EXECUTE_READWRITE, ulProtect);
-		delete ulProtect;
-	}
-	delete mbi;
-}

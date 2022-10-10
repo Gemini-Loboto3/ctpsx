@@ -63,10 +63,13 @@ void SPRT_ENT::SetList()
 void SPRT_ENT::Release()
 {
 	sprt_ent[field_2E].field_10 = 0;
-	if (field_26 && ptr0)
+	if (field_26 && tim)
 	{
-		delete ptr0;
-		ptr0 = nullptr;
+		if (tim->is_ref == 0)
+			delete tim;
+		tim = nullptr;
+		//delete ptr0;
+		//ptr0 = nullptr;
 		field_26 = 0;
 	}
 	Link();
@@ -217,9 +220,9 @@ void SprtTblDeinit()
 	SPRT_ENT* next; // [esp+0h] [ebp-8h]
 	SPRT_ENT* sprt; // [esp+4h] [ebp-4h]
 
-	sprt = prog.sprt;
 	if (prog.sprt)
 	{
+		sprt = prog.sprt;
 		do
 		{
 			next = sprt->next;
@@ -227,7 +230,7 @@ void SprtTblDeinit()
 			sprt = next;
 		} while (next);
 	}
-	prog.sprt = 0;
+	prog.sprt = nullptr;
 }
 
 void SprPos(int id, int x, int y, DWORD flags)
@@ -600,7 +603,7 @@ void sub_403536()
 DWORD dword_422D5C[200];
 WORD word_422AB8;
 
-int __cdecl SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
+int SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
 {
 	__int16 v3[368]; // [esp+0h] [ebp-30Ch] BYREF
 	char v4[14]; // [esp+2E0h] [ebp-2Ch] BYREF
@@ -630,7 +633,7 @@ int __cdecl SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
 		//if (!ReadPosiData_0())
 		//	return 0;
 	}
-	if (!a1->ptr0 || LOWORD(a1->field_89) + LOWORD(a1->field_7D) != a2)
+	if (!a1->tim || LOWORD(a1->field_89) + LOWORD(a1->field_7D) != a2)
 	{
 		//if (!TSprSlotManager::Read((TSprSlotManager*)sprt_slot_manager, a1, a2))
 		{
@@ -644,15 +647,15 @@ int __cdecl SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
 		a1->field_8D = 0;
 	}
 	v14 = (unsigned __int8)a2;
-	Src = a1->ptr0;
-	memcpy(v4, Src, sizeof(v4));
+	//Src = a1->ptr0;
+	//memcpy(v4, Src, sizeof(v4));
 	v9 = 14;
-	memcpy(v3, (char*)Src + 14, 0xEu);
+	//memcpy(v3, (char*)Src + 14, 0xEu);
 	v9 = 28;
 	v12 = v3[6];
 	for (i = 0; i < v12; ++i)
 	{
-		memcpy(&v3[6 * i + 7], (char*)Src + v9, 0xCu);
+		//memcpy(&v3[6 * i + 7], (char*)Src + v9, 0xCu);
 		v9 += 12;
 	}
 	if (a1->field_91 == 1)
@@ -919,3 +922,153 @@ void Vm_spr_dir(int id, __int16 a2, __int16 a3, __int16 a4, __int16 a5)
 	sub_4042C0(id);
 }
 
+void __cdecl RectOrderLeftRight(RECT* a1)
+{
+	LONG left; // [esp+0h] [ebp-4h]
+
+	if (a1->left > a1->right)
+	{
+		left = a1->left;
+		a1->left = a1->right;
+		a1->right = left;
+	}
+}
+
+void __cdecl sub_4027E7(int id, int x, int y, int is_double)
+{
+	if (!id && vm_index5[25] == 1)
+		is_double = 1;
+	if (y >= x || sprt_ent[id].lmx >= x)
+	{
+		if (y >= x && (sprt_ent[id].lmy < 0 || sprt_ent[id].lmy > x))
+		{
+			sprt_dat[id].type3 = 0;
+			if (is_double)
+			{
+				sprt_dat[id].type2 = 2;
+				sprt_dat[id].field_1C = 0;
+			}
+			else
+			{
+				sprt_dat[id].type2 = 1;
+				sprt_dat[id].field_1C = 8;
+			}
+		}
+	}
+	else
+	{
+		sprt_dat[id].type3 = 1;
+		if (is_double)
+		{
+			sprt_dat[id].type2 = 2;
+			sprt_dat[id].field_1C = 0;
+		}
+		else
+		{
+			sprt_dat[id].type2 = 1;
+			sprt_dat[id].field_1C = 8;
+		}
+	}
+}
+
+void Vm_spr_walk_x(int id, int x0, int x1, int a4, int a5)
+{
+	static byte word_420144[] = { 12, 12, 10 };
+
+	__int16 v5; // cx
+	RECT a1; // [esp+0h] [ebp-1Ch] BYREF
+	__int16 v7; // [esp+10h] [ebp-Ch]
+	__int16 v8; // [esp+12h] [ebp-Ah]
+	__int16 v9; // [esp+14h] [ebp-8h]
+	__int16 v10; // [esp+16h] [ebp-6h]
+	__int16 v11; // [esp+18h] [ebp-4h]
+	__int16 x; // [esp+1Ah] [ebp-2h]
+	__int16 a2a; // [esp+28h] [ebp+Ch]
+	__int16 a3a; // [esp+2Ch] [ebp+10h]
+
+	v10 = 8;
+	v9 = 8;
+	a1.left = x0;
+	a1.right = x1;
+	RectOrderLeftRight(&a1);
+	a2a = (short)a1.left;
+	a3a = (short)a1.right;
+	v8 = (short)(a1.right - a1.left) / 2;
+	if (v8 < v10)
+	{
+		if (v8)
+			v5 = v8 - 1;
+		else
+			v5 = 0;
+		v9 = v5;
+	}
+	x = sprt_ent[id].x0;
+	if (sprt_dat[id].type == 3)
+	{
+		if (sprt_dat[id].type0)
+			x -= word_420144[vm_index5[4]];
+		else
+			x += word_420144[vm_index5[4]];
+	}
+	if (v8 + a1.left <= x)
+	{
+		sprt_dat[id].field_1A = 1;
+		vm_index5[29] = 1;
+	}
+	else
+	{
+		sprt_dat[id].field_1A = 0;
+		vm_index5[29] = 0;
+	}
+	if (a4 != -1)
+		sprt_dat[id].field_1A = a4 >> 3;
+	if (a2a - v10 <= x)
+	{
+		if (v10 + a3a >= x)
+		{
+			if (v9 + a2a < x)
+			{
+				if (a3a - v9 > x)
+				{
+					v7 = 2;
+					if (v8 + a2a < x)
+						v11 = a3a;
+					else
+						v11 = a2a;
+				}
+				else
+				{
+					v7 = 1;
+					v11 = a3a;
+				}
+			}
+			else
+			{
+				v7 = 1;
+				v11 = a2a;
+			}
+		}
+		else
+		{
+			v7 = 0;
+			v11 = a3a;
+		}
+	}
+	else
+	{
+		v7 = 0;
+		v11 = a2a;
+	}
+	sprt_dat[id].field_18 = v11;
+	if (v7)
+	{
+		if ((unsigned int)(v7 - 1) < 2)
+			sprt_dat[id].type4 = 2;
+	}
+	else
+	{
+		sub_4027E7(id, x, v11, a5);
+		sprt_dat[id].type4 = 1;
+		sprt_dat[id].field_1C = 0;
+	}
+}

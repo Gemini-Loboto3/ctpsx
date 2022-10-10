@@ -94,7 +94,6 @@
     <ClInclude Include="file_ex.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="inject.h" />
     <ClInclude Include="input_di8.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="palette.h" />
@@ -136,7 +135,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="hacks.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="spr_ent.cpp" />
     <ClCompile Include="text.cpp" />

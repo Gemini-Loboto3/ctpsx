@@ -20,6 +20,12 @@ WORD vm_usage[5],
 
 RECT vm_rects[30];
 
+WORD word_426940;
+WORD render_x,
+	render_y,
+	render_w,
+	render_h;
+
 int error_no;
 
 WORD word_41D574[] =
@@ -62,18 +68,89 @@ void vm_func_del_data()
 		vm_index5[30] = 0;
 }
 
+void vm_func2()
+{
+	static WORD word_4202F8[3][16] =
+	{
+		258, 4096, 519,4120, 515,4121,  0,4122, 514,4124, 258,4113,33288,   0,33067,4111,
+		1112,4608, 21,4637,  23,4638,   0,4639,  22,4641,1112,4636,32808,   0,32800,4634,
+		1115,4864, 27,4886,  29,4887,   0,4120,  28,4890,1115,4885,32809,   0,32801,4883
+	};
+
+	static WORD word_420358[][2] =
+	{
+		518,35840, 532,35850, 534,35852, 258,35854, 533,   0, 277,   0, 272
+	};
+
+	unsigned __int16 v0; // [esp+2h] [ebp-2h]
+
+	v0 = render_x;
+	if (vm_index5[25] == 1)
+	{
+		vm_index5[30] = word_4202F8[vm_index5[4]][v0 * 2];
+		vm_index5[31] = word_4202F8[vm_index5[4]][v0 * 2 + 1];
+	}
+	else if (vm_index5[25] == 2)
+	{
+		vm_index5[30] = word_420358[v0][0];
+		vm_index5[31] = word_420358[v0][1];
+	}
+	if (vm_index5[27] == 2)
+	{
+		vm_index5[30] ^= 0x8000u;
+		vm_index5[31] ^= 0x8000u;
+	}
+}
+
+void vm_func5()
+{
+	if (render_x <= 1)
+		sprt_dat[render_x].type4 = 0;
+}
+
+void vm_func6()
+{
+	if (render_x < 9 && !prog.field_1D4[render_x])
+	{
+		vm_func7();
+		game_state_get(0);
+		prog.field_1D4[render_x] = 1;
+		WriteData();
+	}
+}
+
+void vm_func7()
+{
+	if (game_state_get(1))
+	{
+		for (int i = 0; i < 9; ++i)
+			prog.field_1D4[i] = 0;
+	}
+}
+
+void vm_func8()
+{
+	for (int i = 0; i < 9; ++i)
+		vm_index3[i + 30] = prog.field_1D4[i];
+}
+
+void vm_func_clear()
+{
+	RenderTile(render_x / 2, render_y / 2, render_w / 2, render_h / 2, 0, 0, 0);
+}
+
 void(*vm_funcs[])() =
 {
 	vm_func_null,
 	vm_func_null,	// 1
-	vm_func_null,	// 2
+	vm_func2,		// 2
 	vm_func_null,	// 3
 	vm_func_del_data,	// del_data
-	vm_func_null,	// 5
-	vm_func_null,	// 6
-	vm_func_null,	// 7
-	vm_func_null,	// 8
-	vm_func_null,	// clear
+	vm_func5,		// 5
+	vm_func6,		// 6
+	vm_func7,		// 7
+	vm_func8,		// 8
+	vm_func_clear,	// clear
 	vm_func_null,	// A (psx)
 	vm_func_null,
 	vm_func_null,
@@ -113,7 +190,7 @@ void Vm_all_spr_disp()
 				sprt_ent[11].SetXY(prog.screen_x + prog.field_1B8 - rcDst.left - 16,
 					prog.screen_y + prog.field_1BC - rcDst.top - 16, 0x64u, 1);
 			}
-			//SetSpriteData(&sprt_ent[11], sprt_ent[11].field_3B);
+			SetSpriteData(&sprt_ent[11], sprt_ent[11].field_3B);
 			Render_sprite(&sprt_ent[11], &rcSrc);
 		}
 	}
@@ -137,7 +214,7 @@ void Vm_spr_ent(int a1, DWORD a2, DWORD a3, DWORD a4, __int16 a5, __int16 a6, __
 
 void Vm_func_call(WORD r)
 {
-	if (r < 16u)
+	if (r < 16)
 		vm_funcs[r]();
 }
 
@@ -184,11 +261,6 @@ void Vm_pal_set(int type, int index, int count, int delta, WORD id)
 
 void Vm_sce_init()
 {
-	//int v0;
-	//int v1;
-	//__int16 id;
-	//int ret;
-
 	prog.field_14C = 0;
 	prog.field_140 = 0;
 	prog.field_144 = 0;
@@ -331,9 +403,9 @@ void __cdecl rand_set(DWORD* a1, int cnt)
 	}
 }
 
-void __cdecl game_state_rand()
+void game_state_rand()
 {
-	DWORD p[5]; // [esp+0h] [ebp-14h] BYREF
+	DWORD p[5];
 
 	rand_set(p, 2);
 	prog.field_1E6[0] = word_41D668[p[0] + 11];
@@ -384,6 +456,7 @@ void Game_40C6D3(VM* a1, unsigned __int16 a2)
 		if (++v3 >= 5u)
 			goto LABEL_5;
 	}
+
 	vm_evt_pos = v3;
 LABEL_5:
 	vm_usage[vm_evt_pos] = 1;
@@ -543,16 +616,16 @@ int Vm_wait_fade()
 
 int Vm_ent_wait(int id)
 {
-	if (sprt_ent[id].field_10)
-		return sprt_ent[id].field_8D;
-	else
+	//if (sprt_ent[id].field_10)
+		//return sprt_ent[id].field_8D;
+	//else
 		return 1;
 }
 
 int Vm_wait_ck(int index)
 {
-	//return index >= 2 || sprt_dat[index].type4 == 0;
-	return 1;
+	return index >= 2 || sprt_dat[index].type4 == 0;
+	//return 1;
 }
 
 void Vm_map_attr(WORD attr)
@@ -2333,12 +2406,12 @@ void VM::op_spr_lmt()
 void VM::op_spr_walkx()
 {
 	updateIndex();
-	WORD v6 = read16();
-	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
+	WORD id = read16();
+	int x0 = read16s();
+	int x1 = read16s();
+	int v3 = read16s();
 	WORD v2 = read16();
-	//Vm_spr_walk_x(v6, v5, v4, v3, id);
+	Vm_spr_walk_x(id, x0, x1, v3, v2);
 }
 
 void VM::op_spr_wait()
@@ -2425,12 +2498,6 @@ void VM::op_scl_block()
 		field_3482[i] = read16();
 	Vm_tmap_set_scroll(v3, field_3446, v2, field_3482);
 }
-
-WORD word_426940;
-WORD render_x,
-	render_y,
-	render_w,
-	render_h;
 
 void VM::op_spc_func()
 {

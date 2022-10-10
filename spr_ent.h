@@ -37,7 +37,7 @@ struct SPRT_ENT
 	char field_17;
 	char field_18;
 	char field_19;
-	BITMAPINFOHEADER* ptr0;
+	//BITMAPINFOHEADER* ptr0;
 	DWORD field_1E;
 	DWORD field_22;
 	DWORD field_26;
@@ -89,6 +89,7 @@ void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag);
 void SprtTblDeinit();
 void SprPos(int id, int x, int y, DWORD flags);
 void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4);
+int SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs);
 
 void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc);
@@ -102,3 +103,4 @@ void sub_40243A();
 int EntGetPan(int a1);
 
 void Vm_spr_dir(int id, __int16 a2, __int16 a3, __int16 a4, __int16 a5);
+void Vm_spr_walk_x(int id, int x0, int x1, int a4, int a5);

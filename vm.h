@@ -471,6 +471,10 @@ extern WORD vm_usage[5],
 extern RECT vm_rects[30];
 extern int error_no;
 
+void vm_func7();
+
+int WriteData();
+
 void Vm_load(VM* vm);
 
 void Vm_update(VM* vm, int mode);

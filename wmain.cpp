@@ -9,6 +9,26 @@
 #endif
 #include "timer.h"
 
+ULONG_PTR EnableVisualStyles()
+{
+	TCHAR dir[MAX_PATH];
+	ULONG_PTR ulpActivationCookie = FALSE;
+	ACTCTX actCtx =
+	{
+		sizeof(actCtx),
+		ACTCTX_FLAG_RESOURCE_NAME_VALID
+		| ACTCTX_FLAG_SET_PROCESS_DEFAULT
+		| ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID,
+		TEXT("shell32.dll"), 0, 0, dir, (LPCTSTR)124
+	};
+	UINT cch = GetSystemDirectory(dir, sizeof(dir) / sizeof(*dir));
+	if (cch >= sizeof(dir) / sizeof(*dir))
+		return FALSE;
+	dir[cch] = TEXT('\0');
+	ActivateActCtx(CreateActCtx(&actCtx), &ulpActivationCookie);
+	return ulpActivationCookie;
+}
+
 PROGRAM prog;
 FrameLimiter fps;
 
@@ -218,6 +238,8 @@ void WinLoop()
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
+	EnableVisualStyles();
+
 	ENABLE_CONSOLE;
 
 	prog.hInst = hInstance;
