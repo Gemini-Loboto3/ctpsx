@@ -56,6 +56,7 @@
     <ClInclude Include="win\console.h">
       <Filter>win</Filter>
     </ClInclude>
+    <ClInclude Include="api.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
@@ -108,7 +109,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="dsound.rc">
+    <ResourceCompile Include="clock tower.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

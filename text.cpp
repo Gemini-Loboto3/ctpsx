@@ -8,15 +8,18 @@ void InitFont()
 {
 	FILE* fp;
 	fopen_s(&fp, "font.bin", "rb");
-	fseek(fp, 0, SEEK_END);
-	size_t size = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+	if (fp)
+	{
+		fseek(fp, 0, SEEK_END);
+		size_t size = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
 
-	fnt_data = std::vector<BYTE>(size);
-	fread(fnt_data.data(), size, 1, fp);
-	fclose(fp);
+		fnt_data = std::vector<BYTE>(size);
+		fread(fnt_data.data(), size, 1, fp);
+		fclose(fp);
 
-	FontOpen(fnt_data.data(), &fnt_obj);
+		FontOpen(fnt_data.data(), &fnt_obj);
+	}
 }
 
 #define align(x,y)		((x) + ((y) - 1)) & ~(y - 1)

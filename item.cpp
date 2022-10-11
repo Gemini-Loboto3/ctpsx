@@ -45,7 +45,7 @@ ITEM_DATA item_tbl[] =
 	"NIKU", 9,		// beef
 	"ENGINE", 10,	// car key
 	"GASS", 11,		// insecticide
-	"BLACK", 12,	// black robe
+	"BLACK", 12,	// black robes
 	"ROPE", 13,		// rope
 	"ISI", 15,		// clothing
 	"KAGOKEY", 15,	// some key
@@ -96,7 +96,6 @@ void ItemListDisp()
 
 		int u = item_tbl[item_lut2[inventory[i]]].id % 8 * 16;
 		int v = item_tbl[item_lut2[inventory[i]]].id / 8 * 16;
-		RenderRect(item_tim, x, y, 16, 16, u, v, 0xff, 0xff, 0xff);
 
 		// selected
 		if (i == itemptr2_index)
@@ -104,7 +103,9 @@ void ItemListDisp()
 			u = 7 % 8 * 16;
 			v = 7 / 8 * 16;
 			RenderRect(item_tim, x, y, 16, 16, u, v, 0xff, 0xff, 0xff);
+			RenderRect(item_tim, x, y, 16, 16, u, v, 0xff, 0x80, 0x80);
 		}
+		RenderRect(item_tim, x, y, 16, 16, u, v, 0xff, 0xff, 0xff);
 	}
 }
 

@@ -1401,10 +1401,7 @@ void RBtnClick(int is_double, LONG x, LONG y)
 	if ((prog.click_bits & 1) == 0)
 	{
 		prog.click_bits |= 2u;
-		rcSrc.left = x;
-		rcSrc.right = x + 1;
-		rcSrc.top = y;
-		rcSrc.bottom = y + 1;
+		SetRect(&rcSrc, x, y, x + 1, y + 1);
 		if (prog.vm_func == 1)
 		{
 			if (vm_index5[28])
