@@ -2,14 +2,15 @@
 
 struct SprtEntManEntry
 {
+	SprtEntManEntry();
+
 	int Load(SPRT_ENT* dst, WORD id);
 
 	int field_0;
-	BITMAPINFOHEADER* field_4;
+	BITMAPINFOHEADER* info;
 	SprtEntManEntry* child;
 	SprtEntManEntry* next;
-	__int16 id;
-	__int16 field_12;
+	short id;
 };
 
 struct TSprSlotManager

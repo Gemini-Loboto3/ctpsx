@@ -63,6 +63,7 @@ struct PAL_OBJ
 	{
 		FADE_NONE,
 		FADE_IN,
-		FADE_OUT
+		FADE_OUT,
+		FADE_DONE
 	};
 };

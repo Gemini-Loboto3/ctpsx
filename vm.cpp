@@ -3086,9 +3086,18 @@ int Vm_execute(VM* vm)
 	return ret;
 }
 
+void Vm_update_ent_pan(VM* vm)
+{
+	if (vm->sample_usage[vm->sample_index] != 0xFF)
+		Sound_set_pan(vm->sample_names[vm->sample_index], EntGetPan(vm->sample_usage[vm->sample_index]));
+
+	if (++vm->sample_index >= 4)
+		vm->sample_index = 0;
+}
+
 void Vm_update(VM* vm, int mode)
 {
-	//Game_UpdateEntPan(vm);
+	Vm_update_ent_pan(vm);
 	for (int i = 0; i < 5; ++i)
 	{
 		if (vm_usage[i] == 1)

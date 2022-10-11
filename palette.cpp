@@ -48,7 +48,7 @@ void PAL_OBJ::reset()
 
 int PAL_OBJ::is_fading()
 {
-	return type != 1 && type != 2;
+	return type != FADE_IN && type != FADE_OUT;
 }
 
 void PAL_OBJ::set_fade(int type, int index, int count, int delta, WORD id)
@@ -151,12 +151,12 @@ void PAL_OBJ::set_animate()
 	if (fade_delta)
 	{
 		if (fade_in())
-			type = 3;
+			type = FADE_DONE;
 	}
 	else
 	{
-		memcpy(&pal.palPalEntry[nindex], &pal_aux[id].palPalEntry[nindex], 4 * ncount);
-		type = 3;
+		//memcpy(&pal.palPalEntry[nindex], &pal_aux[id].palPalEntry[nindex], 4 * ncount);
+		type = FADE_DONE;
 	}
 
 	index = nindex;

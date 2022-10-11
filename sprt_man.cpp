@@ -57,7 +57,7 @@ int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
 
 int TSprSlotManager::ReadOneSlotData(SprtEntManEntry* ent, SPRT_ENT* spr, __int16 id)
 {
-	if (!ent->field_4)
+	if (!ent->info)
 		return 0;
 
 	if (ent->id == id)
@@ -95,6 +95,16 @@ void TSprSlotManager::LinkNormal(SprtEntManEntry **super, SprtEntManEntry * ent)
 }
 
 ///////////////////////////////////////////
+SprtEntManEntry::SprtEntManEntry()
+{
+	field_0 = 0;
+	info = nullptr;
+
+	next = nullptr;
+	child = nullptr;
+	id = -1;
+}
+
 int SprtEntManEntry::Load(SPRT_ENT* dst, WORD id)
 {
 	dst->field_2A = field_0;
