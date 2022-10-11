@@ -26,6 +26,11 @@ struct PAL_OBJ
 
 	void f4091AD(int a1);
 
+	void call_fade();
+
+	void set_animate();
+	void update();
+
 	struct PAL_OBJ_VTBL
 	{
 		int(__cdecl* fnc0)(PAL_OBJ*);

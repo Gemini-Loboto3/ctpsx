@@ -104,3 +104,13 @@ int EntGetPan(int a1);
 
 void Vm_spr_dir(int id, __int16 a2, __int16 a3, __int16 a4, __int16 a5);
 void Vm_spr_walk_x(int id, int x0, int x1, int a4, int a5);
+
+void sub_401D32();
+void sub_40266A();
+void sub_401D74();
+void sub_4021DC();
+void sub_4027E7(int id, int x, int y, int is_double);
+int process_mouseXY(int x, int y);
+
+void LBtnClick(int is_double, LONG x, LONG y);
+void RBtnClick(int is_double, LONG x, LONG y);

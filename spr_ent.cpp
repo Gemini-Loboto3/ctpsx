@@ -603,25 +603,25 @@ void sub_403536()
 DWORD dword_422D5C[200];
 WORD word_422AB8;
 
-int SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
+int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 {
 	__int16 v3[368]; // [esp+0h] [ebp-30Ch] BYREF
-	char v4[14]; // [esp+2E0h] [ebp-2Ch] BYREF
+	//char v4[14]; // [esp+2E0h] [ebp-2Ch] BYREF
 	__int16 v5; // [esp+2F0h] [ebp-1Ch]
 	__int16 v6; // [esp+2F2h] [ebp-1Ah]
 	WORD v8; // [esp+2FAh] [ebp-12h]
 	int v9; // [esp+2FCh] [ebp-10h]
-	void* Src; // [esp+300h] [ebp-Ch]
+	//void* Src; // [esp+300h] [ebp-Ch]
 	__int16 i; // [esp+304h] [ebp-8h]
 	__int16 v12; // [esp+306h] [ebp-6h]
 	WORD v13; // [esp+308h] [ebp-4h]
 	__int16 v14; // [esp+30Ah] [ebp-2h]
 
-	if (!a1->field_91)
+	if (!spr->field_91)
 	{
-		if ((a1->field_99 & 2) != 0)
-			a1->field_8D = 1;
-		if (a1->field_8D)
+		if ((spr->field_99 & 2) != 0)
+			spr->field_8D = 1;
+		if (spr->field_8D)
 			return 1;
 	}
 	v8 = ((int)a2 >> 8) & 0x3F;
@@ -633,21 +633,21 @@ int SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
 		//if (!ReadPosiData_0())
 		//	return 0;
 	}
-	if (!a1->tim || LOWORD(a1->field_89) + LOWORD(a1->field_7D) != a2)
+	if (!spr->tim || LOWORD(spr->field_89) + LOWORD(spr->field_7D) != a2)
 	{
-		//if (!TSprSlotManager::Read((TSprSlotManager*)sprt_slot_manager, a1, a2))
+		if (!sprt_slot_manager.Read(spr, a2))
 		{
 			printf("SetSpriteData\n");
 			return 0;
 		}
-		a1->field_7D = a2 & 0x3FFF;
-		a1->field_81 = 0xFFFF;
-		a1->field_85 = 0;
-		a1->field_89 = a2 & 0xC000;
-		a1->field_8D = 0;
+		spr->field_7D = a2 & 0x3FFF;
+		spr->field_81 = 0xFFFF;
+		spr->field_85 = 0;
+		spr->field_89 = a2 & 0xC000;
+		spr->field_8D = 0;
 	}
 	v14 = (unsigned __int8)a2;
-	//Src = a1->ptr0;
+	//Src = spr->ptr0;
 	//memcpy(v4, Src, sizeof(v4));
 	v9 = 14;
 	//memcpy(v3, (char*)Src + 14, 0xEu);
@@ -658,151 +658,151 @@ int SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2)
 		//memcpy(&v3[6 * i + 7], (char*)Src + v9, 0xCu);
 		v9 += 12;
 	}
-	if (a1->field_91 == 1)
+	if (spr->field_91 == 1)
 	{
-		a1->field_81 = 0;
-		if ((a1->field_99 & 1) != 0)
-			a1->field_81 = (unsigned __int16)v3[6] - 1;
-		if ((a1->field_99 & 4) != 0)
-			a1->field_81 = a1->field_9B;
-		v13 = (WORD)a1->field_81;
-		a1->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
-		a1->field_8D = 0;
-		a1->field_91 = 0;
-		a1->field_41 = 1;
+		spr->field_81 = 0;
+		if ((spr->field_99 & 1) != 0)
+			spr->field_81 = (unsigned __int16)v3[6] - 1;
+		if ((spr->field_99 & 4) != 0)
+			spr->field_81 = spr->field_9B;
+		v13 = (WORD)spr->field_81;
+		spr->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
+		spr->field_8D = 0;
+		spr->field_91 = 0;
+		spr->field_41 = 1;
 		if (!v13)
-			a1->field_6B = -1;
+			spr->field_6B = -1;
 		if ((__int16)v13 == (unsigned __int16)v3[6] - 1)
-			a1->field_6B = v3[6] - 1;
-		if ((a1->field_99 & 4) != 0)
+			spr->field_6B = v3[6] - 1;
+		if ((spr->field_99 & 4) != 0)
 		{
-			a1->field_6B = v13 - 1;
-			while (!*((WORD*)dword_422D5C[v14] + (__int16)a1->field_6B + 61))
+			spr->field_6B = v13 - 1;
+			while (!*((WORD*)dword_422D5C[v14] + (__int16)spr->field_6B + 61))
 			{
-				if ((--a1->field_6B & 0x8000u) != 0)
+				if ((--spr->field_6B & 0x8000u) != 0)
 				{
-					a1->field_6B = -1;
+					spr->field_6B = -1;
 					break;
 				}
 			}
 		}
 	}
-	while (!a1->field_85)
+	while (!spr->field_85)
 	{
-		a1->field_41 = 1;
-		if ((a1->field_99 & 1) != 0)
+		spr->field_41 = 1;
+		if ((spr->field_99 & 1) != 0)
 		{
-			if ((--a1->field_81 & 0x80000000) != 0)
+			if ((--spr->field_81 & 0x80000000) != 0)
 			{
 			LABEL_38:
-				a1->field_85 = 1;
+				spr->field_85 = 1;
 				break;
 			}
-			v13 = (WORD)a1->field_81;
-			a1->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
+			v13 = (WORD)spr->field_81;
+			spr->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
 		}
 		else
 		{
-			if ((unsigned __int16)v3[6] <= (int)++a1->field_81)
+			if ((unsigned __int16)v3[6] <= (int)++spr->field_81)
 				goto LABEL_38;
-			v13 = (WORD)a1->field_81;
-			a1->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
+			v13 = (WORD)spr->field_81;
+			spr->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
 		}
 	}
-	if (!--a1->field_85)
+	if (!--spr->field_85)
 	{
-		if ((a1->field_99 & 1) == 0)
+		if ((spr->field_99 & 1) == 0)
 		{
-			if ((signed int)(a1->field_81 + 1) < (unsigned __int16)v3[6])
+			if ((signed int)(spr->field_81 + 1) < (unsigned __int16)v3[6])
 			{
-				if ((a1->field_99 & 8) != 0 && a1->field_9D <= (int)a1->field_81)
+				if ((spr->field_99 & 8) != 0 && spr->field_9D <= (int)spr->field_81)
 				{
-					a1->field_85 = 1;
-					a1->field_8D = 1;
+					spr->field_85 = 1;
+					spr->field_8D = 1;
 				}
 			}
 			else
 			{
-				a1->field_85 = 1;
-				a1->field_8D = 1;
-				a1->field_81 = (unsigned __int16)v3[6] - 1;
+				spr->field_85 = 1;
+				spr->field_8D = 1;
+				spr->field_81 = (unsigned __int16)v3[6] - 1;
 			}
 		}
-		if ((a1->field_99 & 1) != 0)
+		if ((spr->field_99 & 1) != 0)
 		{
-			if (a1->field_81)
+			if (spr->field_81)
 			{
-				if ((a1->field_99 & 8) != 0 && a1->field_9D == a1->field_81)
+				if ((spr->field_99 & 8) != 0 && spr->field_9D == spr->field_81)
 				{
-					a1->field_85 = 1;
-					a1->field_8D = 1;
-					a1->field_81 = (unsigned __int16)v3[6] - 1;
+					spr->field_85 = 1;
+					spr->field_8D = 1;
+					spr->field_81 = (unsigned __int16)v3[6] - 1;
 				}
 			}
 			else
 			{
-				a1->field_85 = 1;
-				a1->field_8D = 1;
-				a1->field_81 = 0;
+				spr->field_85 = 1;
+				spr->field_8D = 1;
+				spr->field_81 = 0;
 			}
 		}
 	}
-	v13 = (WORD)a1->field_81;
-	//a1->flag1 = ptr_abm_tbl[v14][60].field_2[(__int16)v13] & 0x1F;
-	a1->flag1 += a1->flag0;
-	a1->field_75 = (unsigned __int16)v3[6 * (__int16)v13 + 7];
-	a1->field_79 = (unsigned __int16)v3[6 * (__int16)v13 + 8];
-	//a1->bmp_data = (BYTE*)a1->ptr0 + v9 + *(_DWORD*)&v3[6 * (__int16)v13 + 11];
+	v13 = (WORD)spr->field_81;
+	//spr->flag1 = ptr_abm_tbl[v14][60].field_2[(__int16)v13] & 0x1F;
+	spr->flag1 += spr->flag0;
+	spr->field_75 = (unsigned __int16)v3[6 * (__int16)v13 + 7];
+	spr->field_79 = (unsigned __int16)v3[6 * (__int16)v13 + 8];
+	//spr->bmp_data = (BYTE*)spr->ptr0 + v9 + *(_DWORD*)&v3[6 * (__int16)v13 + 11];
 	//if ((ptr_abm_tbl[v14][60].field_2[(__int16)v13] & 0x8000u) != 0)
-	//	v7 = a1->field_79 * (((unsigned __int16)a1->field_75 + 3) & 0xFFFC) - 1;
+	//	v7 = spr->field_79 * (((unsigned __int16)spr->field_75 + 3) & 0xFFFC) - 1;
 	//else
-	//	v7 = (a1->field_79 - 1) * (((unsigned __int16)a1->field_75 + 3) & 0xFFFC);
-	//a1->bmp = a1->bmp_data[v7];
-	a1->field_95 = *((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 1);
-	if (a1->field_95 == 0xFFFF)
+	//	v7 = (spr->field_79 - 1) * (((unsigned __int16)spr->field_75 + 3) & 0xFFFC);
+	//spr->bmp = spr->bmp_data[v7];
+	spr->field_95 = *((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 1);
+	if (spr->field_95 == 0xFFFF)
 	{
-		a1->x3 = 768;
-		a1->y3 = 768;
+		spr->x3 = 768;
+		spr->y3 = 768;
 		return 1;
 	}
 	else
 	{
-		if (a1->field_6B == 0xFFFF)
+		if (spr->field_6B == 0xFFFF)
 		{
 			//v6 = 2 * ptr_abm_tbl[v14]->field_2[0];
 			//v5 = 2 * ptr_abm_tbl[v14][30].field_2[0];
-			a1->field_6B = 0;
+			spr->field_6B = 0;
 		}
-		else if (v13 == a1->field_6B)
+		else if (v13 == spr->field_6B)
 		{
 			v6 = 0;
 			v5 = 0;
 		}
 		else
 		{
-			//v6 = 2 * (ptr_abm_tbl[v14]->field_2[(__int16)v13] - ptr_abm_tbl[v14]->field_2[(__int16)a1->field_6B]);
-			//v5 = 2 * (ptr_abm_tbl[v14][30].field_2[(__int16)v13] - ptr_abm_tbl[v14][30].field_2[(__int16)a1->field_6B]);
-			a1->field_6B = v13;
+			//v6 = 2 * (ptr_abm_tbl[v14]->field_2[(__int16)v13] - ptr_abm_tbl[v14]->field_2[(__int16)spr->field_6B]);
+			//v5 = 2 * (ptr_abm_tbl[v14][30].field_2[(__int16)v13] - ptr_abm_tbl[v14][30].field_2[(__int16)spr->field_6B]);
+			spr->field_6B = v13;
 		}
-		if ((a1->field_89 & 0x8000) == 0)
+		if ((spr->field_89 & 0x8000) == 0)
 		{
-			a1->x0 += v6;
-			a1->x3 = (__int16)(LOWORD(a1->x0) - v3[6 * (__int16)v13 + 9]);
-		}
-		else
-		{
-			a1->x0 -= v6;
-			a1->x3 = (__int16)(LOWORD(a1->x0) + v3[6 * (__int16)v13 + 9] - v3[6 * (__int16)v13 + 7]);
-		}
-		if ((a1->field_89 & 0x4000) != 0)
-		{
-			a1->y0 -= v5;
-			a1->y3 = (__int16)(LOWORD(a1->y0) - v3[6 * (__int16)v13 + 10]);
+			spr->x0 += v6;
+			spr->x3 = (__int16)(LOWORD(spr->x0) - v3[6 * (__int16)v13 + 9]);
 		}
 		else
 		{
-			a1->y0 += v5;
-			a1->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(a1->y0) - LOWORD(a1->field_79));
+			spr->x0 -= v6;
+			spr->x3 = (__int16)(LOWORD(spr->x0) + v3[6 * (__int16)v13 + 9] - v3[6 * (__int16)v13 + 7]);
+		}
+		if ((spr->field_89 & 0x4000) != 0)
+		{
+			spr->y0 -= v5;
+			spr->y3 = (__int16)(LOWORD(spr->y0) - v3[6 * (__int16)v13 + 10]);
+		}
+		else
+		{
+			spr->y0 += v5;
+			spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->field_79));
 		}
 		return 1;
 	}
@@ -1070,5 +1070,438 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int a5)
 		sub_4027E7(id, x, v11, a5);
 		sprt_dat[id].type4 = 1;
 		sprt_dat[id].field_1C = 0;
+	}
+}
+
+int sub_401F05()
+{
+	static WORD word_41FF54[4][4] =
+	{
+		349, 350,33117,33118, 349, 350,33117,33118,  73,  74,32841,32842
+	};
+
+	switch (sprt_dat[0].type)
+	{
+	case 3u:
+		vm_index5[2] += 2;
+		if (vm_index5[2] > 0x320u)
+			vm_index5[2] = 800;
+		if (sprt_dat[0].type2 != 3)
+		{
+			sprt_dat[0].type = 5;
+			SprAnim(0, word_41FF54[vm_index5[4]][2 * sprt_dat[0].type0 + 1], 0, 0);
+		}
+		return 1;
+	case 4u:
+		if (sprt_ent[0].field_8D)
+		{
+			sprt_dat[0].type = 3;
+			sprt_dat[0].type2 = 3;
+		}
+		return 1;
+	case 5u:
+		if (sprt_ent[0].field_8D)
+		{
+			sprt_dat[0].type = 0;
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	default:
+		if (!sprt_dat[0].field_20)
+			return 0;
+		if (--sprt_dat[0].field_20
+			|| sprt_ent[0].x0 - 80 < sprt_ent[0].lmx
+			|| sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 80 > sprt_ent[0].lmy)
+		{
+			return 0;
+		}
+		else
+		{
+			sprt_dat[0].type = 4;
+			sprt_dat[0].type2 = 4;
+			SprAnim(0, word_41FF54[vm_index5[4]][2 * sprt_dat[0].type0], 0, 0);
+			sprt_dat[0].field_14 = 0;
+			return 1;
+		}
+	}
+}
+
+void __cdecl sub_402DE5(int id)
+{
+	RECT a1; // [esp+0h] [ebp-10h] BYREF
+
+	switch (sprt_dat[id].type4)
+	{
+	case 1u:
+		a1.left = sprt_ent[id].x0;
+		a1.right = sprt_ent[id].x1;
+		RectOrderLeftRight(&a1);
+		if (sprt_dat[id].field_18 >= LOWORD(a1.left) && sprt_dat[id].field_18 <= LOWORD(a1.right))
+			sprt_dat[id].type4 = 2;
+		break;
+	case 2u:
+		sprt_ent[id].SetXY(sprt_dat[id].field_18, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
+		if (sprt_dat[id].type == 1 || sprt_dat[id].type == 2)
+		{
+			sprt_dat[id].field_10 = 1;
+			sprt_dat[id].type2 = 0;
+		}
+		sprt_dat[id].type4 = 3;
+		break;
+	case 3u:
+		if (sprt_dat[id].field_1A == LOWORD(sprt_dat[id].type0))
+		{
+			sprt_dat[id].type4 = 0;
+		}
+		else
+		{
+			sprt_dat[id].type3 = (__int16)sprt_dat[id].field_1A;
+			sprt_dat[id].type4 = 4;
+		}
+		break;
+	case 4u:
+		if (sprt_ent[id].field_8D)
+			sprt_dat[id].type4 = 0;
+		break;
+	}
+}
+
+void sub_4020BA()
+{
+	WORD a2[2];
+
+	if (sprt_dat[0].field_1C)
+	{
+		--sprt_dat[0].field_1C;
+	}
+	else if (sprt_dat[0].type0 != sprt_dat[0].type3 || sprt_dat[0].type != sprt_dat[0].type2)
+	{
+		sub_4033A4(a2, 0);
+		if (prog.field_128 && sprt_dat[0].type == 2)
+			sprt_dat[0].field_10 = 1;
+		if (sprt_dat[0].field_10)
+		{
+			if (a2[1])
+				a2[0] = a2[1];
+		}
+		SprAnim(0, a2[0], 0, 0);
+		sprt_dat[0].field_14 = a2[1];
+		sprt_dat[0].field_10 = 0;
+		sprt_dat[0].type0 = sprt_dat[0].type3;
+		sprt_dat[0].type = sprt_dat[0].type2;
+	}
+}
+
+void sub_401D32()
+{
+	sub_401DB5();
+	sub_401EB7(0);
+	if (!sub_401F05())
+	{
+		if (sprt_dat[0].type == 2)
+		{
+			if (vm_index5[2])
+				--vm_index5[2];
+		}
+		sub_4020BA();
+		sub_402DE5(0);
+	}
+}
+
+void sub_40266A()
+{
+	struct tagRECT r1; // [esp+0h] [ebp-24h] BYREF
+	RECT r0; // [esp+10h] [ebp-14h] BYREF
+	int v2; // [esp+20h] [ebp-4h]
+
+	if (!vm_index5[41])
+	{
+		r0.left = sprt_ent[0].x0;
+		r0.right = sprt_ent[0].x1;
+		r0.top = sprt_ent[0].y0;
+		r0.bottom = sprt_ent[0].y0 + 1;
+		RectOrderLeftRight(&r0);
+		v2 = 0;
+		while ((vm_index6[v2 + 10] & 0x10) == 0 || !sub_403304(v2) || !IntersectRect(&r1, &r0, &vm_rects[v2]))
+		{
+			if (++v2 >= 30)
+				return;
+		}
+		Vm_mark_event(v2 + 10, 1u);
+	}
+}
+
+void __cdecl sub_401E61()
+{
+	if (sprt_ent[1].lmx >= 0 && sprt_ent[1].x0 <= sprt_ent[1].lmx && sprt_dat[1].type0 == 1)
+		sprt_dat[1].type3 = 0;
+	if (sprt_ent[1].lmy >= 0 && sprt_ent[1].x0 >= sprt_ent[1].lmy && !sprt_dat[1].type0)
+		sprt_dat[1].type3 = 1;
+}
+
+void __cdecl sub_402053()
+{
+	if (vm_index5[25] == 1 && vm_index5[39] && sprt_ent[1].field_8D && ++sprt_dat[1].field_24 >= 2u)
+	{
+		sprt_dat[1].field_24 = 0;
+		sprt_dat[1].type2 = 1;
+		sprt_dat[1].type3 = sprt_ent[1].x0 - sprt_ent[0].x0 >= 0;
+	}
+}
+
+void __cdecl sub_402178()
+{
+	WORD a2[2]; // [esp+0h] [ebp-4h] BYREF
+
+	if (sprt_dat[1].type0 != sprt_dat[1].type3 || sprt_dat[1].type != sprt_dat[1].type2)
+	{
+		sub_4033A4(a2, 1);
+		SprAnim(1u, a2[0], 0, 0);
+		sprt_dat[1].field_14 = a2[1];
+		sprt_dat[1].type0 = sprt_dat[1].type3;
+		sprt_dat[1].type = sprt_dat[1].type2;
+	}
+}
+
+void sub_401D74()
+{
+	if (vm_index5[25] && !vm_index5[27])
+	{
+		if (sprt_ent[1].field_10)
+		{
+			sub_401E61();
+			sub_402053();
+			sub_401EB7(1u);
+			sub_402178();
+			sub_402DE5(1);
+		}
+	}
+}
+
+__int16 sub_4022ED()
+{
+	static WORD word_420374[][2] =
+	{
+		0x64, 0x50,
+		0x3C, 0x32,
+		0x32, 0x28
+	};
+
+	unsigned __int16 v1; // [esp+6h] [ebp-Ah]
+	__int16 v2; // [esp+8h] [ebp-8h]
+	__int16 v3; // [esp+Ah] [ebp-6h]
+	int v4; // [esp+Ch] [ebp-4h]
+
+	v3 = 0;
+	v2 = LOWORD(sprt_ent[1].x0) - LOWORD(sprt_ent[0].x0);
+	v1 = abs(LOWORD(sprt_ent[1].x0) - LOWORD(sprt_ent[0].x0));
+	if (vm_index5[25] == 1)
+	{
+		if (v2 <= 0)
+		{
+			if (!sprt_dat[1].type0 && word_420374[vm_index5[4]][0] >= v1
+				|| sprt_dat[1].type0 == 1 && word_420374[vm_index5[4]][1] >= v1)
+			{
+				return 2;
+			}
+		}
+		else if (sprt_dat[1].type0 == 1 && word_420374[vm_index5[4]][0] >= v1
+			|| !sprt_dat[1].type0 && word_420374[vm_index5[4]][1] >= v1)
+		{
+			return 1;
+		}
+	}
+	else if (vm_index5[25] == 2)
+	{
+		static WORD word_420380[2] = { 0x5A, 0x50 };
+
+		v4 = 0;
+		if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
+			v4 = 1;
+		if (word_420380[v4] >= v1)
+		{
+			if (v2 <= 0)
+				return 2;
+			else
+				return 1;
+		}
+	}
+	return v3;
+}
+
+void sub_4021DC()
+{
+	__int16 v0; // [esp+0h] [ebp-2h]
+
+	if (vm_index5[25])
+	{
+		if (vm_index5[26])
+		{
+			if (!vm_index5[27] && vm_index5[4] == vm_index5[6] && vm_index5[3] == vm_index5[5])
+			{
+				v0 = sub_4022ED();
+				if (v0)
+				{
+					if ((vm_index3[14] & 1) != 0)
+					{
+						if (!sprt_dat[0].type4 && !prog.field_128)
+							return;
+						sprt_dat[0].type4 = 0;
+						prog.field_128 = 0;
+						Vm_set_63();
+					}
+					vm_index5[27] = v0;
+					sprt_dat[0].field_20 = 0;
+					Vm_mark_event(0x191u, 0);
+					sprt_dat[0].type4 = 0;
+					sprt_dat[1].type4 = 0;
+					if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
+						vm_index5[41] = 1;
+				}
+			}
+		}
+	}
+}
+
+int process_mouseXY(int x, int y)
+{
+	struct tagRECT rcDst; // [esp+0h] [ebp-24h] BYREF
+	struct tagRECT rc; // [esp+10h] [ebp-14h] BYREF
+	int i; // [esp+20h] [ebp-4h]
+
+	if (vm_index5[41])
+		return -1;
+	SetRect(&rc, x + 1, y + 1, x + 2, y + 2);
+	for (i = 0; i < 30; ++i)
+	{
+		if ((vm_index6[i + 10] & 0x10) == 0)
+		{
+			if (sub_403304(i))
+			{
+				rcDst.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
+				rcDst.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
+				rcDst.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
+				rcDst.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
+				if (IntersectRect(&rcDst, &rc, &rcDst))
+					return i;
+			}
+		}
+	}
+	return -1;
+}
+
+void RBtnClick(int is_double, LONG x, LONG y)
+{
+	struct tagRECT rcDst; // [esp+0h] [ebp-20h] BYREF
+	RECT rcSrc; // [esp+10h] [ebp-10h] BYREF
+
+	if ((prog.click_bits & 1) == 0)
+	{
+		prog.click_bits |= 2u;
+		rcSrc.left = x;
+		rcSrc.right = x + 1;
+		rcSrc.top = y;
+		rcSrc.bottom = y + 1;
+		if (prog.vm_func == 1)
+		{
+			if (vm_index5[28])
+			{
+				if (vm_index5[28] != 0xFFFF)
+					++vm_index5[28];
+				if (vm_index5[44])
+				{
+					if (vm_index5[44] != 0xFFFF)
+						++vm_index5[44];
+				}
+			}
+			else if (IntersectRect(&rcDst, &rcSrc, &prog.render_rect) && prog.field_12E && sprt_dat[0].type <= 2)
+			{
+				sprt_dat[0].type2 = 0;
+				sprt_dat[0].field_1C = 0;
+				if (!sprt_dat[0].field_20 && !vm_index5[40])
+					sprt_dat[0].field_20 = 100;
+				if (sprt_dat[0].type4)
+				{
+					sprt_dat[0].type4 = 0;
+					Vm_set_63();
+					vm_index5[45] = 1;
+				}
+			}
+		}
+	}
+}
+
+void LBtnClick(int is_double, LONG x, LONG y)
+{
+	struct tagRECT rcDst; // [esp+0h] [ebp-38h] BYREF
+	RECT click; // [esp+10h] [ebp-28h] BYREF
+	int v7; // [esp+24h] [ebp-14h]
+	int v9; // [esp+2Ch] [ebp-Ch]
+	UINT v10; // [esp+30h] [ebp-8h]
+	int TickCount; // [esp+34h] [ebp-4h]
+
+	if (!is_double)
+	{
+		TickCount = getTime();
+		v10 = TickCount - prog.tick;
+		prog.tick = TickCount;
+		if (GetDoubleClickTime() > v10)
+			is_double = 1;
+	}
+	prog.click_bits |= 1u;
+	click.left = x;
+	click.right = x + 1;
+	click.top = y;
+	click.bottom = y + 1;
+	if (prog.vm_func == 1)
+	{
+		if (IntersectRect(&rcDst, &click, &prog.render_rect))
+		{
+			vm_index3[22] = prog.screen_x + x - prog.render_rect.left <= sprt_ent[0].x0;
+			if ((prog.field_12E || prog.field_130) && sprt_dat[0].type != 4 && sprt_dat[0].type != 5)
+			{
+				sprt_dat[0].field_20 = 0;
+				v9 = process_mouseXY(x, y);
+				if (v9 == -1)
+				{
+					if (prog.field_12E && !sprt_dat[0].type4)
+					{
+						if (vm_index5[40])
+							is_double = 0;
+						sub_4027E7(0, sprt_ent[0].x0, prog.screen_x + x - prog.render_rect.left, is_double);
+					}
+				}
+				else if (Vm_mark_event(v9 + 10, 0))
+				{
+					sprt_dat[0].type2 = 0;
+					sprt_dat[0].field_1C = 0;
+					prog.field_128 = 1;
+				}
+			}
+		}
+		else if (vm_index5[45] && IntersectRect(&rcDst, &click, (const RECT*)&prog.field_178))
+		{
+			v7 = -1;
+			int i;
+			for (i = 0; i < 15; i++)
+			{
+				RECT r;
+				SetRect(&r, item_xy_tbl[i][0] * 2, item_xy_tbl[i][1] * 2, item_xy_tbl[i][0] * 2 + 32, item_xy_tbl[i][1] * 2 + 32);
+				if (IntersectRect(&rcDst, &click, &r))
+				{
+					v7 = i;
+					break;
+				}
+			}
+
+			if (v7 != -1 && inventory[v7] != 0xffff)
+			{
+				itemptr2_index = v7;
+				prog.field_13C = 1;
+			}
+		}
 	}
 }

@@ -132,3 +132,50 @@ void PAL_OBJ::f4091AD(int a1)
 {
 	field_1044 = a1;
 }
+
+void PAL_OBJ::call_fade()
+{
+	switch (type)
+	{
+	case FADE_IN:
+		set_animate();
+		break;
+	case FADE_OUT:
+		update();
+		break;
+	}
+}
+
+void PAL_OBJ::set_animate()
+{
+	if (fade_delta)
+	{
+		if (fade_in())
+			type = 3;
+	}
+	else
+	{
+		memcpy(&pal.palPalEntry[nindex], &pal_aux[id].palPalEntry[nindex], 4 * ncount);
+		type = 3;
+	}
+
+	index = nindex;
+	count = ncount;
+}
+
+void PAL_OBJ::update()
+{
+	if (fade_delta)
+	{
+		if (fade_out())
+			type = FADE_NONE;
+	}
+	else
+	{
+		//reset_palette();
+		type = FADE_NONE;
+	}
+
+	index = nindex;
+	count = ncount;
+}

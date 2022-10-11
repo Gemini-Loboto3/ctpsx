@@ -16,6 +16,7 @@
 #include "sound.h"
 #include "font.h"
 #include "text.h"
+#include "sprt_man.h"
 
 DWORD getTime();
 

@@ -82,9 +82,7 @@ void vm_func2()
 		518,35840, 532,35850, 534,35852, 258,35854, 533,   0, 277,   0, 272
 	};
 
-	unsigned __int16 v0; // [esp+2h] [ebp-2h]
-
-	v0 = render_x;
+	WORD v0 = render_x;
 	if (vm_index5[25] == 1)
 	{
 		vm_index5[30] = word_4202F8[vm_index5[4]][v0 * 2];
@@ -100,6 +98,32 @@ void vm_func2()
 		vm_index5[30] ^= 0x8000u;
 		vm_index5[31] ^= 0x8000u;
 	}
+}
+
+void vm_func3()
+{
+	static short word_420384[][2] =
+	{
+		95, -95,
+		55, -55,
+		45, -45,
+		45, -45,
+		65, -65
+	};
+
+	bool v0; // [esp+0h] [ebp-8h]
+	__int16 v1; // [esp+6h] [ebp-2h]
+
+	v0 = vm_index5[27] == 2;
+	if (vm_index5[25] == 1)
+	{
+		v1 = word_420384[vm_index5[4]][v0];
+	}
+	else if (vm_index5[25] == 2)
+	{
+		v1 = v1 = word_420384[vm_index5[41] + 3][v0];
+	}
+	vm_index5[30] = v1 + sprt_ent[0].x0;
 }
 
 void vm_func5()
@@ -144,7 +168,7 @@ void(*vm_funcs[])() =
 	vm_func_null,
 	vm_func_null,	// 1
 	vm_func2,		// 2
-	vm_func_null,	// 3
+	vm_func3,		// 3
 	vm_func_del_data,	// del_data
 	vm_func5,		// 5
 	vm_func6,		// 6
@@ -161,10 +185,8 @@ void(*vm_funcs[])() =
 
 void Vm_all_spr_disp()
 {
-	struct tagRECT rcDst; // [esp+0h] [ebp-34h] BYREF
-	struct tagRECT rc; // [esp+10h] [ebp-24h] BYREF
-	RECT rcSrc; // [esp+20h] [ebp-14h] BYREF
-	SPRT_ENT* sprt; // [esp+30h] [ebp-4h]
+	RECT rcDst, rc, rcSrc;
+	SPRT_ENT* sprt;
 
 	TMapGetDstRect(&tmap, &rcSrc);
 	TMapGetRect(&tmap, &rc);

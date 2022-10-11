@@ -42,6 +42,7 @@
     <ClInclude Include="timer.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="palette.h" />
+    <ClInclude Include="sprt_man.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
@@ -78,6 +79,7 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="palette.cpp" />
+    <ClCompile Include="sprt_man.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc">

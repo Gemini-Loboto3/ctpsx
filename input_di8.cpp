@@ -30,10 +30,12 @@ void InputRead()
 	DIMOUSESTATE2 state;
 	if (SUCCEEDED(di_mouse->Acquire()) && SUCCEEDED(di_mouse->GetDeviceState(sizeof(DIMOUSESTATE2), &state)))
 	{
-		state.lX;
-		state.lY;
-		state.lZ;
-		prog.click_bits = state.rgbButtons[0] ? 1 : 0;
-		prog.click_bits |= state.rgbButtons[1] ? 2 : 0;
+		if (state.rgbButtons[0])
+			LBtnClick(0, state.lX, state.lY);
+		else prog.click_bits &= ~1;
+
+		if (state.rgbButtons[1])
+			RBtnClick(0, state.lX, state.lY);
+		else prog.click_bits &= ~2;
 	}
 }

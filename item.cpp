@@ -3,6 +3,24 @@
 
 int itemptr2_index;
 WORD inventory[15];
+short item_xy_tbl[][2] =
+{
+	64, 200,
+	80, 200,
+	96, 200,
+	112, 200,
+	128, 200,
+	144, 200,
+	160, 200,
+	176, 200,
+	192, 200,
+	208, 200,
+	64, 216,
+	80, 216,
+	96, 216,
+	112, 216,
+	128, 216
+};
 CTim* item_tim;
 
 short item_lut[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -1, -1, 11, -1, 11 };
@@ -68,32 +86,13 @@ void ItemUpdate()
 
 void ItemListDisp()
 {
-	static short xy[][2] =
-	{
-		64, 200,
-		80, 200,
-		96, 200,
-		112, 200,
-		128, 200,
-		144, 200,
-		160, 200,
-		176, 200,
-		192, 200,
-		208, 200,
-		64, 216,
-		80, 216,
-		96, 216,
-		112, 216,
-		128, 216
-	};
-
 	ItemUpdate();
 	for (int i = 0; i < 15; ++i)
 	{
 		if (inventory[i] == 0xffff)
 			continue;
-		int x = xy[i][0];
-		int y = xy[i][1];
+		int x = item_xy_tbl[i][0];
+		int y = item_xy_tbl[i][1];
 
 		int u = item_tbl[item_lut2[inventory[i]]].id % 8 * 16;
 		int v = item_tbl[item_lut2[inventory[i]]].id / 8 * 16;

@@ -101,6 +101,7 @@
     <ClInclude Include="render_d3d9.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="sprt_man.h" />
     <ClInclude Include="spr_ent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="text.h" />
@@ -136,6 +137,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="sprt_man.cpp" />
     <ClCompile Include="spr_ent.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="tim.cpp" />

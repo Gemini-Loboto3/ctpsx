@@ -142,12 +142,12 @@ void draw_func0()
 // game?
 void draw_func1()
 {
-	//sub_40266A();
+	sub_40266A();
 	TMap_scroller();
 	TMap_scroller2();
-	//sub_401D32();
-	//sub_401D74();
-	//sub_4021DC();
+	sub_401D32();
+	sub_401D74();
+	sub_4021DC();
 	sub_40243A();
 	sub_40245E();
 	int pal = sub_4035DC();
@@ -202,7 +202,7 @@ int Game()
 			Vm_update(prog.vm, prog.field_128);
 			sub_4017BB();
 			draw_func[prog.vm_func]();
-			//PalObj_404CDD(&prog.pal_obj);
+			prog.pal_obj.call_fade();
 			sub_4017D6();
 		}
 	}
