@@ -1,5 +1,5 @@
 #pragma once
-#include "xaudio/include/xaudio2redist.h"
+#include "../xaudio/include/xaudio2redist.h"
 #include <vector>
 #include "audio_bgm.h"
 

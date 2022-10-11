@@ -5,8 +5,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="xaudio">
-      <UniqueIdentifier>{55131bf9-ddc1-40d1-9b3f-68c40cd45e46}</UniqueIdentifier>
+    <Filter Include="win">
+      <UniqueIdentifier>{5b923871-3100-421a-8cf2-30d1316d1a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win\xaudio">
+      <UniqueIdentifier>{ef562d83-59d4-4977-b9e2-96a0d9225fa4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -19,35 +22,43 @@
     <ClInclude Include="dib.h" />
     <ClInclude Include="spr_ent.h" />
     <ClInclude Include="tmap.h" />
-    <ClInclude Include="console.h" />
-    <ClInclude Include="render_d3d9.h" />
     <ClInclude Include="bg.h" />
-    <ClInclude Include="input_di8.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="tmc.h" />
-    <ClInclude Include="xaudio\audio_bgm.h">
-      <Filter>xaudio</Filter>
-    </ClInclude>
-    <ClInclude Include="xaudio\sndfmt.h">
-      <Filter>xaudio</Filter>
-    </ClInclude>
-    <ClInclude Include="file_ex.h" />
-    <ClInclude Include="xaudio\audio.h">
-      <Filter>xaudio</Filter>
-    </ClInclude>
-    <ClInclude Include="FileHandle.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="palette.h" />
     <ClInclude Include="sprt_man.h" />
+    <ClInclude Include="win\file_ex.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\FileHandle.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\xaudio\audio.h">
+      <Filter>win\xaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="win\xaudio\audio_bgm.h">
+      <Filter>win\xaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="win\xaudio\sndfmt.h">
+      <Filter>win\xaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="win\input_di8.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\render_d3d9.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\console.h">
+      <Filter>win</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
-    <ClCompile Include="game.cpp" />
-    <ClCompile Include="wmain.cpp" />
     <ClCompile Include="vm.cpp" />
     <ClCompile Include="unk.cpp" />
     <ClCompile Include="api.cpp" />
@@ -55,31 +66,46 @@
     <ClCompile Include="dib.cpp" />
     <ClCompile Include="spr_ent.cpp" />
     <ClCompile Include="tmap.cpp" />
-    <ClCompile Include="console.cpp" />
     <ClCompile Include="draw.cpp" />
-    <ClCompile Include="render_d3d9.cpp" />
     <ClCompile Include="bg.cpp" />
-    <ClCompile Include="input_di8.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="tmc.cpp" />
-    <ClCompile Include="midi.cpp" />
-    <ClCompile Include="xaudio\sndfmt.cpp">
-      <Filter>xaudio</Filter>
-    </ClCompile>
-    <ClCompile Include="xaudio\audio_bgm.cpp">
-      <Filter>xaudio</Filter>
-    </ClCompile>
-    <ClCompile Include="file_ex.cpp" />
-    <ClCompile Include="xaudio\audio.cpp">
-      <Filter>xaudio</Filter>
-    </ClCompile>
-    <ClCompile Include="FileHandle.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="palette.cpp" />
     <ClCompile Include="sprt_man.cpp" />
+    <ClCompile Include="win\file_ex.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\FileHandle.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\xaudio\audio.cpp">
+      <Filter>win\xaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="win\xaudio\audio_bgm.cpp">
+      <Filter>win\xaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="win\xaudio\sndfmt.cpp">
+      <Filter>win\xaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="win\midi.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\input_di8.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\render_d3d9.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\wmain.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\console.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc">

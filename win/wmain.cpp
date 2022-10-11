@@ -4,9 +4,6 @@
 #include "unk.h"
 #include "resource.h"
 #include "console.h"
-#ifdef _WINDOWS
-#include "render_d3d9.h"
-#endif
 #include "timer.h"
 
 ULONG_PTR EnableVisualStyles()

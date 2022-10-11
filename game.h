@@ -8,8 +8,8 @@
 #include "tmap.h"
 #include "spr_ent.h"
 #ifdef _WINDOWS
-#include "render_d3d9.h"
-#include "input_di8.h"
+#include "win\render_d3d9.h"
+#include "win\input_di8.h"
 #endif
 #include "bg.h"
 #include "item.h"

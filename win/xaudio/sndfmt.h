@@ -6,7 +6,7 @@
 #include "ogg\minivorbis.h"
 #endif
 
-#include "file_ex.h"
+#include "..\file_ex.h"
 
 // ======================================
 // Base streaming interface

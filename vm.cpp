@@ -2561,10 +2561,10 @@ void VM::op_avi_play()
 
 	updateIndex();
 	WORD flag = read16();
-	WORD x = read16();
-	WORD y = read16();
-	WORD w = read16();
-	WORD h = read16();
+	int x = read16s();
+	int y = read16s();
+	int w = read16();
+	int h = read16();
 	getstr(path);
 }
 

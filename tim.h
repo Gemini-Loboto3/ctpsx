@@ -4,7 +4,7 @@ class CTim;
 
 #ifdef _WINDOWS
 #include <d3d9.h>
-#include "render_d3d9.h"
+#include "win\render_d3d9.h"
 #endif
 
 class CTim

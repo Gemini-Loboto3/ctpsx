@@ -89,16 +89,11 @@
   <ItemGroup>
     <ClInclude Include="bg.h" />
     <ClInclude Include="dib.h" />
-    <ClInclude Include="console.h" />
-    <ClInclude Include="FileHandle.h" />
-    <ClInclude Include="file_ex.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="input_di8.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="palette.h" />
     <ClInclude Include="program.h" />
-    <ClInclude Include="render_d3d9.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="sprt_man.h" />
@@ -111,9 +106,14 @@
     <ClInclude Include="tmc.h" />
     <ClInclude Include="unk.h" />
     <ClInclude Include="vm.h" />
-    <ClInclude Include="xaudio\audio.h" />
-    <ClInclude Include="xaudio\audio_bgm.h" />
-    <ClInclude Include="xaudio\sndfmt.h" />
+    <ClInclude Include="win\console.h" />
+    <ClInclude Include="win\FileHandle.h" />
+    <ClInclude Include="win\file_ex.h" />
+    <ClInclude Include="win\input_di8.h" />
+    <ClInclude Include="win\render_d3d9.h" />
+    <ClInclude Include="win\xaudio\audio.h" />
+    <ClInclude Include="win\xaudio\audio_bgm.h" />
+    <ClInclude Include="win\xaudio\sndfmt.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="api.cpp" />
@@ -122,20 +122,10 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="dib.cpp" />
-    <ClCompile Include="console.cpp" />
-    <ClCompile Include="FileHandle.cpp" />
-    <ClCompile Include="file_ex.cpp" />
     <ClCompile Include="font.cpp" />
-    <ClCompile Include="input_di8.cpp" />
     <ClCompile Include="item.cpp" />
-    <ClCompile Include="midi.cpp" />
     <ClCompile Include="palette.cpp" />
-    <ClCompile Include="render_d3d9.cpp" />
     <ClCompile Include="draw.cpp" />
-    <ClCompile Include="game.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="sprt_man.cpp" />
     <ClCompile Include="spr_ent.cpp" />
@@ -147,10 +137,16 @@
     <ClCompile Include="unk.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="vm.cpp" />
-    <ClCompile Include="wmain.cpp" />
-    <ClCompile Include="xaudio\audio.cpp" />
-    <ClCompile Include="xaudio\audio_bgm.cpp" />
-    <ClCompile Include="xaudio\sndfmt.cpp" />
+    <ClCompile Include="win\console.cpp" />
+    <ClCompile Include="win\FileHandle.cpp" />
+    <ClCompile Include="win\file_ex.cpp" />
+    <ClCompile Include="win\input_di8.cpp" />
+    <ClCompile Include="win\midi.cpp" />
+    <ClCompile Include="win\render_d3d9.cpp" />
+    <ClCompile Include="win\wmain.cpp" />
+    <ClCompile Include="win\xaudio\audio.cpp" />
+    <ClCompile Include="win\xaudio\audio_bgm.cpp" />
+    <ClCompile Include="win\xaudio\sndfmt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="dsound.rc" />
