@@ -1,4 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdafx.h>
+#include <vector>
+#include "game.h"
 
 LPCSTR sprt_name0[] =
 {
@@ -261,3 +265,25 @@ LPCSTR sprt_name7[] =
 	"",
 	"",
 };
+
+int Tmc::open(const char* filename)
+{
+	FILE* fp = fopen(filename, "rb");
+
+	TMC_HEADER head;
+	fread(&head, sizeof(head), 1, fp);
+
+	if (head.magic != 'TM' && head.magic != 'MT')
+		return 0;
+
+	entries = std::vector<TMC_ENTRY>(head.entry_cnt);
+	fread(entries.data(), head.entry_cnt, sizeof(TMC_ENTRY), fp);
+	fread(clut, sizeof(clut), 1, fp);
+
+	return 1;
+}
+
+void LoadTMC(int id)
+{
+
+}

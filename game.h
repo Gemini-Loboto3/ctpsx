@@ -1,8 +1,10 @@
 #pragma once
 
+#include "api.h"
 #include "vm.h"
 #include "unk.h"
 #include "tim.h"
+#include "tmc.h"
 #include "dib.h"
 #include "spr_ent.h"
 #include "tmap.h"

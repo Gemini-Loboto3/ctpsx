@@ -53,6 +53,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;..</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,7 +103,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="tim.h" />
-    <ClInclude Include="timer.h" />
     <ClInclude Include="tmap.h" />
     <ClInclude Include="tmc.h" />
     <ClInclude Include="unk.h" />
@@ -112,6 +112,7 @@
     <ClInclude Include="win\file_ex.h" />
     <ClInclude Include="win\input_di8.h" />
     <ClInclude Include="win\render_d3d9.h" />
+    <ClInclude Include="win\timer.h" />
     <ClInclude Include="win\xaudio\audio.h" />
     <ClInclude Include="win\xaudio\audio_bgm.h" />
     <ClInclude Include="win\xaudio\sndfmt.h" />
@@ -132,7 +133,6 @@
     <ClCompile Include="spr_ent.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="tim.cpp" />
-    <ClCompile Include="timer.cpp" />
     <ClCompile Include="tmap.cpp" />
     <ClCompile Include="tmc.cpp" />
     <ClCompile Include="unk.cpp" />
@@ -142,9 +142,10 @@
     <ClCompile Include="win\FileHandle.cpp" />
     <ClCompile Include="win\file_ex.cpp" />
     <ClCompile Include="win\input_di8.cpp" />
-    <ClCompile Include="win\midi.cpp" />
+    <ClCompile Include="win\midi_ogg.cpp" />
     <ClCompile Include="win\render_d3d9.cpp" />
-    <ClCompile Include="win\wmain.cpp" />
+    <ClCompile Include="win\main.cpp" />
+    <ClCompile Include="win\timer.cpp" />
     <ClCompile Include="win\xaudio\audio.cpp" />
     <ClCompile Include="win\xaudio\audio_bgm.cpp" />
     <ClCompile Include="win\xaudio\sndfmt.cpp" />

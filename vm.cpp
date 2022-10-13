@@ -638,10 +638,9 @@ int Vm_wait_fade()
 
 int Vm_ent_wait(int id)
 {
-	//if (sprt_ent[id].field_10)
-		//return sprt_ent[id].field_8D;
-	//else
-		return 1;
+	/*if (sprt_ent[id].field_10)
+		return sprt_ent[id].field_8D;
+	else */return 1;
 }
 
 int Vm_wait_ck(int index)
@@ -1670,10 +1669,10 @@ void VM::op_set_mark()
 			loop_end = 1;
 		else
 		{
-			vm_rects[i].left = mark;
-			vm_rects[i].top = read16();
-			vm_rects[i].right = read16();
-			vm_rects[i].bottom = read16();
+			vm_rects[i].left = (short)mark;
+			vm_rects[i].top = read16s();
+			vm_rects[i].right = read16s();
+			vm_rects[i].bottom = read16s();
 			vm_index7[i++] = consume();
 		}
 	} while (!loop_end);
@@ -1963,9 +1962,9 @@ void VM::op_map_disp()
 	for (int i = 0; i < 6; ++i)
 		*(&scroll_x + i) = read16s();
 	Vm_map_disp(this);
-	for (int i = 0; i < 0x1Eu; ++i)
+	for (int i = 0; i < 30; ++i)
 	{
-		if (vm_index7[i] != -1
+		if (vm_index7[i] != 0xffff
 			&& vm_index2[vm_index7[i]]
 			&& vm_rects[i].left >= scrl_x
 			&& vm_rects[i].top >= scrl_y)
@@ -2432,7 +2431,7 @@ void VM::op_spr_walkx()
 	int x0 = read16s();
 	int x1 = read16s();
 	int v3 = read16s();
-	WORD v2 = read16();
+	int v2 = read16s();
 	Vm_spr_walk_x(id, x0, x1, v3, v2);
 }
 

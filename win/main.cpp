@@ -136,6 +136,8 @@ void draw_func0()
 	sub_403252();
 }
 
+void DispCursor();
+
 // game?
 void draw_func1()
 {
@@ -150,6 +152,7 @@ void draw_func1()
 	int pal = sub_4035DC();
 	prog.pal_obj.f4091AD(pal);
 	DrawQSprites();
+	DispCursor();
 	SwapBuffer();
 	sub_403252();
 }
@@ -245,6 +248,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	prog.tCaption = (LPWSTR)L"Clock Tower: The First Fear";
 
 	InitInstance();
+
+	Tmc tm;
+	tm.open("SPRT\\CHARTMC1\\J_ACT01E.TMC");
 
 	vm_index4[58] = 1;
 

@@ -15,10 +15,10 @@ struct PROGRAM
 		render_rect.top = 0;
 		render_rect.right = 559;
 		render_rect.bottom = 303;
-		field_178 = 144;
-		field_17C = 320;
-		field_180 = 607;
-		field_184 = 431;
+		menu_rect.left = 144;
+		menu_rect.top = 320;
+		menu_rect.right = 607;
+		menu_rect.bottom = 431;
 		//sprt = 0;
 		screen_on = 0;
 		map_attr = 0;
@@ -72,11 +72,8 @@ struct PROGRAM
 	int field_15C;
 	int screen_x;
 	int screen_y;
-	RECT render_rect;
-	int field_178;
-	int field_17C;
-	int field_180;
-	int field_184;
+	RECT render_rect,
+		menu_rect;
 	int tick_delta;
 	DWORD tick_now;
 	int field_190;

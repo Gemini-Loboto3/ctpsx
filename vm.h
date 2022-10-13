@@ -385,12 +385,12 @@ struct VM
 	CTim* bank_no[21];
 	WORD bank_spr_id[21];
 	LPCVOID field_33F8[9];
-	WORD scroll_x;
-	WORD scroll_y;
-	__int16 field_3420;
+	short scroll_x;
+	short scroll_y;
+	short field_3420;
 	short scrl_x;
 	short scrl_y;
-	__int16 field_3426;
+	short field_3426;
 	WORD map_left;
 	WORD map_top;
 	__int16 field_342C;

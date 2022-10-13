@@ -1,7 +1,7 @@
 #ifndef _WINDOWS
 #include <stdafx.h>
 
-bool intersectRect(const RECT* r1, const RECT* r2)
+bool intersectRect(RECT* dst, const RECT* r1, const RECT* r2)
 {
 	return !(r2->left > r1->right ||
 		r2->right < r1->left ||
@@ -23,6 +23,18 @@ void offsetRect(RECT* r, int x, int y)
 	r->right += x;
 	r->top += y;
 	r->bottom += y;
+}
+
+#else
+
+static int cursor_visible = 0;
+
+bool ShowCursor(bool show)
+{
+	if (show) cursor_visible++;
+	else cursor_visible = 0;
+
+	return cursor_visible ? true : false;
 }
 
 #endif

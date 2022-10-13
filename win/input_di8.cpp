@@ -2,9 +2,12 @@
 #define DIRECTINPUT_VERSION 0x800
 #include <dinput.h>
 #include "game.h"
+#include <algorithm>
 
 LPDIRECTINPUT8 di8;
 LPDIRECTINPUTDEVICE8 di_mouse;
+
+#define CAPTURE_MOUSE	1
 
 int mouseX = 0,
 	mouseY = 0;
@@ -16,7 +19,11 @@ int InputInit()
 
 	if (FAILED(di8->CreateDevice(GUID_SysMouse, &di_mouse, nullptr)))
 		return 0;
+#if CAPTURE_MOUSE
+	di_mouse->SetCooperativeLevel(prog.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+#else
 	di_mouse->SetCooperativeLevel(prog.hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+#endif
 
 #if 0
 	DIDATAFORMAT DIDataFormat;
@@ -39,6 +46,9 @@ void InputRead()
 	{
 		mouseX += state.lX;
 		mouseY += state.lY;
+
+		mouseX = std::clamp(mouseX, 0, 512);
+		mouseY = std::clamp(mouseY, 0, 480);
 
 		if (state.rgbButtons[0])
 			LBtnClick(0, mouseX, mouseY);

@@ -176,8 +176,8 @@ void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
 {
 	if (sprt_ent[id].field_10)
 	{
-		sprt_ent[id].field_75 = w;
-		sprt_ent[id].field_79 = h;
+		sprt_ent[id].width = w;
+		sprt_ent[id].height = h;
 		sprt_ent[id].tim = ptr;
 		//sprt_ent[id].bmp = ptr[(h - 1) * w];
 		sprt_ent[id].field_37 = 0;
@@ -346,9 +346,9 @@ void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4)
 
 void sub_402FAF()
 {
-	struct tagRECT rcDst; // [esp+0h] [ebp-24h] BYREF
+	RECT rcDst; // [esp+0h] [ebp-24h] BYREF
 	RECT rcSrc1; // [esp+10h] [ebp-14h] BYREF
-	int v2; // [esp+20h] [ebp-4h]
+	int i; // [esp+20h] [ebp-4h]
 
 	rcSrc1.left = prog.field_1B8 + 1;
 	rcSrc1.right = prog.field_1B8 + 2;
@@ -356,23 +356,23 @@ void sub_402FAF()
 	rcSrc1.bottom = prog.field_1BC + 2;
 	if (prog.field_1A4)
 	{
-		v2 = 0;
+		i = 0;
 		while (1)
 		{
-			if ((vm_index6[v2 + 10] & 0x10) == 0 && sub_403304(v2))
+			if ((vm_index6[i + 10] & 0x10) == 0 && sub_403304(i))
 			{
-				rcDst.left = prog.render_rect.left + vm_rects[v2].left - prog.screen_x;
-				rcDst.right = prog.render_rect.left + vm_rects[v2].right - prog.screen_x;
-				rcDst.top = prog.render_rect.top + vm_rects[v2].top - prog.screen_y;
-				rcDst.bottom = prog.render_rect.top + vm_rects[v2].bottom - prog.screen_y;
+				rcDst.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
+				rcDst.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
+				rcDst.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
+				rcDst.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
 				if (IntersectRect(&rcDst, &rcSrc1, &rcDst))
 					break;
 			}
-			if (++v2 >= 30)
+			if (++i >= 30)
 				goto LABEL_15;
 		}
-		prog.field_1A8 = vm_rects[v2].left - (32 - (vm_rects[v2].right - vm_rects[v2].left)) / 2;
-		prog.field_1AC = vm_rects[v2].top - (32 - (vm_rects[v2].bottom - vm_rects[v2].top)) / 2;
+		prog.field_1A8 = vm_rects[i].left - (32 - (vm_rects[i].right - vm_rects[i].left)) / 2;
+		prog.field_1AC = vm_rects[i].top - (32 - (vm_rects[i].bottom - vm_rects[i].top)) / 2;
 		if (prog.field_14C)
 		{
 			if (prog.field_14C == 1)
@@ -424,9 +424,9 @@ void sub_402FAF()
 void __cdecl SpriteGetRect(SPRT_ENT* s, RECT* r)
 {
 	r->left = s->x3;
-	r->right = s->field_75 + s->x3 - 1;
+	r->right = s->width + s->x3 - 1;
 	r->top = s->y3;
-	r->bottom = s->field_79 + s->y3 - 1;
+	r->bottom = s->height + s->y3 - 1;
 }
 
 void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc)
@@ -474,16 +474,16 @@ void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc)
 		srcy = 0;
 	}
 
-	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->field_75, sprt->field_79, srcx, srcy, 0xff, 0xff, 0xff);
+	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
 
 	//RenderToOffScreen(
 	//	dstx,
 	//	dsty,
 	//	srcx,
 	//	srcy,
-	//	sprt->field_75,
-	//	sprt->field_79,
-	//	sprt->field_75,
+	//	sprt->width,
+	//	sprt->height,
+	//	sprt->width,
 	//	rcDst.right - rcDst.left + 1,
 	//	rcDst.bottom - rcDst.top + 1,
 	//	(BYTE*)sprt->field_5B,
@@ -600,10 +600,10 @@ void sub_403536()
 	}
 }
 
-DWORD dword_422D5C[200];
+PATTERN_DATA *pattern_data[200];
 WORD word_422AB8;
 
-int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
+int SetSpriteData(SPRT_ENT* spr, unsigned __int16 id)
 {
 	__int16 v3[368]; // [esp+0h] [ebp-30Ch] BYREF
 	//char v4[14]; // [esp+2E0h] [ebp-2Ch] BYREF
@@ -615,7 +615,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 	__int16 i; // [esp+304h] [ebp-8h]
 	__int16 v12; // [esp+306h] [ebp-6h]
 	WORD v13; // [esp+308h] [ebp-4h]
-	__int16 v14; // [esp+30Ah] [ebp-2h]
+	__int16 lo_id; // [esp+30Ah] [ebp-2h]
 
 	if (!spr->field_91)
 	{
@@ -624,7 +624,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 		if (spr->field_8D)
 			return 1;
 	}
-	v8 = ((int)a2 >> 8) & 0x3F;
+	v8 = ((int)id >> 8) & 0x3F;
 	if (v8 != word_422AB8)
 	{
 		word_422AB8 = v8;
@@ -633,20 +633,21 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 		//if (!ReadPosiData_0())
 		//	return 0;
 	}
-	if (!spr->tim || LOWORD(spr->field_89) + LOWORD(spr->field_7D) != a2)
+	if (!spr->tim || LOWORD(spr->field_89) + LOWORD(spr->field_7D) != id)
 	{
-		if (!sprt_slot_manager.Read(spr, a2))
+		if (!sprt_slot_manager.Read(spr, id))
 		{
 			printf("SetSpriteData\n");
 			return 0;
 		}
-		spr->field_7D = a2 & 0x3FFF;
+		spr->field_7D = id & 0x3FFF;
 		spr->field_81 = 0xFFFF;
 		spr->field_85 = 0;
-		spr->field_89 = a2 & 0xC000;
+		spr->field_89 = id & 0xC000;
 		spr->field_8D = 0;
 	}
-	v14 = (unsigned __int8)a2;
+
+	lo_id = id & 0xff;
 	//Src = spr->ptr0;
 	//memcpy(v4, Src, sizeof(v4));
 	v9 = 14;
@@ -666,22 +667,22 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 		if ((spr->field_99 & 4) != 0)
 			spr->field_81 = spr->field_9B;
 		v13 = (WORD)spr->field_81;
-		spr->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
+		spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		spr->field_8D = 0;
 		spr->field_91 = 0;
 		spr->field_41 = 1;
 		if (!v13)
-			spr->field_6B = -1;
+			spr->field_6B = 0xffff;
 		if ((__int16)v13 == (unsigned __int16)v3[6] - 1)
 			spr->field_6B = v3[6] - 1;
 		if ((spr->field_99 & 4) != 0)
 		{
 			spr->field_6B = v13 - 1;
-			while (!*((WORD*)dword_422D5C[v14] + (__int16)spr->field_6B + 61))
+			while (!pattern_data[lo_id][30].field_2[spr->field_6B])
 			{
 				if ((--spr->field_6B & 0x8000u) != 0)
 				{
-					spr->field_6B = -1;
+					spr->field_6B = 0xffff;
 					break;
 				}
 			}
@@ -699,14 +700,14 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 				break;
 			}
 			v13 = (WORD)spr->field_81;
-			spr->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
+			spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		}
 		else
 		{
 			if ((unsigned __int16)v3[6] <= (int)++spr->field_81)
 				goto LABEL_38;
 			v13 = (WORD)spr->field_81;
-			spr->field_85 = (*((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 61) + 1) / 2;
+			spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		}
 	}
 	if (!--spr->field_85)
@@ -748,17 +749,17 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 		}
 	}
 	v13 = (WORD)spr->field_81;
-	//spr->flag1 = ptr_abm_tbl[v14][60].field_2[(__int16)v13] & 0x1F;
+	//spr->flag1 = ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x1F;
 	spr->flag1 += spr->flag0;
-	spr->field_75 = (unsigned __int16)v3[6 * (__int16)v13 + 7];
-	spr->field_79 = (unsigned __int16)v3[6 * (__int16)v13 + 8];
+	spr->width = (unsigned __int16)v3[6 * (__int16)v13 + 7];
+	spr->height = (unsigned __int16)v3[6 * (__int16)v13 + 8];
 	//spr->bmp_data = (BYTE*)spr->ptr0 + v9 + *(_DWORD*)&v3[6 * (__int16)v13 + 11];
-	//if ((ptr_abm_tbl[v14][60].field_2[(__int16)v13] & 0x8000u) != 0)
-	//	v7 = spr->field_79 * (((unsigned __int16)spr->field_75 + 3) & 0xFFFC) - 1;
+	//if ((ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x8000u) != 0)
+	//	v7 = spr->height * (((unsigned __int16)spr->width + 3) & 0xFFFC) - 1;
 	//else
-	//	v7 = (spr->field_79 - 1) * (((unsigned __int16)spr->field_75 + 3) & 0xFFFC);
+	//	v7 = (spr->height - 1) * (((unsigned __int16)spr->width + 3) & 0xFFFC);
 	//spr->bmp = spr->bmp_data[v7];
-	spr->field_95 = *((unsigned __int16*)dword_422D5C[v14] + (__int16)v13 + 1);
+	spr->field_95 = pattern_data[lo_id]->field_2[v13];
 	if (spr->field_95 == 0xFFFF)
 	{
 		spr->x3 = 768;
@@ -769,8 +770,8 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 	{
 		if (spr->field_6B == 0xFFFF)
 		{
-			//v6 = 2 * ptr_abm_tbl[v14]->field_2[0];
-			//v5 = 2 * ptr_abm_tbl[v14][30].field_2[0];
+			//v6 = 2 * ptr_abm_tbl[lo_id]->field_2[0];
+			//v5 = 2 * ptr_abm_tbl[lo_id][30].field_2[0];
 			spr->field_6B = 0;
 		}
 		else if (v13 == spr->field_6B)
@@ -780,8 +781,8 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 		}
 		else
 		{
-			//v6 = 2 * (ptr_abm_tbl[v14]->field_2[(__int16)v13] - ptr_abm_tbl[v14]->field_2[(__int16)spr->field_6B]);
-			//v5 = 2 * (ptr_abm_tbl[v14][30].field_2[(__int16)v13] - ptr_abm_tbl[v14][30].field_2[(__int16)spr->field_6B]);
+			//v6 = 2 * (ptr_abm_tbl[lo_id]->field_2[(__int16)v13] - ptr_abm_tbl[lo_id]->field_2[(__int16)spr->field_6B]);
+			//v5 = 2 * (ptr_abm_tbl[lo_id][30].field_2[(__int16)v13] - ptr_abm_tbl[lo_id][30].field_2[(__int16)spr->field_6B]);
 			spr->field_6B = v13;
 		}
 		if ((spr->field_89 & 0x8000) == 0)
@@ -802,7 +803,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 a2)
 		else
 		{
 			spr->y0 += v5;
-			spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->field_79));
+			spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->height));
 		}
 		return 1;
 	}
@@ -1366,7 +1367,7 @@ void sub_4021DC()
 	}
 }
 
-int process_mouseXY(int x, int y)
+int intersect_triggers(int x, int y)
 {
 	struct tagRECT rcDst; // [esp+0h] [ebp-24h] BYREF
 	struct tagRECT rc; // [esp+10h] [ebp-14h] BYREF
@@ -1455,13 +1456,14 @@ void LBtnClick(int is_double, LONG x, LONG y)
 	click.bottom = y + 1;
 	if (prog.vm_func == 1)
 	{
+		// check if it's inside the game area
 		if (IntersectRect(&rcDst, &click, &prog.render_rect))
 		{
 			vm_index3[22] = prog.screen_x + x - prog.render_rect.left <= sprt_ent[0].x0;
 			if ((prog.field_12E || prog.field_130) && sprt_dat[0].type != 4 && sprt_dat[0].type != 5)
 			{
 				sprt_dat[0].field_20 = 0;
-				v9 = process_mouseXY(x, y);
+				v9 = intersect_triggers(x, y);
 				if (v9 == -1)
 				{
 					if (prog.field_12E && !sprt_dat[0].type4)
@@ -1471,7 +1473,8 @@ void LBtnClick(int is_double, LONG x, LONG y)
 						sub_4027E7(0, sprt_ent[0].x0, prog.screen_x + x - prog.render_rect.left, is_double);
 					}
 				}
-				else if (Vm_mark_event(v9 + 10, 0))
+				else
+					if (Vm_mark_event(v9 + 10, 0))
 				{
 					sprt_dat[0].type2 = 0;
 					sprt_dat[0].field_1C = 0;
@@ -1479,7 +1482,8 @@ void LBtnClick(int is_double, LONG x, LONG y)
 				}
 			}
 		}
-		else if (vm_index5[45] && IntersectRect(&rcDst, &click, (const RECT*)&prog.field_178))
+		// check if it's inside the inventory space
+		else if (vm_index5[45] && IntersectRect(&rcDst, &click, &prog.menu_rect))
 		{
 			v7 = -1;
 			int i;

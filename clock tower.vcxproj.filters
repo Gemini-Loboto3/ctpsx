@@ -28,7 +28,6 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="tmc.h" />
-    <ClInclude Include="timer.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="palette.h" />
     <ClInclude Include="sprt_man.h" />
@@ -57,6 +56,9 @@
       <Filter>win</Filter>
     </ClInclude>
     <ClInclude Include="api.h" />
+    <ClInclude Include="win\timer.h">
+      <Filter>win</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
@@ -73,7 +75,6 @@
     <ClCompile Include="text.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="tmc.cpp" />
-    <ClCompile Include="timer.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="palette.cpp" />
     <ClCompile Include="sprt_man.cpp" />
@@ -92,7 +93,7 @@
     <ClCompile Include="win\xaudio\sndfmt.cpp">
       <Filter>win\xaudio</Filter>
     </ClCompile>
-    <ClCompile Include="win\midi.cpp">
+    <ClCompile Include="win\midi_ogg.cpp">
       <Filter>win</Filter>
     </ClCompile>
     <ClCompile Include="win\input_di8.cpp">
@@ -101,10 +102,13 @@
     <ClCompile Include="win\render_d3d9.cpp">
       <Filter>win</Filter>
     </ClCompile>
-    <ClCompile Include="win\wmain.cpp">
+    <ClCompile Include="win\main.cpp">
       <Filter>win</Filter>
     </ClCompile>
     <ClCompile Include="win\console.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\timer.cpp">
       <Filter>win</Filter>
     </ClCompile>
   </ItemGroup>

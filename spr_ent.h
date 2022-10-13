@@ -1,5 +1,12 @@
 #pragma once
 
+struct PATTERN_DATA
+{
+	__int16 field_0;
+	WORD field_2[120];
+};
+
+
 struct SPRT_DAT
 {
 	DWORD type0;
@@ -63,8 +70,8 @@ struct SPRT_ENT
 	WORD field_6B;
 	int x3;
 	int y3;
-	DWORD field_75;
-	DWORD field_79;
+	DWORD width;
+	DWORD height;
 	DWORD field_7D;
 	DWORD field_81;
 	DWORD field_85;
@@ -110,7 +117,7 @@ void sub_40266A();
 void sub_401D74();
 void sub_4021DC();
 void sub_4027E7(int id, int x, int y, int is_double);
-int process_mouseXY(int x, int y);
+int intersect_triggers(int x, int y);
 
 void LBtnClick(int is_double, LONG x, LONG y);
 void RBtnClick(int is_double, LONG x, LONG y);

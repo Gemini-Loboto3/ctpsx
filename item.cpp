@@ -84,6 +84,11 @@ void ItemUpdate()
 	vm_index5[24] = inventory[itemptr2_index];
 }
 
+void DispCursor()
+{
+	RenderRect(item_tim, mouseX / 2, mouseY / 2, 16, 16, 0, 0, 0xff, 0xff, 0xff);
+}
+
 void ItemListDisp()
 {
 	ItemUpdate();
