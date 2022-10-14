@@ -59,6 +59,12 @@
     <ClInclude Include="win\timer.h">
       <Filter>win</Filter>
     </ClInclude>
+    <ClInclude Include="win\Bitmap.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\lodepng.h">
+      <Filter>win</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
@@ -109,6 +115,12 @@
       <Filter>win</Filter>
     </ClCompile>
     <ClCompile Include="win\timer.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\Bitmap.cpp">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\lodepng.cpp">
       <Filter>win</Filter>
     </ClCompile>
   </ItemGroup>

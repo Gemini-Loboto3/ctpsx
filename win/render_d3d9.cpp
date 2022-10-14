@@ -1,13 +1,12 @@
 #include <stdafx.h>
 #include "game.h"
 
-RENDER_BMP render_bmp;
-
 #define RENDER_W		1280
 #define RENDER_H		960
 
 LPDIRECT3D9 d3d9 = nullptr;
 LPDIRECT3DDEVICE9 d3d9dev = nullptr;
+// render targets
 LPDIRECT3DTEXTURE9 d3d9rend = nullptr;
 LPDIRECT3DTEXTURE9 d3d9text = nullptr;
 D3DFORMAT d3dfmttex;
@@ -57,8 +56,6 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 	bmp->bmp_info->info.biHeight = 1;
 	bmp->bmp_info->info.biHeight *= h;
 	bmp->bmp_info->info.biWidth = w;
-
-	bmp->ppvbits = (RENDER_PIC*)new BYTE[w * h];
 
 	bmp->flipped_h = 1;	// makes sure stuff is renderer in the correct vertical order
 	bmp->used = 1;
@@ -127,7 +124,7 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 
 void InitRender()
 {
-	CreateOffScreenBitmap(&render_bmp, 640, 480);
+	CreateOffScreenBitmap(&prog.render_bmp, 640, 480);
 }
 
 LPDIRECT3DSURFACE9 targ;
@@ -149,7 +146,7 @@ void SwapBuffer()
 		fvf p[4];
 		const float ofs = -0.5f;
 		float x0 = ofs, y0 = ofs,
-			x1 = (float)render_bmp.w + ofs, y1 = (float)render_bmp.h + ofs;
+			x1 = (float)prog.render_bmp.w + ofs, y1 = (float)prog.render_bmp.h + ofs;
 		float u0 = 0.f, v0 = 0.f,
 			u1 = 1.f, v1 = 1.f;
 

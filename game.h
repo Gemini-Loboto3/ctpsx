@@ -46,7 +46,6 @@ struct RENDER_BMP
 	RECT rect;
 	int screen_on;
 	BITMAP_DATA* bmp_info;
-	RENDER_PIC* ppvbits;
 	int flipped_h;
 };
 
@@ -55,5 +54,3 @@ struct RENDER_BMP
 #include <poppack.h>
 
 //EXTERN_C VM* vm;
-
-extern RENDER_BMP render_bmp;

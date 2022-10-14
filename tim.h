@@ -45,7 +45,7 @@ public:
 	LPDIRECT3DTEXTURE9 tex = nullptr;
 
 	void SetTexture();
-	DWORD torgb888(WORD c)
+	static DWORD torgb888(WORD c)
 	{
 		if (c == 0)
 			return D3DCOLOR_ARGB(0, 0, 0, 0);

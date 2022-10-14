@@ -1,7 +1,7 @@
 typedef struct tagTmcEntry
 {
-	WORD unk0,
-		unk2,
+	WORD w,
+		h,
 		unk4,
 		unk6;
 	int pos,
@@ -26,6 +26,10 @@ class Tmc
 public:
 	std::vector<TMC_ENTRY> entries;
 	WORD clut[256];
+	std::vector<BYTE> pix,
+		coor,
+		unk;
 
 	int open(const char* filename);
+	int dec(BYTE* src, BYTE* dst, int cmp_size);
 };

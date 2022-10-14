@@ -14,6 +14,13 @@
 #define GETY(y)		((y) / 2 - GAME_Y)
 #define GETXR(x)	((x) / 2 - 8)	// push the right
 
+enum
+{
+	RENDTARG_BACK,
+	RENDTARG_SPRITE,
+	RENDTARG_FRONT
+};
+
 extern LPDIRECT3D9 d3d9;
 extern LPDIRECT3DDEVICE9 d3d9dev;
 extern LPDIRECT3DTEXTURE9 d3d9rend;

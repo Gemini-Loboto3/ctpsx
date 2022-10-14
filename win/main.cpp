@@ -250,7 +250,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	InitInstance();
 
 	Tmc tm;
-	tm.open("SPRT\\CHARTMC1\\J_ACT01E.TMC");
+	tm.open("SPRT\\CHARTMC2\\A_ACT01.TMC");
 
 	vm_index4[58] = 1;
 

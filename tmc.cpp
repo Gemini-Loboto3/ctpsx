@@ -4,6 +4,10 @@
 #include <vector>
 #include "game.h"
 
+#ifdef _WINDOWS
+#include "win/bitmap.h"
+#endif
+
 LPCSTR sprt_name0[] =
 {
 	"",
@@ -266,6 +270,8 @@ LPCSTR sprt_name7[] =
 	"",
 };
 
+byte buffer[128 * 1024];
+
 int Tmc::open(const char* filename)
 {
 	FILE* fp = fopen(filename, "rb");
@@ -276,11 +282,76 @@ int Tmc::open(const char* filename)
 	if (head.magic != 'TM' && head.magic != 'MT')
 		return 0;
 
+	// cache all the necessary data
 	entries = std::vector<TMC_ENTRY>(head.entry_cnt);
 	fread(entries.data(), head.entry_cnt, sizeof(TMC_ENTRY), fp);
+	// palettes
 	fread(clut, sizeof(clut), 1, fp);
+	// compressed pics
+	fseek(fp, head.pos_pix, SEEK_SET);
+	pix = std::vector<BYTE>(head.pix_size);
+	fread(pix.data(), head.pix_size, 1, fp);
+	// coordinates
+	fseek(fp, head.pos_coor, SEEK_SET);
+	coor = std::vector<BYTE>(head.coor_size);
+	fread(coor.data(), head.coor_size, 1, fp);
+	// whatever
+	fseek(fp, head.unkptr_18, SEEK_SET);
+	unk = std::vector<BYTE>(head.unksize_1C);
+	fread(unk.data(), head.unksize_1C, 1, fp);
+
+	fclose(fp);
+
+#if 1
+	char path[MAX_PATH];
+	CreateDirectoryA("test", nullptr);
+
+	CBitmap bmp;
+	for (int i = 0; i < head.entry_cnt; i++)
+	{
+		if (entries[i].pos == -1)
+			continue;
+
+		bmp.Create(entries[i].w, entries[i].h);
+		dec(&pix[entries[i].pos], buffer, entries[i].size);
+
+		BYTE* src = buffer;
+		for (int y = 0; y < entries[i].h; y++)
+			for (int x = 0; x < entries[i].w; x++)
+				bmp.setPixel(x, y, CTim::torgb888(clut[*src++]));
+
+		sprintf_s(path, MAX_PATH, "test\\%03i.png", i);
+		bmp.SavePng(path);
+	}
+#endif
 
 	return 1;
+}
+
+int Tmc::dec(BYTE* src, BYTE* dst, int cmp_size)
+{
+	int dec_size = 0;
+
+	while (cmp_size > 0)
+	{
+		// compressed
+		if (*src == 0)
+		{
+			memset(dst, 0, src[1]);
+			dst += src[1];
+			dec_size += src[1];
+			src += 2;
+			cmp_size -= 2;
+		}
+		else
+		{
+			*dst++ = *src++;
+			cmp_size--;
+			dec_size++;
+		}
+	}
+
+	return dec_size;
 }
 
 void LoadTMC(int id)

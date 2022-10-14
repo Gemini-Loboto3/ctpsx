@@ -107,10 +107,12 @@
     <ClInclude Include="tmc.h" />
     <ClInclude Include="unk.h" />
     <ClInclude Include="vm.h" />
+    <ClInclude Include="win\Bitmap.h" />
     <ClInclude Include="win\console.h" />
     <ClInclude Include="win\FileHandle.h" />
     <ClInclude Include="win\file_ex.h" />
     <ClInclude Include="win\input_di8.h" />
+    <ClInclude Include="win\lodepng.h" />
     <ClInclude Include="win\render_d3d9.h" />
     <ClInclude Include="win\timer.h" />
     <ClInclude Include="win\xaudio\audio.h" />
@@ -138,10 +140,12 @@
     <ClCompile Include="unk.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="vm.cpp" />
+    <ClCompile Include="win\Bitmap.cpp" />
     <ClCompile Include="win\console.cpp" />
     <ClCompile Include="win\FileHandle.cpp" />
     <ClCompile Include="win\file_ex.cpp" />
     <ClCompile Include="win\input_di8.cpp" />
+    <ClCompile Include="win\lodepng.cpp" />
     <ClCompile Include="win\midi_ogg.cpp" />
     <ClCompile Include="win\render_d3d9.cpp" />
     <ClCompile Include="win\main.cpp" />

@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdafx.h>
+#include <assert.h>
 #include "game.h"
 
 #define MAX_STR_SIZE	80
@@ -1752,6 +1753,11 @@ void VM::op_box_fill()
 	WORD r = read16();
 	WORD g = read16();
 	WORD b = read16();
+
+	assert(r < 256);
+	assert(g < 256);
+	assert(b < 256);
+
 	RenderTile(GETX(x0), GETY(y0), (x1 - x0) / 2, (y1 - y0) / 2, (BYTE)r, (BYTE)g, (BYTE)b);
 }
 
