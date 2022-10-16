@@ -1,6 +1,12 @@
 #pragma once
 #ifndef _WINDOWS
 
+typedef const char* LPCSTR, *PCSTR;
+typedef unsigned long       DWORD;
+typedef int                 BOOL;
+typedef unsigned char       BYTE;
+typedef unsigned short      WORD;
+
 typedef struct tagRect
 {
 	int left,

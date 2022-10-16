@@ -25,11 +25,13 @@ class Tmc
 {
 public:
 	std::vector<TMC_ENTRY> entries;
-	WORD clut[256];
+	WORD clut[256], count;
 	std::vector<BYTE> pix,
 		coor,
 		unk;
 
 	int open(const char* filename);
 	int dec(BYTE* src, BYTE* dst, int cmp_size);
+
+	void test(const char* filename);
 };

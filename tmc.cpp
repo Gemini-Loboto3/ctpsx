@@ -302,28 +302,7 @@ int Tmc::open(const char* filename)
 
 	fclose(fp);
 
-#if 1
-	char path[MAX_PATH];
-	CreateDirectoryA("test", nullptr);
-
-	CBitmap bmp;
-	for (int i = 0; i < head.entry_cnt; i++)
-	{
-		if (entries[i].pos == -1)
-			continue;
-
-		bmp.Create(entries[i].w, entries[i].h);
-		dec(&pix[entries[i].pos], buffer, entries[i].size);
-
-		BYTE* src = buffer;
-		for (int y = 0; y < entries[i].h; y++)
-			for (int x = 0; x < entries[i].w; x++)
-				bmp.setPixel(x, y, CTim::torgb888(clut[*src++]));
-
-		sprintf_s(path, MAX_PATH, "test\\%03i.png", i);
-		bmp.SavePng(path);
-	}
-#endif
+	count = head.entry_cnt;
 
 	return 1;
 }
@@ -352,6 +331,30 @@ int Tmc::dec(BYTE* src, BYTE* dst, int cmp_size)
 	}
 
 	return dec_size;
+}
+
+void Tmc::test(const char* filename)
+{
+	char path[MAX_PATH];
+	CreateDirectoryA("test", nullptr);
+
+	CBitmap bmp;
+	for (int i = 0; i < count; i++)
+	{
+		if (entries[i].pos == -1)
+			continue;
+
+		bmp.Create(entries[i].w, entries[i].h);
+		dec(&pix[entries[i].pos], buffer, entries[i].size);
+
+		BYTE* src = buffer;
+		for (int y = 0; y < entries[i].h; y++)
+			for (int x = 0; x < entries[i].w; x++)
+				bmp.setPixel(x, y, CTim::torgb888(clut[*src++]));
+
+		sprintf_s(path, MAX_PATH, "test\\%03i.png", i);
+		bmp.SavePng(path);
+	}
 }
 
 void LoadTMC(int id)

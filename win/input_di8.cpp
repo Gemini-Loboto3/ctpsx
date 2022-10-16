@@ -5,36 +5,52 @@
 #include <algorithm>
 
 LPDIRECTINPUT8 di8;
-LPDIRECTINPUTDEVICE8 di_mouse;
+LPDIRECTINPUTDEVICE8 di_mouse,
+	di_kb;
 
 #define CAPTURE_MOUSE	1
 
 int mouseX = 0,
 	mouseY = 0;
 
-int InputInit()
+static int InitMouse()
 {
-	if (FAILED(DirectInput8Create(prog.hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&di8, nullptr)))
-		return 0;
-
 	if (FAILED(di8->CreateDevice(GUID_SysMouse, &di_mouse, nullptr)))
 		return 0;
+	if (FAILED(di_mouse->SetDataFormat(&c_dfDIMouse2)))
+		return 0;
+
 #if CAPTURE_MOUSE
 	di_mouse->SetCooperativeLevel(prog.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 #else
 	di_mouse->SetCooperativeLevel(prog.hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
 #endif
 
-#if 0
-	DIDATAFORMAT DIDataFormat;
-	memcpy(&DIDataFormat, &c_dfDIMouse2, sizeof(DIDataFormat));
-	DIDataFormat.dwFlags = DIDF_ABSAXIS;
-	if (FAILED(di_mouse->SetDataFormat(&DIDataFormat)))
+	return 1;
+}
+
+static int InitKeyboard()
+{
+	if (FAILED(di8->CreateDevice(GUID_SysKeyboard, &di_kb, nullptr)))
 		return 0;
-#else
-	if (FAILED(di_mouse->SetDataFormat(&c_dfDIMouse2)))
+	if (FAILED(di_kb->SetDataFormat(&c_dfDIKeyboard)))
 		return 0;
-#endif
+
+	di_kb->SetCooperativeLevel(prog.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+
+	return 1;
+}
+
+int InputInit()
+{
+	if (FAILED(DirectInput8Create(prog.hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&di8, nullptr)))
+		return 0;
+
+	if (!InitMouse())
+		return 0;
+
+	if (!InitKeyboard())
+		return 0;
 
 	return 1;
 }
@@ -57,9 +73,58 @@ void InputRead()
 		if (state.rgbButtons[1])
 			RBtnClick(0, mouseX, mouseY);
 		else prog.click_bits &= ~2;
+	}
 
-		char mes[32];
-		sprintf_s(mes, 32, "X %d Y %d\n", mouseX, mouseY);
-		OutputDebugStringA(mes);
+	char kb_state[256];
+	if (SUCCEEDED(di_kb->Acquire()) && SUCCEEDED(di_kb->GetDeviceState(sizeof(kb_state), (LPVOID)kb_state)))
+	{
+		int event = -1;
+		// new game
+		if (kb_state[DIK_F1]) event = 0;
+		// fast start
+		else if (kb_state[DIK_F2]) event = 1;
+		// continue
+		else if (kb_state[DIK_F3]) event = 2;
+		// ending list
+		else if (kb_state[DIK_F5]) event = 3;
+		// shutdown
+		else if (kb_state[DIK_F4] && kb_state[DIK_LALT])
+			SendMessageW(prog.hWnd, WM_CLOSE, 0, 0);
+
+		if (event != -1)
+		{
+			vm_index3[16] = event;
+			Vm_set_63();
+			Vm_mark_event(0x190, 1);
+		}
+
+		bool left = kb_state[DIK_A] ? true : false;
+		bool right = kb_state[DIK_D] ? true : false;
+		bool down = kb_state[DIK_S] ? true : false;
+		bool up = kb_state[DIK_W] ? true : false;
+		bool run_left = kb_state[DIK_Q] ? true : false;
+		bool run_right = kb_state[DIK_E] ? true : false;
+		bool rest = kb_state[DIK_LCONTROL] ? true : false;
+		int fast = kb_state[DIK_LSHIFT] ? 2 : 1;
+		bool conf = kb_state[DIK_SPACE] ? true : false;
+
+		const int mspd = 8;	// cursor speed
+
+		if (left) mouseX -= mspd * fast;
+		else if (right) mouseX += mspd * fast;
+		mouseX = std::clamp(mouseX, 0, 512);
+
+		if (up) mouseY -= mspd * fast;
+		else if (down) mouseY += mspd * fast;
+		mouseY = std::clamp(mouseY, 0, 480);
+
+		if (conf)
+			LBtnClick(fast ? 1 : 0, mouseX, mouseY);
+		if (rest)
+			RBtnClick(fast ? 1 : 0, mouseX, mouseY);
+		if (run_left)
+			LBtnClick(1, 0, 0);
+		if (run_right)
+			LBtnClick(1, 640, 0);
 	}
 }
