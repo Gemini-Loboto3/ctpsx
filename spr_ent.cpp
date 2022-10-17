@@ -62,7 +62,7 @@ void SPRT_ENT::SetList()
 
 void SPRT_ENT::Release()
 {
-	sprt_ent[field_2E].field_10 = 0;
+	sprt_ent[id2].enabled = 0;
 	if (field_26 && tim)
 	{
 		if (tim->is_ref == 0)
@@ -94,9 +94,9 @@ void SPRT_ENT::Update()
 	UpdateXY();
 }
 
-void SPRT_ENT::SetXY(int _x, int _y, DWORD a4, int flip)
+void SPRT_ENT::SetXY(int _x, int _y, DWORD a4, int _flip)
 {
-	if (flip)
+	if (_flip)
 	{
 		flip = 0;
 		x0 = _x;
@@ -131,7 +131,7 @@ void SPRT_ENT::CalcPan()
 
 	if (!field_45 && field_41 == 1)
 	{
-		v4 = (field_3B & 0x3FFF) >> 8;
+		v4 = (id & 0x3FFF) >> 8;
 		if (v4 <= 0x12u)
 		{
 			v3 = -1;//off_41F094[v4][field_95];
@@ -167,21 +167,21 @@ void Vm_spr_lmt(int a1, int lmx, int lmy)
 	sprt_ent[a1].lmy = lmy;
 }
 
-void sub_404346(int a1, int a2)
+void sub_404346(int id, int val)
 {
-	sprt_ent[a1].field_45 = a2;
+	sprt_ent[id].field_45 = val;
 }
 
 void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
 {
-	if (sprt_ent[id].field_10)
+	if (sprt_ent[id].enabled)
 	{
 		sprt_ent[id].width = w;
 		sprt_ent[id].height = h;
 		sprt_ent[id].tim = ptr;
 		//sprt_ent[id].bmp = ptr[(h - 1) * w];
 		sprt_ent[id].field_37 = 0;
-		sprt_ent[id].field_3B = -1;
+		sprt_ent[id].id = -1;
 		sub_404346(id, 1);
 		sprt_ent[id].field_41 = 0;
 		sprt_ent[id].field_8D = 0;
@@ -190,7 +190,7 @@ void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
 
 void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag)
 {
-	if (sprt_ent[a1].field_10)
+	if (sprt_ent[a1].enabled)
 	{
 		sprt_ent[a1].x3 = x;
 		sprt_ent[a1].y3 = y;
@@ -204,8 +204,8 @@ void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int
 {
 	if (id <= 20)
 	{
-		sprt_ent[id].field_2E = id;
-		sprt_ent[id].field_10 = 1;
+		sprt_ent[id].id2 = id;
+		sprt_ent[id].enabled = 1;
 		sprt_ent[id].field_32 = a8;
 		sprt_ent[id].is_abs = is_abs;
 		BgSprPos(id, x, y, flag);
@@ -235,7 +235,7 @@ void SprtTblDeinit()
 
 void SprPos(int id, int x, int y, DWORD flags)
 {
-	if (sprt_ent[id].field_10)
+	if (sprt_ent[id].enabled)
 		sprt_ent[id].SetXY(x, y, flags, 0);
 }
 
@@ -314,22 +314,22 @@ void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4)
 {
 	WORD v5[2];
 
-	if (sprt_ent[id].field_10)
+	if (sprt_ent[id].enabled)
 	{
 		if (a2 == 0xFFFF)
 		{
 			if (sub_4033A4(v5, id))
 			{
-				sprt_ent[id].field_3B = v5[0];
+				sprt_ent[id].id = v5[0];
 				sprt_dat[id].field_14 = v5[1];
-				sprt_dat[id].field_10 = 0;
+				sprt_dat[id].enabled = 0;
 				sprt_dat[id].type0 = sprt_dat[id].type3;
 				sprt_dat[id].type = sprt_dat[id].type2;
 			}
 		}
 		else
 		{
-			sprt_ent[id].field_3B = a2;
+			sprt_ent[id].id = a2;
 		}
 		sprt_ent[id].field_99 = a3;
 		sprt_ent[id].field_9B = a4 & 0xff;
@@ -496,8 +496,8 @@ void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int
 {
 	if (id <= 11)
 	{
-		sprt_ent[id].field_2E = id;
-		sprt_ent[id].field_10 = 1;
+		sprt_ent[id].id2 = id;
+		sprt_ent[id].enabled = 1;
 		sprt_ent[id].field_32 = a8;
 		sprt_ent[id].is_abs = is_abs;
 		sprt_ent[id].SetXY(x, y, a4, 1);
@@ -556,7 +556,7 @@ void __cdecl sub_401C83(SPRT_ENT* a1)
 	{
 		if ((a1->field_99 & 0x10) != 0)
 			goto LABEL_17;
-		v1 = a1->field_3B & 0x3FFF;
+		v1 = a1->id & 0x3FFF;
 		if (v1 > 3081u)
 		{
 			if (v1 == 3085 || (unsigned int)v1 - 4097 < 2 || (unsigned int)v1 - 4609 < 2 || (unsigned int)v1 - 4865 < 2)
@@ -667,7 +667,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 id)
 		if ((spr->field_99 & 4) != 0)
 			spr->field_81 = spr->field_9B;
 		v13 = (WORD)spr->field_81;
-		spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
+		//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		spr->field_8D = 0;
 		spr->field_91 = 0;
 		spr->field_41 = 1;
@@ -678,12 +678,12 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 id)
 		if ((spr->field_99 & 4) != 0)
 		{
 			spr->field_6B = v13 - 1;
-			while (!pattern_data[lo_id][30].field_2[spr->field_6B])
+			//while (!pattern_data[lo_id][30].field_2[spr->field_6B])
 			{
-				if ((--spr->field_6B & 0x8000u) != 0)
+				//if ((--spr->field_6B & 0x8000u) != 0)
 				{
-					spr->field_6B = 0xffff;
-					break;
+					//spr->field_6B = 0xffff;
+					//break;
 				}
 			}
 		}
@@ -707,7 +707,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 id)
 			if ((unsigned __int16)v3[6] <= (int)++spr->field_81)
 				goto LABEL_38;
 			v13 = (WORD)spr->field_81;
-			spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
+			//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		}
 	}
 	if (!--spr->field_85)
@@ -751,15 +751,15 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 id)
 	v13 = (WORD)spr->field_81;
 	//spr->flag1 = ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x1F;
 	spr->flag1 += spr->flag0;
-	spr->width = (unsigned __int16)v3[6 * (__int16)v13 + 7];
-	spr->height = (unsigned __int16)v3[6 * (__int16)v13 + 8];
+	//spr->width = (unsigned __int16)v3[6 * (__int16)v13 + 7];
+	//spr->height = (unsigned __int16)v3[6 * (__int16)v13 + 8];
 	//spr->bmp_data = (BYTE*)spr->ptr0 + v9 + *(_DWORD*)&v3[6 * (__int16)v13 + 11];
 	//if ((ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x8000u) != 0)
 	//	v7 = spr->height * (((unsigned __int16)spr->width + 3) & 0xFFFC) - 1;
 	//else
 	//	v7 = (spr->height - 1) * (((unsigned __int16)spr->width + 3) & 0xFFFC);
 	//spr->bmp = spr->bmp_data[v7];
-	spr->field_95 = pattern_data[lo_id]->field_2[v13];
+	//spr->field_95 = pattern_data[lo_id]->field_2[v13];
 	if (spr->field_95 == 0xFFFF)
 	{
 		spr->x3 = 768;
@@ -787,23 +787,23 @@ int SetSpriteData(SPRT_ENT* spr, unsigned __int16 id)
 		}
 		if ((spr->field_89 & 0x8000) == 0)
 		{
-			spr->x0 += v6;
-			spr->x3 = (__int16)(LOWORD(spr->x0) - v3[6 * (__int16)v13 + 9]);
+			//spr->x0 += v6;
+			//spr->x3 = (__int16)(LOWORD(spr->x0) - v3[6 * (__int16)v13 + 9]);
 		}
 		else
 		{
-			spr->x0 -= v6;
-			spr->x3 = (__int16)(LOWORD(spr->x0) + v3[6 * (__int16)v13 + 9] - v3[6 * (__int16)v13 + 7]);
+			//spr->x0 -= v6;
+			//spr->x3 = (__int16)(LOWORD(spr->x0) + v3[6 * (__int16)v13 + 9] - v3[6 * (__int16)v13 + 7]);
 		}
 		if ((spr->field_89 & 0x4000) != 0)
 		{
-			spr->y0 -= v5;
-			spr->y3 = (__int16)(LOWORD(spr->y0) - v3[6 * (__int16)v13 + 10]);
+			//spr->y0 -= v5;
+			//spr->y3 = (__int16)(LOWORD(spr->y0) - v3[6 * (__int16)v13 + 10]);
 		}
 		else
 		{
-			spr->y0 += v5;
-			spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->height));
+			//spr->y0 += v5;
+			//spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->height));
 		}
 		return 1;
 	}
@@ -820,12 +820,12 @@ void sub_40245E()
 		s->x1 = s->x0;
 		flag1 = s->flag1;
 		sub_401C83(s);
-		if (s->field_3B != 0xFFFF)
+		if (s->id != 0xFFFF)
 		{
-			if ((s->field_3B & 0x3FFF) >= 0x3800);
+			if ((s->id & 0x3FFF) >= 0x3800);
 				//sub_4013B0(s);
 			else
-				SetSpriteData(s, s->field_3B);
+				SetSpriteData(s, s->id);
 		}
 		if (flag1 != s->flag1)
 			sub_404783(s);
@@ -837,7 +837,7 @@ void sub_40245E()
 
 DWORD __cdecl Vm_ent_wait(int a1)
 {
-	if (sprt_ent[a1].field_10)
+	if (sprt_ent[a1].enabled)
 		return sprt_ent[a1].field_8D;
 	else
 		return 1;
@@ -859,7 +859,7 @@ void sub_401DB5()
 		&& sprt_ent[0].x0 <= sprt_ent[0].lmx
 		&& sprt_dat[0].type0 == 1)
 	{
-		sprt_dat[0].field_10 = 1;
+		sprt_dat[0].enabled = 1;
 		sprt_dat[0].type2 = 0;
 		sprt_dat[0].field_1C = 0;
 		sprt_dat[0].type3 = 1;
@@ -869,7 +869,7 @@ void sub_401DB5()
 		&& sprt_ent[0].x0 >= sprt_ent[0].lmy
 		&& !sprt_dat[0].type0)
 	{
-		sprt_dat[0].field_10 = 1;
+		sprt_dat[0].enabled = 1;
 		sprt_dat[0].type2 = 0;
 		sprt_dat[0].field_1C = 0;
 		sprt_dat[0].type3 = 0;
@@ -897,7 +897,7 @@ void sub_4042C0(int id)
 {
 	sprt_dat[id].field_14 = 0;
 	sprt_dat[id].type4 = 0;
-	sprt_dat[id].field_10 = 0;
+	sprt_dat[id].enabled = 0;
 	sprt_dat[id].field_1C = 0;
 	sprt_dat[id].field_20 = 0;
 	sprt_dat[id].field_24 = 0;
@@ -1147,7 +1147,7 @@ void __cdecl sub_402DE5(int id)
 		sprt_ent[id].SetXY(sprt_dat[id].field_18, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
 		if (sprt_dat[id].type == 1 || sprt_dat[id].type == 2)
 		{
-			sprt_dat[id].field_10 = 1;
+			sprt_dat[id].enabled = 1;
 			sprt_dat[id].type2 = 0;
 		}
 		sprt_dat[id].type4 = 3;
@@ -1182,15 +1182,15 @@ void sub_4020BA()
 	{
 		sub_4033A4(a2, 0);
 		if (prog.field_128 && sprt_dat[0].type == 2)
-			sprt_dat[0].field_10 = 1;
-		if (sprt_dat[0].field_10)
+			sprt_dat[0].enabled = 1;
+		if (sprt_dat[0].enabled)
 		{
 			if (a2[1])
 				a2[0] = a2[1];
 		}
 		SprAnim(0, a2[0], 0, 0);
 		sprt_dat[0].field_14 = a2[1];
-		sprt_dat[0].field_10 = 0;
+		sprt_dat[0].enabled = 0;
 		sprt_dat[0].type0 = sprt_dat[0].type3;
 		sprt_dat[0].type = sprt_dat[0].type2;
 	}
@@ -1271,7 +1271,7 @@ void sub_401D74()
 {
 	if (vm_index5[25] && !vm_index5[27])
 	{
-		if (sprt_ent[1].field_10)
+		if (sprt_ent[1].enabled)
 		{
 			sub_401E61();
 			sub_402053();

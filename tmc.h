@@ -35,3 +35,5 @@ public:
 
 	void test(const char* filename);
 };
+
+void LoadTMC(int id);

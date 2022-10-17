@@ -359,5 +359,84 @@ void Tmc::test(const char* filename)
 
 void LoadTMC(int id)
 {
+	static signed char tmc_lut[] =
+	{
+		2, 0, 0, 0, 0, 0, 2,-1,-1, 2, 0,-1, 0, 0,-1, 0,
+		0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1,-1, 1, 2,-1, 2, 2, 2, 2, 2, 2,
+		0,-1, 0,-1, 0, 0, 0, 0, 1, 1, 1,-1
+	};
 
+	id &= 0x7fff;
+
+	int bits = -1;
+	short num = id;
+	switch (vm_index5[0])
+	{
+	case 0x04:
+	case 0x05:
+	case 0x0d:
+	case 0x13:
+	case 0x1a:
+	case 0x30:
+	case 0x3a:
+		switch (num)
+		{
+		case 0x0600: bits = 0; break;
+		case 0x0b00: bits = 1; break;
+		case 0x0c00: bits = 2; break;
+		case 0x0f00: bits = 3; break;
+		case 0x1000: bits = 4; break;
+		case 0x1100: bits = 5; break;
+		case 0x1200: bits = 6; break;
+		case 0x1300: bits = 7; break;
+		}
+	}
+
+	const char* fname;
+	char path[MAX_PATH];
+	int fp = num >> 8;
+
+	if ((~bits & 0xffff) >> 0xf != 0)
+	{
+		switch (vm_index5[0])
+		{
+		case 0x04:
+			fname = sprt_name2[bits];
+			break;
+		case 0x05:
+			fname = sprt_name0[bits];
+			break;
+		case 0x0d:
+			fname = sprt_name6[bits];
+			break;
+		case 0x13:
+			fname = sprt_name1[bits];
+			break;
+		case 0x1a:
+			fname = sprt_name5[bits];
+			break;
+		case 0x30:
+			fname = sprt_name3[bits];
+			break;
+		case 0x3a:
+			fname = sprt_name4[bits];
+			break;
+		default:
+			goto other_case;
+		}
+	}
+	else
+	{
+other_case:
+		if (num < 0x501)
+			fp += tmc_lut[vm_index5[0]] * 58;
+		if (num >= 0xfff && num < 0x1301)
+			fp += tmc_lut[vm_index5[0]] * 58;
+		if (num == 0xa00)
+			fp += tmc_lut[vm_index5[0]] * 58 + 10;
+
+		sprintf_s(path, MAX_PATH, "SPRT\\CHARTMC%s", sprt_name7[fp]);
+		fname = path;
+	}
 }

@@ -13,7 +13,7 @@ struct SPRT_DAT
 	DWORD type;
 	DWORD type3;
 	DWORD type2;
-	DWORD field_10;
+	DWORD enabled;
 	WORD field_14;
 	WORD type4;
 	WORD field_18;
@@ -38,7 +38,7 @@ struct SPRT_ENT
 	DWORD field_4;
 	SPRT_ENT* next;
 	SPRT_ENT* prev;
-	DWORD field_10;
+	DWORD enabled;
 	WORD is_abs;
 	char field_16;
 	char field_17;
@@ -49,11 +49,11 @@ struct SPRT_ENT
 	DWORD field_22;
 	DWORD field_26;
 	DWORD field_2A;
-	DWORD field_2E;
+	DWORD id2;
 	DWORD field_32;
 	char bmp;
 	DWORD field_37;
-	WORD field_3B;
+	WORD id;
 	DWORD flag0;
 	DWORD field_41;
 	DWORD field_45;

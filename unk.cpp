@@ -40,7 +40,7 @@ void sub_41259E()
 	if (vm_index4[60])
 		vm_index3[14] = 2;
 	if (vm_index4[61])
-		vm_index3[14] |= 1u;
+		vm_index3[14] |= 1;
 }
 
 int sub_403304(int a1)

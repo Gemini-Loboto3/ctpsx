@@ -194,7 +194,7 @@ void Vm_all_spr_disp()
 	OffsetRect(&rc, -rc.left, -rc.top);
 	for (sprt = prog.sprt; sprt; sprt = sprt->next)
 	{
-		if (sprt->field_10)
+		if (sprt->enabled)
 		{
 			if (sprt->is_abs)
 				Render_sprite(sprt, &rc);
@@ -213,7 +213,7 @@ void Vm_all_spr_disp()
 				sprt_ent[11].SetXY(prog.screen_x + prog.field_1B8 - rcDst.left - 16,
 					prog.screen_y + prog.field_1BC - rcDst.top - 16, 0x64u, 1);
 			}
-			SetSpriteData(&sprt_ent[11], sprt_ent[11].field_3B);
+			SetSpriteData(&sprt_ent[11], sprt_ent[11].id);
 			Render_sprite(&sprt_ent[11], &rcSrc);
 		}
 	}
@@ -639,7 +639,7 @@ int Vm_wait_fade()
 
 int Vm_ent_wait(int id)
 {
-	/*if (sprt_ent[id].field_10)
+	/*if (sprt_ent[id].enabled)
 		return sprt_ent[id].field_8D;
 	else */return 1;
 }

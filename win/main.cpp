@@ -42,19 +42,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case VK_F1:	// game start
-		case VK_F2:	// quick start
-		case VK_F3:	// continue
-		case VK_F4:	// ending list
-			vm_index3[16] = wParam - VK_F1;
-			Vm_set_63();
-			Vm_mark_event(0x190, 1);
-			return 1;
-		case VK_F5:
-			fps.NextSpeed();
-			return 1;
-		case VK_F6:
+		case VK_F1:
 			fps.PrevSpeed();
+			return 1;
+		case VK_F2:
+			fps.NextSpeed();
 			return 1;
 		}
 	}

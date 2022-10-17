@@ -265,3 +265,9 @@ void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b)
 	d3d9dev->SetTexture(0, nullptr);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 }
+
+int GetX(int x, int double_w)
+{
+	int base_x = (x * 4 - double_w) / 10;
+	return (base_x < 0) ? 0 : base_x;
+}

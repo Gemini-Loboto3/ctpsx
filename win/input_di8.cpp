@@ -36,7 +36,7 @@ static int InitKeyboard()
 	if (FAILED(di_kb->SetDataFormat(&c_dfDIKeyboard)))
 		return 0;
 
-	di_kb->SetCooperativeLevel(prog.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+	//di_kb->SetCooperativeLevel(prog.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 
 	return 1;
 }
@@ -80,14 +80,14 @@ void InputRead()
 	{
 		int event = -1;
 		// new game
-		if (kb_state[DIK_F1]) event = 0;
+		if (kb_state[DIK_F5]) event = 0;
 		// fast start
-		else if (kb_state[DIK_F2]) event = 1;
+		else if (kb_state[DIK_F6]) event = 1;
 		// continue
-		else if (kb_state[DIK_F3]) event = 2;
+		else if (kb_state[DIK_F7]) event = 2;
 		// ending list
-		else if (kb_state[DIK_F5]) event = 3;
-		// shutdown
+		else if (kb_state[DIK_F8]) event = 3;
+		// shutdown (ALT+F4)
 		else if (kb_state[DIK_F4] && kb_state[DIK_LALT])
 			SendMessageW(prog.hWnd, WM_CLOSE, 0, 0);
 
