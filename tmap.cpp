@@ -32,10 +32,10 @@ TMAP::~TMAP()
 	}
 }
 
-void TMap_SetXY1(TMAP* a1, int x, int y)
+void TMap_SetXY1(TMAP* tmap, int x, int y)
 {
-	a1->x1 = x;
-	a1->y1 = y;
+	tmap->x1 = x;
+	tmap->y1 = y;
 }
 
 void TMap_GetXY1(TMAP* tmap, int* dst)
@@ -138,7 +138,7 @@ void TMap_scrollY(TMAP* tmap, int scrly, int speed)
 
 void TMapGetRect(TMAP* tmap, RECT* lprcDst)
 {
-	CopyRect(lprcDst, &tmap->clip);
+	copyRect(lprcDst, &tmap->clip);
 }
 
 void TMapRenderScroll(TMAP* tmap, int wx0, int wy0, int ww, int wh, int xpos, int ypos)
@@ -166,7 +166,7 @@ void TMapRender(TMAP* tmap)
 	TMapGetDstRect(tmap, &rdst);
 	if (TMapGetSize(tmap, &rsrc))
 	{
-		if (IntersectRect(&rdst, &rdst, &rsrc))
+		if (intersectRect(&rdst, &rsrc))
 		{
 			int x, y;
 			

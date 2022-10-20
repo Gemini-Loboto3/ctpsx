@@ -210,8 +210,8 @@ void Vm_all_spr_disp()
 			if (prog.field_14C == 3)
 			{
 				TMapGetRect(&tmap, &rcDst);
-				sprt_ent[11].SetXY(prog.screen_x + prog.field_1B8 - rcDst.left - 16,
-					prog.screen_y + prog.field_1BC - rcDst.top - 16, 0x64u, 1);
+				sprt_ent[11].SetXY(prog.screen_x + prog.mousePT.x - rcDst.left - 16,
+					prog.screen_y + prog.mousePT.y - rcDst.top - 16, 0x64u, 1);
 			}
 			SetSpriteData(&sprt_ent[11], sprt_ent[11].id);
 			Render_sprite(&sprt_ent[11], &rcSrc);
@@ -295,6 +295,7 @@ void Vm_sce_init()
 	prog.pal_obj.f4091AD(id);
 	Vm_slant_clr();
 	vm_index5[28] = 0;
+	//vm_index5[48] = 18;	// psx
 }
 
 int ReadData(int reload)

@@ -123,6 +123,7 @@
     <ClCompile Include="win\lodepng.cpp">
       <Filter>win</Filter>
     </ClCompile>
+    <ClCompile Include="bg_spr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="clock tower.rc">

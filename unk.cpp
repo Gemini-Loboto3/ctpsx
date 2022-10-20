@@ -11,24 +11,26 @@ void sub_4017BB()
 
 void sub_4017D6()
 {
-	vm_index3[0] = ((4 * ~prog.field_1B6) | 3) & (5 * prog.click_bits);
+	vm_index3[0]  = ((4 * ~prog.field_1B6) | 3) & (5 * prog.click_bits);
 	prog.field_1B6 = prog.click_bits;
-	GetCursorPos((LPPOINT)&prog.field_1B8);
-	ScreenToClient(prog.hWnd, (LPPOINT)&prog.field_1B8);
-	vm_index3[1] = prog.field_1B8;
-	vm_index3[2] = prog.field_1BC;
-	vm_index3[3] = prog.key_is_down;
-	vm_index3[4] = prog.field_1C8;
-	vm_index3[5] = sprt_ent[0].x0;
-	vm_index3[6] = sprt_ent[0].y0;
-	vm_index3[17] = (WORD)sprt_ent[0].flag1;
-	vm_index3[7] = 8 * LOWORD(sprt_dat[0].type0) + 4;
-	vm_index3[8] = (WORD)sprt_dat[0].type;
-	vm_index3[9] = sprt_ent[1].x0;
+	//GetCursorPos(&prog.mousePT);
+	prog.mousePT.x = 0;
+	prog.mousePT.y = 0;
+	//ScreenToClient(prog.hWnd, &prog.mousePT);
+	vm_index3[1]  = (WORD)prog.mousePT.x;
+	vm_index3[2]  = (WORD)prog.mousePT.y;
+	vm_index3[3]  = prog.key_is_down;
+	vm_index3[4]  = prog.in_key;
+	vm_index3[5]  = sprt_ent[0].x0;
+	vm_index3[6]  = sprt_ent[0].y0;
+	vm_index3[7]  = WORD(8 * sprt_dat[0].type0 + 4);
+	vm_index3[8]  = (WORD)sprt_dat[0].type;
+	vm_index3[9]  = sprt_ent[1].x0;
 	vm_index3[10] = sprt_ent[1].y0;
-	vm_index3[18] = (WORD)sprt_ent[1].flag1;
-	vm_index3[11] = 8 * LOWORD(sprt_dat[1].type0) + 4;
+	vm_index3[11] = WORD(8 * sprt_dat[1].type0 + 4);
 	vm_index3[12] = (WORD)sprt_dat[1].type;
+	vm_index3[17] = (WORD)sprt_ent[0].flag1;
+	vm_index3[18] = (WORD)sprt_ent[1].flag1;
 	vm_index3[19] = prog.screen_x;
 	vm_index3[20] = prog.screen_y;
 	vm_index3[21] = prog.pal_obj.type;
@@ -60,7 +62,7 @@ void __cdecl sub_405F2E()
 			rcDst.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
 			rcDst.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
 			rcDst.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
-			if (IntersectRect(&rcDst, &prog.render_rect, &rcDst))
+			if (intersectRect(&prog.render_rect, &rcDst))
 				RenderTile(rcDst.left, rcDst.top, rcDst.right - rcDst.left, rcDst.bottom - rcDst.top, 0, 0xff, 0xff);
 		}
 	}
@@ -89,7 +91,7 @@ void Render_frame()
 	sub_40245E();
 	DrawQSprites();
 	SwapBuffer();
-	sub_403252();
+	CursorDispCk();
 }
 
 // ========================================================

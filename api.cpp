@@ -1,7 +1,6 @@
-#ifndef _WINDOWS
 #include <stdafx.h>
 
-bool intersectRect(RECT* dst, const RECT* r1, const RECT* r2)
+bool intersectRect(const RECT* r1, const RECT* r2)
 {
 	return !(r2->left > r1->right ||
 		r2->right < r1->left ||
@@ -17,6 +16,14 @@ void setRect(RECT* r, int x0, int y0, int x1, int y1)
 	r->bottom = y1;
 }
 
+void copyRect(RECT* dst, RECT* src)
+{
+	dst->left = src->left;
+	dst->right = src->right;
+	dst->top = src->top;
+	dst->bottom = src->bottom;
+}
+
 void offsetRect(RECT* r, int x, int y)
 {
 	r->left += x;
@@ -25,11 +32,9 @@ void offsetRect(RECT* r, int x, int y)
 	r->bottom += y;
 }
 
-#else
-
 static int cursor_visible = 0;
 
-bool ShowCursor(bool show)
+bool showCursor(bool show)
 {
 	if (show) cursor_visible++;
 	else cursor_visible = 0;
@@ -37,4 +42,3 @@ bool ShowCursor(bool show)
 	return cursor_visible ? true : false;
 }
 
-#endif

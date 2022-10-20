@@ -60,8 +60,8 @@ struct SPRT_ENT
 	int lmx;
 	int lmy;
 	DWORD x1;
-	WORD x2;
-	WORD y2;
+	short x2;
+	short y2;
 	WORD flag2;
 	CTim* tim;
 	int x0;
@@ -90,13 +90,13 @@ extern SPRT_DAT sprt_dat[2];
 void Vm_spr_lmt(int a1, int lmx, int lmy);
 void sub_404346(int a1, int a2);
 void sub_402FAF();
-void sub_403252();
+void CursorDispCk();
 void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr);
 void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag);
 void SprtTblDeinit();
 void SprPos(int id, int x, int y, DWORD flags);
 void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4);
-int SetSpriteData(SPRT_ENT* a1, unsigned __int16 a2);
+int SetSpriteData(SPRT_ENT* spr, unsigned int id);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs);
 
 void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc);
@@ -109,15 +109,15 @@ void sub_40243A();
 
 int EntGetPan(int a1);
 
-void Vm_spr_dir(int id, __int16 a2, __int16 a3, __int16 a4, __int16 a5);
-void Vm_spr_walk_x(int id, int x0, int x1, int a4, int a5);
+void Vm_spr_dir(int id, int a2, int a3, int a4, int a5);
+void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running);
 
 void sub_401D32();
 void sub_40266A();
 void sub_401D74();
 void sub_4021DC();
-void sub_4027E7(int id, int x, int y, int is_double);
+void SprSetDest(int id, int cur_x, int dst_y, int running);
 int intersect_triggers(int x, int y);
 
 void LBtnClick(int is_double, LONG x, LONG y);
-void RBtnClick(int is_double, LONG x, LONG y);
+void RBtnClick(LONG x, LONG y);

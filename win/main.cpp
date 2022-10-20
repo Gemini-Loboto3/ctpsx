@@ -125,12 +125,12 @@ void InitInstance()
 void draw_func0()
 {
 	SwapBuffer();
-	sub_403252();
+	CursorDispCk();
 }
 
 void DispCursor();
 
-// game?
+// game
 void draw_func1()
 {
 	sub_40266A();
@@ -146,7 +146,7 @@ void draw_func1()
 	DrawQSprites();
 	DispCursor();
 	SwapBuffer();
-	sub_403252();
+	CursorDispCk();
 }
 
 // opening / title screen
@@ -155,7 +155,7 @@ void draw_func2()
 	sub_40245E();
 	DrawQSprites();
 	SwapBuffer();
-	sub_403252();
+	CursorDispCk();
 }
 
 void (*draw_func[])()

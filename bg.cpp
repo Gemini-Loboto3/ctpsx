@@ -105,17 +105,17 @@ void Game_RedrawAll(VM* g)
 	}
 }
 
-void Game_BgDispTrn(VM* game, int x, int y, int w, int h, __int16 a6, __int16 a7, WORD id, int type, int a10)
+void Game_BgDispTrn(VM* game, int x, int y, int w, int h, __int16 srcx, __int16 srcy, WORD id, int type, int mode)
 {
 	if (game->bank_no[id])
 	{
 		if (type == 1)
 			Vm_pal_set(0, 0, 0, 0, 0);
-		if (!w)
+		if (w == 0)
 			w = game->bank_no[id]->real_w;
-		if (!h)
+		if (h == 0)
 			h = game->bank_no[id]->pix_h;
-		Render_bank(x, y, w, h, a6, a7, game->bank_no[id], a10);
+		Render_bank(x, y, w, h, srcx, srcy, game->bank_no[id], mode);
 		game->_id = id;
 		game->_x = x;
 		game->_y = y;
@@ -125,8 +125,8 @@ void Game_BgDispTrn(VM* game, int x, int y, int w, int h, __int16 a6, __int16 a7
 		game->rects[id].y = y;
 		game->rects[id].w = w;
 		game->rects[id].h = h;
-		game->rects[id].rw1 = a6;
-		game->rects[id].rw2 = a7;
+		game->rects[id].rw1 = srcx;
+		game->rects[id].rw2 = srcy;
 	}
 	else printf("Bank %d doesn't exist!\n", id);
 }
@@ -177,7 +177,7 @@ void Game_RedrawScene(VM* a1)
 void Render_bank(int x, int y, int w, int h, int srcx, int srcy, CTim* bank, int mode)
 {
 	//BmpGetRect(&prog.render_bmp, &rcSrc2);
-	//result = IntersectRect(&dst_rect, &dst_rect, &rcSrc2);
+	//result = intersectRect(&dst_rect, &rcSrc2);
 	//if (result)
 	{
 		int _x = GetX(x, w);

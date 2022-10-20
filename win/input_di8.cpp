@@ -71,7 +71,7 @@ void InputRead()
 		else prog.click_bits &= ~1;
 
 		if (state.rgbButtons[1])
-			RBtnClick(0, mouseX, mouseY);
+			RBtnClick(mouseX, mouseY);
 		else prog.click_bits &= ~2;
 	}
 
@@ -121,7 +121,7 @@ void InputRead()
 		if (conf)
 			LBtnClick(fast ? 1 : 0, mouseX, mouseY);
 		if (rest)
-			RBtnClick(fast ? 1 : 0, mouseX, mouseY);
+			RBtnClick(mouseX, mouseY);
 		if (run_left)
 			LBtnClick(1, 0, 0);
 		if (run_right)
