@@ -306,21 +306,21 @@ int ReadData(int reload)
 	int ret; // [esp+A0h] [ebp-8h]
 
 	ret = 0;
-	FILE *fp;
-	fopen_s(&fp, "DATA.BIN", "rb");
-	if (fp == nullptr)
+
+	CFile fp;
+	if (fp.Open("DATA.BIN"))
 		ret = 6;
 	else
 	{
-		fread(Buffer, 0x12, 1, fp);
+		fp.Read(Buffer, 0x12);
 		if (reload)
 			memcpy(prog.field_1D4, Buffer, sizeof(prog.field_1D4));
 		else
 		{
-			fread(prog.field_1E6, 0x24, 1, fp);
-			if (fread(vm_index2, 0x400u, 1, fp) == 1024)
+			fp.Read(prog.field_1E6, 0x24);
+			if (fp.Read(vm_index2, 1024) == 1024)
 			{
-				if (fread(vm_index5, 0x100, 1, fp) != 256)
+				if (fp.Read(vm_index5, 256) != 256)
 					ret = 7;
 			}
 			else
@@ -328,29 +328,28 @@ int ReadData(int reload)
 		}
 	}
 
-	if (fp) fclose(fp);
+	fp.Close();
 
 	return ret;
 }
 
 int WriteData()
 {
-	FILE* fp;
+	CFile fp;
 	int ret;
 
 	ret = 0;
-	fopen_s(&fp, "DATA.BIN", "wb");
-	if (fp == nullptr)
+	if (fp.Create("DATA.BIN"))
 	{
 		ret = 6;
 	}
-	else if (fwrite(prog.field_1D4, 18, 1, fp) == 18)
+	else if (fp.Write(prog.field_1D4, 18) == 18)
 	{
-		if (fwrite(prog.field_1E6, 36, 1, fp) == 36)
+		if (fp.Write(prog.field_1E6, 36) == 36)
 		{
-			if (fwrite(vm_index2, 1024, 1, fp) == 1024)
+			if (fp.Write(vm_index2, 1024) == 1024)
 			{
-				if (fwrite(vm_index5, 256, 1, fp) != 256)
+				if (fp.Write(vm_index5, 256) != 256)
 					ret = 8;
 			}
 			else
@@ -362,7 +361,7 @@ int WriteData()
 	else
 		ret = 8;
 
-	if (fp) fclose(fp);
+	fp.Close();
 
 	return ret;
 }
@@ -995,15 +994,15 @@ void Vm_load(VM *vm)
 
 	Vm_reset(vm);
 
-	FILE* fp;
+	CFile fp;
 
-	fopen_s(&fp, "SCE\\CTPS.ADO", "rb");
-	if (fp)
+	if (fp.Open("SCE\\CTPS.ADO"))
 	{
-		for (int bank = 0, cnt = 0;;)
+		int size = fp.GetSize();
+		for (int bank = 0, cnt = 0, i = 0; i < size; i++)
 		{
-			int b = fgetc(fp);
-			if (b == EOF) break;
+			byte b;
+			fp.Read(&b, 1);
 
 			vm->ado[bank][cnt++] = b;
 			if (cnt >= 0x8000)
@@ -1012,15 +1011,14 @@ void Vm_load(VM *vm)
 				bank++;
 			}
 		}
-		fclose(fp);
+		fp.Close();
 	}
 
-	fopen_s(&fp, "SCE\\CTPS.ADT", "rb");
-	if (fp)
+	if (fp.Open("SCE\\CTPS.ADT"))
 	{
 		for (int i = 0; i < 2000; i++)
-			fread(&vm->adt[i], 4, 1, fp);
-		fclose(fp);
+			fp.Read(&vm->adt[i], 4);
+		fp.Close();
 	}
 }
 

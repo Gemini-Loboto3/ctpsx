@@ -1,5 +1,5 @@
 #include <stdafx.h>
-#include "tim.h"
+#include "game.h"
 
 //////////////////////////////
 // pure TIM handler
@@ -64,17 +64,14 @@ CTim::~CTim()
 
 size_t CTim::Open(const char* filename)
 {
-	FILE* fp;
-	fopen_s(&fp, filename, "rb");
-	if (fp)
+	CFile fp;
+	if (fp.Open(filename))
 	{
-		fseek(fp, 0, SEEK_END);
-		size_t size = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
+		size_t size = fp.GetSize();
 
 		std::vector<BYTE> buf = std::vector<BYTE>(size);
-		fread(buf.data(), 1, size, fp);
-		fclose(fp);
+		fp.Read(buf.data(), size);
+		fp.Close();
 
 		return Open(buf.data());
 	}

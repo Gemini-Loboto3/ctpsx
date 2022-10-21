@@ -6,17 +6,14 @@ std::vector<BYTE> fnt_data;
 
 void InitFont()
 {
-	FILE* fp;
-	fopen_s(&fp, "font.bin", "rb");
-	if (fp)
+	CFile fp;
+	if (fp.Open("font.bin"))
 	{
-		fseek(fp, 0, SEEK_END);
-		size_t size = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
+		size_t size = fp.GetSize();
 
 		fnt_data = std::vector<BYTE>(size);
-		fread(fnt_data.data(), size, 1, fp);
-		fclose(fp);
+		fp.Read(fnt_data.data(), size);
+		fp.Close();
 
 		FontOpen(fnt_data.data(), &fnt_obj);
 	}

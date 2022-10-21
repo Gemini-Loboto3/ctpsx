@@ -12,9 +12,6 @@ public:
 	void Close();
 
 	DWORD GetSize();
-	void GetFinalPath();
-
-	__inline const char* GetOpenPath() { return open_path.c_str(); }
 
 	DWORD Read(LPVOID buffer, DWORD size);
 	DWORD Write(LPVOID buffer, DWORD size);

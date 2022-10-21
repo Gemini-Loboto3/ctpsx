@@ -274,33 +274,34 @@ byte buffer[128 * 1024];
 
 int Tmc::open(const char* filename)
 {
-	FILE* fp = fopen(filename, "rb");
+	CFile fp;
+	fp.Open(filename);
 
 	TMC_HEADER head;
-	fread(&head, sizeof(head), 1, fp);
+	fp.Read(&head, sizeof(head));
 
 	if (head.magic != 'TM' && head.magic != 'MT')
 		return 0;
 
 	// cache all the necessary data
 	entries = std::vector<TMC_ENTRY>(head.entry_cnt);
-	fread(entries.data(), head.entry_cnt, sizeof(TMC_ENTRY), fp);
+	fp.Read(entries.data(), head.entry_cnt * sizeof(TMC_ENTRY));
 	// palettes
-	fread(clut, sizeof(clut), 1, fp);
+	fp.Read(clut, sizeof(clut));
 	// compressed pics
-	fseek(fp, head.pos_pix, SEEK_SET);
+	fp.Seek(head.pos_pix, SEEK_SET);
 	pix = std::vector<BYTE>(head.pix_size);
-	fread(pix.data(), head.pix_size, 1, fp);
+	fp.Read(pix.data(), head.pix_size);
 	// coordinates
-	fseek(fp, head.pos_coor, SEEK_SET);
+	fp.Seek(head.pos_coor, SEEK_SET);
 	coor = std::vector<BYTE>(head.coor_size);
-	fread(coor.data(), head.coor_size, 1, fp);
+	fp.Read(coor.data(), head.coor_size);
 	// whatever
-	fseek(fp, head.unkptr_18, SEEK_SET);
+	fp.Seek(head.unkptr_18, SEEK_SET);
 	unk = std::vector<BYTE>(head.unksize_1C);
-	fread(unk.data(), head.unksize_1C, 1, fp);
+	fp.Read(unk.data(), head.unksize_1C);
 
-	fclose(fp);
+	fp.Close();
 
 	count = head.entry_cnt;
 

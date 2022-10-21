@@ -37,22 +37,6 @@ DWORD CFile::GetSize()
 	return GetFileSize(handle, NULL);
 }
 
-void CFile::GetFinalPath()
-{
-	if (!IsOpen()) return;
-
-	char buffer[MAX_PATH + 1];
-	DWORD ret = GetFinalPathNameByHandleA(handle, buffer, MAX_PATH, FILE_NAME_OPENED);
-	open_path = std::string(buffer);
-	if (ret < MAX_PATH)
-	{
-		if (open_path.substr(0, 8).compare("\\\\?\\UNC\\") == 0)
-			open_path = "\\" + open_path.substr(7);
-		else if (open_path.substr(0, 4).compare("\\\\?\\") == 0)
-			open_path = open_path.substr(4);
-	}
-}
-
 DWORD CFile::Read(LPVOID buffer, DWORD size)
 {
 	DWORD read;

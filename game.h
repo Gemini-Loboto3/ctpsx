@@ -12,6 +12,7 @@
 #ifdef _WINDOWS
 #include "win\render_d3d9.h"
 #include "win\input_di8.h"
+#include "win\FileHandle.h"
 #endif
 #include "bg.h"
 #include "item.h"
