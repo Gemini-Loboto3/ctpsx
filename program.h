@@ -11,8 +11,8 @@ struct PROGRAM
 		field_190 = 0;
 		tick_now = 0;
 		tick_delta = 30;
-		render_rect.Set(80, 0, 559, 303);
-		menu_rect.Set(144, 320, 607, 431);
+		render_rect.Set(80, 559, 0, 303);
+		menu_rect.Set(144, 607, 320, 431);
 		//sprt = 0;
 		screen_on = 0;
 		map_attr = 0;
