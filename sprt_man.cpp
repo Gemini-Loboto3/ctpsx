@@ -63,7 +63,7 @@ int TSprSlotManager::ReadOneSlotData(SprtEntManEntry* ent, SPRT_ENT* spr, __int1
 
 	if (ent->id == id)
 	{
-		//spr->ptr0 = (BITMAPINFOHEADER*)ent->field_4;
+		//spr->ptr0 = (BITMAPINFOHEADER*)ent->linked;
 	}
 	else if (!ent->Load(spr, id))
 		return 0;

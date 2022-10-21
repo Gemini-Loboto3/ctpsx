@@ -1,6 +1,7 @@
 #include <stdafx.h>
+#include "api.h"
 
-bool intersectRect(const RECT* r1, const RECT* r2)
+bool intersectRect(const PC_RECT* r1, const PC_RECT* r2)
 {
 	return !(r2->left > r1->right ||
 		r2->right < r1->left ||
@@ -8,7 +9,7 @@ bool intersectRect(const RECT* r1, const RECT* r2)
 		r2->bottom < r1->top);
 }
 
-void setRect(RECT* r, int x0, int y0, int x1, int y1)
+void setRect(PC_RECT* r, int x0, int y0, int x1, int y1)
 {
 	r->left = x0;
 	r->right = x1;
@@ -16,7 +17,7 @@ void setRect(RECT* r, int x0, int y0, int x1, int y1)
 	r->bottom = y1;
 }
 
-void copyRect(RECT* dst, RECT* src)
+void copyRect(PC_RECT* dst, PC_RECT* src)
 {
 	dst->left = src->left;
 	dst->right = src->right;
@@ -24,7 +25,7 @@ void copyRect(RECT* dst, RECT* src)
 	dst->bottom = src->bottom;
 }
 
-void offsetRect(RECT* r, int x, int y)
+void offsetRect(PC_RECT* r, int x, int y)
 {
 	r->left += x;
 	r->right += x;

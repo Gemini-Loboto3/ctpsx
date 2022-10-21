@@ -57,9 +57,10 @@ bool XAudio2_IsPresent()
 #endif
 	if (!xdll)
 	{
-		wchar_t path[MAX_PATH];
-		CopyMemory(path + GetSystemDirectoryW(path, MAX_PATH - 14), "\\xaudio2_9.dll", 15 * 2);
-		xdll = LoadLibraryW(path);
+		wchar_t sys_path[MAX_PATH], dll_path[MAX_PATH];
+		GetSystemDirectoryW(sys_path, MAX_PATH);
+		wprintf_s(dll_path, MAX_PATH, "%s\\xaudio2_9.dll");
+		xdll = LoadLibraryW(dll_path);
 		if(!xdll)
 			return false;
 	}

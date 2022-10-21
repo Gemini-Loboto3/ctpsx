@@ -136,7 +136,7 @@ void TMap_scrollY(TMAP* tmap, int scrly, int speed)
 		tmap->speedY = speed;
 }
 
-void TMapGetRect(TMAP* tmap, RECT* lprcDst)
+void TMapGetRect(TMAP* tmap, PC_RECT* lprcDst)
 {
 	copyRect(lprcDst, &tmap->clip);
 }
@@ -160,8 +160,7 @@ void TMapRender(TMAP* tmap)
 	if (tmap->tim == nullptr)
 		return;
 
-	RECT rsrc;
-	RECT rdst;
+	CRect rsrc, rdst;
 
 	TMapGetDstRect(tmap, &rdst);
 	if (TMapGetSize(tmap, &rsrc))
@@ -183,8 +182,8 @@ void TMapRender(TMAP* tmap)
 
 			int u = rdst.left / 2;
 			int v = rdst.top / 2;
-			int w = (rdst.right - rdst.left) / 2;
-			int h = (rdst.bottom - rdst.top) / 2;
+			int w = rdst.W() / 2;
+			int h = rdst.H() / 2;
 
 			RenderRect(tmap->tim, GETX(x), GETY(y), w, h, u, v, 0xff, 0xff, 0xff);
 		}
@@ -388,7 +387,7 @@ void SetScrollBlock(int x, int y)
 	}
 }
 
-int TMapGetSize(TMAP* tmap, RECT* lprc)
+int TMapGetSize(TMAP* tmap, PC_RECT* lprc)
 {
 	if (!tmap->w || !tmap->h)
 		return 0;
@@ -411,15 +410,15 @@ void TMapSetClipArea(TMAP* tmap, int x, int y, int w, int h)
 	SetRect(&tmap->clip, x, y, w + x - 1, h + y - 1);
 }
 
-void TMapGetDstRect(TMAP* tmap, RECT* dst)
+void TMapGetDstRect(TMAP* tmap, PC_RECT* dst)
 {
 	SetRect(dst, tmap->x1, tmap->y1, tmap->clip.right + tmap->x1 - tmap->clip.left, tmap->clip.bottom + tmap->y1 - tmap->clip.top);
 }
 
 void SetWorldPos(int x, int y)
 {
-	RECT size;
-	RECT dest;
+	PC_RECT size;
+	PC_RECT dest;
 
 	TMapSetScrolling(&tmap, x, y);
 	prog.screen_x = x;

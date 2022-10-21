@@ -3,6 +3,7 @@
 #include <stdafx.h>
 #include <assert.h>
 #include "game.h"
+#include "api.h"
 
 #define MAX_STR_SIZE	80
 
@@ -15,11 +16,11 @@ WORD vm_usage[5],
 	vm_index3[64],
 	vm_index4[64],
 	vm_index5[128],
-	vm_index6[500],
-	vm_index7[30],
+	vm_index6[530/*500*/],
+	//vm_index7[30],
 	word_42069E;
 
-RECT vm_rects[30];
+CRect vm_rects[30];
 
 WORD word_426940;
 WORD render_x,
@@ -113,24 +114,21 @@ void vm_func3()
 	};
 
 	bool v0; // [esp+0h] [ebp-8h]
-	__int16 v1; // [esp+6h] [ebp-2h]
+	__int16 v1 = 0; // [esp+6h] [ebp-2h]
 
 	v0 = vm_index5[27] == 2;
 	if (vm_index5[25] == 1)
-	{
 		v1 = word_420384[vm_index5[4]][v0];
-	}
 	else if (vm_index5[25] == 2)
-	{
 		v1 = v1 = word_420384[vm_index5[41] + 3][v0];
-	}
+
 	vm_index5[30] = v1 + sprt_ent[0].x0;
 }
 
 void vm_func5()
 {
 	if (render_x <= 1)
-		sprt_dat[render_x].type4 = 0;
+		ai_ent[render_x].type4 = 0;
 }
 
 void vm_func6()
@@ -186,25 +184,29 @@ void(*vm_funcs[])() =
 
 void Vm_all_spr_disp()
 {
-	RECT rcDst, rc, rcSrc;
+	PC_RECT rcDst, rinv, rmap;
 	SPRT_ENT* sprt;
 
-	TMapGetDstRect(&tmap, &rcSrc);
-	TMapGetRect(&tmap, &rc);
-	OffsetRect(&rc, -rc.left, -rc.top);
+	TMapGetDstRect(&tmap, &rmap);
+	TMapGetRect(&tmap, &rinv);
+	OffsetRect(&rinv, -rinv.left, -rinv.top);
+
+	// sprite entities
 	for (sprt = prog.sprt; sprt; sprt = sprt->next)
 	{
 		if (sprt->enabled)
 		{
 			if (sprt->is_abs)
-				Render_sprite(sprt, &rc);
+				SprDraw(sprt, &rinv);
 			else
-				Render_sprite(sprt, &rcSrc);
+				SprDraw(sprt, &rmap);
 		}
 	}
+
+	// cursor display
 	if (prog.vm_func == 1)
 	{
-		sub_402FAF();
+		SprCursorAnimate();
 		if (prog.field_14C)
 		{
 			if (prog.field_14C == 3)
@@ -213,8 +215,8 @@ void Vm_all_spr_disp()
 				sprt_ent[11].SetXY(prog.screen_x + prog.mousePT.x - rcDst.left - 16,
 					prog.screen_y + prog.mousePT.y - rcDst.top - 16, 0x64u, 1);
 			}
-			SetSpriteData(&sprt_ent[11], sprt_ent[11].id);
-			Render_sprite(&sprt_ent[11], &rcSrc);
+			SetSpriteData(&sprt_ent[11], sprt_ent[11].frame_id);
+			SprDraw(&sprt_ent[11], &rmap);
 		}
 	}
 }
@@ -229,10 +231,10 @@ void Vm_spr_clr(WORD index)
 	sprt_ent[index].Release();
 }
 
-void Vm_spr_ent(int a1, DWORD a2, DWORD a3, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD a9)
+void Vm_spr_ent(int id, DWORD x, DWORD y, DWORD flags, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
 {
-	SprEnt(a1, a2, a3, a4, a5, a6, a7, a8, a9);
-	sprt_ent[a1].SetList();
+	SprEnt(id, x, y, flags, a5, a6, a7, a8, is_abs);
+	sprt_ent[id].SetList();
 }
 
 void Vm_func_call(WORD r)
@@ -289,7 +291,7 @@ void Vm_sce_init()
 	prog.field_144 = 0;
 	prog.field_148 = 0;
 	prog.field_138 = 1;
-	prog.field_13C = 1;
+	prog.click_on_item = 1;
 	prog.pal_obj.reset();
 	int id = sub_4035DC();
 	prog.pal_obj.f4091AD(id);
@@ -334,7 +336,7 @@ int ReadData(int reload)
 int WriteData()
 {
 	FILE* fp;
-	int ret; // [esp+8Ch] [ebp-8h]
+	int ret;
 
 	ret = 0;
 	fopen_s(&fp, "DATA.BIN", "wb");
@@ -365,12 +367,12 @@ int WriteData()
 	return ret;
 }
 
-int __cdecl game_state_get(int a1)
+int game_state_get(int a1)
 {
 	return ReadData(a1);
 }
 
-void __cdecl game_state_set()
+void game_state_set()
 {
 	word_41D574[word_41D668[0]] = prog.field_1E6[0];
 	word_41D574[word_41D668[1]] = prog.field_1E6[1];
@@ -392,10 +394,10 @@ void __cdecl game_state_set()
 	word_41D574[word_41D668[17]] = prog.field_1E6[17];
 }
 
-void __cdecl rand_set(DWORD* a1, int cnt)
+void rand_set(DWORD* dst, int cnt)
 {
-	int v2; // [esp+0h] [ebp-10h]
-	int v3; // [esp+4h] [ebp-Ch]
+	int set; // [esp+0h] [ebp-10h]
+	int r; // [esp+4h] [ebp-Ch]
 	int j; // [esp+8h] [ebp-8h]
 	int i; // [esp+Ch] [ebp-4h]
 
@@ -404,22 +406,22 @@ void __cdecl rand_set(DWORD* a1, int cnt)
 	{
 		while (1)
 		{
-			v2 = 1;
-			v3 = _rand() % cnt;
+			set = 1;
+			r = _rand() % cnt;
 			j = 0;
 			if (i > 0)
 			{
-				while (a1[j] != v3)
+				while (dst[j] != r)
 				{
 					if (++j >= i)
 						goto LABEL_6;
 				}
-				v2 = 0;
+				set = 0;
 			}
-		LABEL_6:
-			if (v2)
+LABEL_6:
+			if (set)
 			{
-				a1[i++] = v3;
+				dst[i++] = r;
 				if (i >= cnt)
 					break;
 			}
@@ -468,29 +470,29 @@ void __cdecl Vm_cont_init()
 	}
 }
 
-void Game_40C6D3(VM* a1, unsigned __int16 a2)
+void Vm_enable_event(VM* vm, int index)
 {
 	WORD posbk; // [esp+0h] [ebp-4h]
-	WORD v3; // [esp+2h] [ebp-2h]
+	WORD i; // [esp+2h] [ebp-2h]
 
 	posbk = vm_evt_pos;
-	v3 = 0;
-	while (vm_usage[v3])
+	i = 0;
+	while (vm_usage[i])
 	{
-		if (++v3 >= 5u)
+		if (++i >= 5)
 			goto LABEL_5;
 	}
 
-	vm_evt_pos = v3;
+	vm_evt_pos = i;
 LABEL_5:
 	vm_usage[vm_evt_pos] = 1;
-	a1->ado_pos0[vm_evt_pos] = a1->adt[a1->ado_pos1[a2 + 5]].w.w[0];
-	a1->ado_pos1[vm_evt_pos] = a1->adt[a1->ado_pos1[a2 + 5]].b.b[2];
-	a1->updateIndex();
+	vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[index]].w.w[0];
+	vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[index]].b.b[2];
+	vm->updateIndex();
 	vm_evt_pos = posbk;
 }
 
-void __cdecl Vm_dest(VM* vm, unsigned __int16 index)
+void Vm_dest(VM* vm, int index)
 {
 	int v2; // edx
 	int v3; // cf
@@ -501,10 +503,10 @@ void __cdecl Vm_dest(VM* vm, unsigned __int16 index)
 	if (vm_index4[index])
 	{
 		a2 = vm_index4[index + 1];
-		if (vm->ado_pos1[a2 + 5] != 0xFF1F)
+		if (vm->field_209C[a2] != 0xFF1F)
 		{
 			if (vm_index4[59])
-				printf("Event destination: 0x%X\n", vm->adt[(unsigned __int16)vm->field_209C[a2]].dw);
+				printf("Event destination: 0x%X\n", vm->adt[vm->field_209C[a2]].dw);
 
 			vm->ado_pos_bk[0][vm_evt_pos] = vm->ado_pos0[vm_evt_pos];
 			vm->ado_pos_bk[1][vm_evt_pos] = vm->ado_pos1[vm_evt_pos];
@@ -518,8 +520,8 @@ void __cdecl Vm_dest(VM* vm, unsigned __int16 index)
 				vm->field_24B6[vm_evt_pos][vm->ado_pos2[vm_evt_pos]] = (vm->ado_pos1[vm_evt_pos] << 16) & 0xFF0000;
 				v5 = vm->ado_pos2[vm_evt_pos];
 				vm->field_24B6[vm_evt_pos][v5] |= vm->ado_pos0[vm_evt_pos];
-				vm->ado_pos0[vm_evt_pos] = vm->adt[vm->ado_pos1[a2 + 5]].w.w[0];
-				vm->ado_pos1[vm_evt_pos] = HIWORD(vm->adt[vm->ado_pos1[a2 + 5]].dw);
+				vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[0];
+				vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[1];
 				++vm->ado_pos2[vm_evt_pos];
 				vm->updateIndex();
 				vm_index4[index] = 0;
@@ -529,13 +531,13 @@ void __cdecl Vm_dest(VM* vm, unsigned __int16 index)
 				if (v4)
 				{
 					vm_index4[index + 1] = vm_index4[index + 3];
-					Game_40C6D3(vm, a2);
+					Vm_enable_event(vm, a2);
 				}
 				else
 				{
 					vm->ado_pos_bk[2][vm_evt_pos] = vm->ado_pos2[vm_evt_pos];
-					vm->ado_pos0[vm_evt_pos] = vm->adt[vm->ado_pos1[a2 + 5]].w.w[0];
-					vm->ado_pos1[vm_evt_pos] = vm->adt[vm->ado_pos1[a2 + 5]].b.b[2];
+					vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[0];
+					vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[a2]].b.b[2];
 					vm->updateIndex();
 					vm->ado_pos2[vm_evt_pos] = 0;
 				}
@@ -606,8 +608,8 @@ void Vm_event(VM* vm)
 				vm->ado_pos_bk[2][vm_evt_pos] = vm->ado_pos2[vm_evt_pos];
 			vm->ado_pos_bk[0][vm_evt_pos] = vm->ado_pos0[vm_evt_pos];
 			vm->ado_pos_bk[1][vm_evt_pos] = vm->ado_pos1[vm_evt_pos];
-			vm->ado_pos0[vm_evt_pos] = vm->adt[vm->ado_pos1[i + 5]].w.w[0];
-			vm->ado_pos1[vm_evt_pos] = vm->adt[vm->ado_pos1[i + 5]].b.b[2];
+			vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[i]].w.w[0];
+			vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[i]].b.b[2];
 			vm->updateIndex();
 			vm_index4[i] = 0;
 			vm_index4[60] = 1;
@@ -634,20 +636,20 @@ void Vm_sce_end()
 
 int Vm_wait_fade()
 {
-	//return PalObj_404C5F(&prog.pal_obj);
+	//return PalObj_is_fading(&prog.pal_obj);
 	return 1;
 }
 
 int Vm_ent_wait(int id)
 {
-	/*if (sprt_ent[id].enabled)
-		return sprt_ent[id].field_8D;
-	else */return 1;
+	if (sprt_ent[id].enabled)
+		return sprt_ent[id].is_busy;
+	else return 1;
 }
 
 int Vm_wait_ck(int index)
 {
-	return index >= 2 || sprt_dat[index].type4 == 0;
+	return index >= 2 || ai_ent[index].type4 == 0;
 	//return 1;
 }
 
@@ -887,7 +889,7 @@ void Vm_reset(VM* vm)
 		vm->adt[i].dw = 0;
 
 	for (int i = 0; i < 30; ++i)
-		vm_index7[i] = -1;
+		vm_index6[i + 500] = 0xffff;
 	for (int i = 0; i < 500; ++i)
 		vm_index6[i] = 0;
 
@@ -1661,7 +1663,7 @@ void VM::op_set_mark()
 
 	updateIndex();
 	for (int i = 0; i < 30; ++i)
-		vm_index7[i] = -1;
+		vm_index6[i + 500] = -1;
 	int loop_end = 0;
 	int i = 0;
 	do
@@ -1675,7 +1677,8 @@ void VM::op_set_mark()
 			vm_rects[i].top = read16s();
 			vm_rects[i].right = read16s();
 			vm_rects[i].bottom = read16s();
-			vm_index7[i++] = consume();
+			vm_index6[500 + i] = consume();
+			i++;
 		}
 	} while (!loop_end);
 }
@@ -1714,8 +1717,8 @@ void VM::op_fawait()	// fade
 void VM::op_btwait()
 {
 	updateIndex();
-	WORD v1 = read16();
-	if ((v1 & 1) != 0 && (vm_index3[0] & 1) == 0 || (v1 & 2) != 0 && (vm_index3[0] & 2) == 0)
+	WORD bt = read16();
+	if ((bt & 1) != 0 && (vm_index3[0] & 1) == 0 || (bt & 2) != 0 && (vm_index3[0] & 2) == 0)
 	{
 		rewindIndex();
 		rewindIndex();
@@ -1971,15 +1974,15 @@ void VM::op_map_disp()
 	Vm_map_disp(this);
 	for (int i = 0; i < 30; ++i)
 	{
-		if (vm_index7[i] != 0xffff
-			&& vm_index2[vm_index7[i]]
+		if (vm_index6[i + 500] != 0xffff
+			&& vm_index2[vm_index6[i + 500]]
 			&& vm_rects[i].left >= scrl_x
 			&& vm_rects[i].top >= scrl_y)
 		{
 			int x0 = scroll_x + vm_rects[i].left - scrl_x;
 			int y0 = scroll_y + vm_rects[i].top - scrl_y;
-			int x1 = vm_rects[i].right - vm_rects[i].left + x0;
-			int y1 = vm_rects[i].bottom - vm_rects[i].top + y0;
+			int x1 = vm_rects[i].W() + x0;
+			int y1 = vm_rects[i].H() + y0;
 
 			RenderTile(GETX(x0), GETY(y0), (x1 - x0) / 2, (y1 - y0) / 2, 0, 255, 0);
 		}
@@ -2372,16 +2375,16 @@ void VM::op_spr_ent(int is_abs)
 {
 	updateIndex();
 	WORD id = read16();
-	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
+	int x = read16s();
+	int y = read16s();
+	WORD flags = read16();
 	WORD v8 = read16();
 	WORD v7 = read16();
 	WORD v6 = read16();
 	if (read16())
-		Vm_spr_ent(id, v5, v4, v3, v8, v7, v6, 1, is_abs);
+		Vm_spr_ent(id, x, y, flags, v8, v7, v6, 1, is_abs);
 	else
-		Vm_spr_ent(id, v5, v4, v3, v8, v7, v6, 0, is_abs);
+		Vm_spr_ent(id, x, y, flags, v8, v7, v6, 0, is_abs);
 }
 
 void VM::op_spr_pos()
@@ -2445,10 +2448,10 @@ void VM::op_spr_walkx()
 void VM::op_spr_wait()
 {
 	updateIndex();
-	WORD v2 = read16();
-	int v3 = Vm_ent_wait(v2);
-	int v1 = Vm_wait_ck(v2);
-	if (!v3 || !v1)
+	WORD id = read16();
+	int ck0 = Vm_ent_wait(id);
+	int ck1 = Vm_wait_ck(id);
+	if (!ck0 || !ck1)
 	{
 		rewindIndex();
 		rewindIndex();

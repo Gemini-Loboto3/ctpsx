@@ -25,7 +25,7 @@ class Tmc
 {
 public:
 	std::vector<TMC_ENTRY> entries;
-	WORD clut[256], count;
+	WORD clut[256], count = 0;
 	std::vector<BYTE> pix,
 		coor,
 		unk;

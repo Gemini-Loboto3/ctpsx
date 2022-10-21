@@ -63,7 +63,7 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 	// resize window
 	BOOL menu = (GetMenu(prog.hWnd) != nullptr);
 	auto dwStyle = GetWindowLongA(prog.hWnd, GWL_STYLE);
-	RECT rc;
+	PC_RECT rc;
 	SetRect(&rc, 0, 0, w, h);
 
 	//SetWindowLongA(hWnd, GWL_STYLE, dwStyle);
@@ -202,6 +202,12 @@ void SwapBuffer()
 
 void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b)
 {
+	if (tim == nullptr)
+	{
+		RenderTile(x, y, w, h, r, g, b);
+		return;
+	}
+
 	const float ofs = -0.5f;
 	float x0 = (float)x + ofs, y0 = (float)y + ofs,
 		x1 = x0 + (float)w, y1 = y0 + (float)h;
@@ -248,19 +254,26 @@ void RenderRect(LPDIRECT3DTEXTURE9 tex, int x, int y, int real_w, int real_h, in
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 }
 
-void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b)
+void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b, BYTE a)
 {
 	const float ofs = -0.5f;
 	float x0 = (float)x + ofs, y0 = (float)y + ofs,
 		x1 = x0 + (float)w, y1 = y0 + (float)h;
 
-	DWORD diffuse = D3DCOLOR_XRGB(r, g, b);
+	DWORD diffuse = D3DCOLOR_ARGB(a, r, g, b);
 
 	fvf p[4];
 	p[0].x = x0, p[0].y = y0, p[0].z = 0.5f, p[0].w = 1.f, p[0].diffuse = diffuse;
 	p[1].x = x1, p[1].y = y0, p[1].z = 0.5f, p[1].w = 1.f, p[1].diffuse = diffuse;
 	p[2].x = x0, p[2].y = y1, p[2].z = 0.5f, p[2].w = 1.f, p[2].diffuse = diffuse;
 	p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].diffuse = diffuse;
+
+	if (a != 255)
+	{
+		d3d9dev->SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
+		d3d9dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		d3d9dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	}
 
 	d3d9dev->SetTexture(0, nullptr);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));

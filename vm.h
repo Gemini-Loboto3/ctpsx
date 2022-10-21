@@ -212,9 +212,9 @@ struct VM
 	void op_set_bkcol(int size);
 	void op_set_msgcol(int size);
 
-	void op_wait();
+	void op_wait();		// timed wait
 	void op_fawait();	// fade wait
-	void op_btwait();
+	void op_btwait();	// button wait
 	void op_bg_wait();	// background scroll wait
 	void op_tmwait();	// timer wait
 
@@ -465,10 +465,11 @@ extern WORD vm_usage[5],
 	vm_index3[64],
 	vm_index4[64],
 	vm_index5[128],
-	vm_index6[500],
-	vm_index7[30];
+	//vm_index6[500],
+	//vm_index7[30];
+	vm_index6[530];
 
-extern RECT vm_rects[30];
+extern CRect vm_rects[30];
 extern int error_no;
 
 void vm_func7();
@@ -488,5 +489,6 @@ int Vm_mark_event(WORD index, WORD a2);
 void Vm_set_63();
 
 void Vm_all_spr_disp();
+int Vm_ent_wait(int id);
 
 int __cdecl game_state_get(int a1);

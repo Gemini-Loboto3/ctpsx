@@ -22,15 +22,14 @@ struct PROGRAM
 		//sprt = 0;
 		screen_on = 0;
 		map_attr = 0;
-		field_134 = 0;
+		trigger_debug = 1; //0;
 		field_14C = 0;
 		showCursor(0);
 		cur_type0 = showCursor(1);
-		//WaitCursor(p, 0);
 		cur_type1 = 0;
-		field_1A4 = 1;
+		cur_enabled = 1;
 		click_bits = 0;
-		field_1B6 = 0;
+		click_old = 0;
 		mousePT.x = 0;
 		mousePT.y = 0;
 		tick = (int)getTime();
@@ -59,9 +58,9 @@ struct PROGRAM
 	__int16 field_12E;
 	__int16 field_130;
 	WORD map_attr;
-	int field_134;
+	int trigger_debug;
 	int field_138;
-	int field_13C;
+	int click_on_item;
 	int field_140;
 	int field_144;
 	int field_148;
@@ -72,7 +71,7 @@ struct PROGRAM
 	int field_15C;
 	int screen_x;
 	int screen_y;
-	RECT render_rect,
+	PC_RECT render_rect,
 		menu_rect;
 	int tick_delta;
 	DWORD tick_now;
@@ -84,13 +83,13 @@ struct PROGRAM
 	__int16 field_19E;
 	short field_1A0;
 	short field_1A2;
-	int field_1A4;
-	int field_1A8;
-	int field_1AC;
+	int cur_enabled;
+	int triggerX;
+	int triggerY;
 	__int16 cur_type0;
 	__int16 cur_type1;
 	__int16 click_bits;
-	__int16 field_1B6;
+	__int16 click_old;
 	POINT mousePT;
 	int tick;
 	int key_is_down;

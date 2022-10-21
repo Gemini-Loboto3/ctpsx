@@ -75,8 +75,8 @@ void Init()
 	Vm_set_proc(0);
 	//BmpInitRect(&prog.render_bmp, 80, 0, 480, 304);
 	vm_index5[0] = 0;
-	//sprt_dat[0].type4 = 0;
-	//sprt_dat[1].type4 = 0;
+	ai_ent[0].type4 = 0;
+	ai_ent[1].type4 = 0;
 
 #ifdef NDEBUG
 	char path[MAX_PATH];
@@ -98,7 +98,7 @@ void InitApp()
 
 	prog.vm = new VM();
 	Vm_load(prog.vm);
-	//sub_405DDF();
+	Vm_spr_ent(11, 0, 0, 0x64, 0x3501, 0, 0, 1, 0);
 
 	InitRender();
 	InputInit();
@@ -195,7 +195,7 @@ int Game()
 			sub_4017BB();
 			draw_func[prog.vm_func]();
 			prog.pal_obj.call_fade();
-			sub_4017D6();
+			Vm_update_state();
 		}
 	}
 
@@ -244,7 +244,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Tmc tm;
 	tm.open("SPRT\\CHARTMC2\\A_ACT01.TMC");
 
-	vm_index4[58] = 1;
+	//vm_index4[58] = 1;
 
 	startTime();
 	WinLoop();

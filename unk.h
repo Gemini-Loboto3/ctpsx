@@ -1,5 +1,5 @@
 void sub_4017BB();
-void sub_4017D6();
+void Vm_update_state();
 void sub_41259E();
 void sub_405ED3();
 int sub_403304(int a1);

@@ -2,11 +2,11 @@
 #include "game.h"
 
 SPRT_ENT sprt_ent[21];
-SPRT_DAT sprt_dat[2];
+AI_ENT ai_ent[2];
 
 void SPRT_ENT::Link()
 {
-	if (field_4)
+	if (linked)
 	{
 		if (prev)
 			prev->next = next;
@@ -14,9 +14,9 @@ void SPRT_ENT::Link()
 			prog.sprt = next;
 		if (next)
 			next->prev = prev;
-		prev = 0;
-		next = 0;
-		field_4 = 0;
+		prev = nullptr;
+		next = nullptr;
+		linked = 0;
 	}
 }
 
@@ -25,7 +25,7 @@ void SPRT_ENT::SetList()
 	SPRT_ENT* sprt;
 	SPRT_ENT* i;
 
-	if (field_4)
+	if (linked)
 		Link();
 	sprt = prog.sprt;
 	for (i = prog.sprt; i; i = i->next)
@@ -57,13 +57,13 @@ void SPRT_ENT::SetList()
 			prog.sprt = this;
 		prev = sprt;
 	}
-	field_4 = 1;
+	linked = 1;
 }
 
 void SPRT_ENT::Release()
 {
 	sprt_ent[id2].enabled = 0;
-	if (field_26 && tim)
+	if (/*field_26 &&*/ tim)
 	{
 		if (tim->is_ref == 0)
 			delete tim;
@@ -72,6 +72,7 @@ void SPRT_ENT::Release()
 		//ptr0 = nullptr;
 		field_26 = 0;
 	}
+
 	Link();
 }
 
@@ -131,7 +132,7 @@ void SPRT_ENT::CalcPan()
 
 	if (!field_45 && field_41 == 1)
 	{
-		v4 = (id & 0x3FFF) >> 8;
+		v4 = (frame_id & 0x3FFF) >> 8;
 		if (v4 <= 0x12u)
 		{
 			v3 = -1;//off_41F094[v4][field_95];
@@ -177,10 +178,10 @@ void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
 		sprt_ent[id].tim = ptr;
 		//sprt_ent[id].bmp = ptr[(h - 1) * w];
 		sprt_ent[id].field_37 = 0;
-		sprt_ent[id].id = -1;
+		sprt_ent[id].frame_id = -1;
 		sub_404346(id, 1);
 		sprt_ent[id].field_41 = 0;
-		sprt_ent[id].field_8D = 0;
+		sprt_ent[id].is_busy = 0;
 	}
 }
 
@@ -213,8 +214,8 @@ void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int
 
 void SprtTblDeinit()
 {
-	SPRT_ENT* next; // [esp+0h] [ebp-8h]
-	SPRT_ENT* sprt; // [esp+4h] [ebp-4h]
+	SPRT_ENT* next;
+	SPRT_ENT* sprt;
 
 	if (prog.sprt)
 	{
@@ -226,6 +227,7 @@ void SprtTblDeinit()
 			sprt = next;
 		} while (next);
 	}
+
 	prog.sprt = nullptr;
 }
 
@@ -235,42 +237,255 @@ void SprPos(int id, int x, int y, DWORD flags)
 		sprt_ent[id].SetXY(x, y, flags, 0);
 }
 
+WORD word_41FDA4[][36][2] =
+{
+  {
+	{ 258u, 0u },
+	{ 270u, 0u },
+	{ 264u, 271u },
+	{ 261u, 258u },
+	{ 261u, 270u },
+	{ 261u, 271u },
+	{ 258u, 0u },
+	{ 270u, 0u },
+	{ 264u, 271u },
+	{ 261u, 258u },
+	{ 261u, 270u },
+	{ 262u, 271u },
+	{ 263u, 258u },
+	{ 270u, 0u },
+	{ 271u, 0u },
+	{ 262u, 258u },
+	{ 262u, 270u },
+	{ 262u, 271u },
+	{ 33026u, 0u },
+	{ 33038u, 0u },
+	{ 33032u, 33039u },
+	{ 33029u, 33026u },
+	{ 33029u, 33038u },
+	{ 33029u, 33039u },
+	{ 33026u, 0u },
+	{ 33038u, 0u },
+	{ 33032u, 33039u },
+	{ 33029u, 33026u },
+	{ 33029u, 33038u },
+	{ 33030u, 33039u },
+	{ 33031u, 33026u },
+	{ 33038u, 0u },
+	{ 33039u, 0u },
+	{ 33030u, 33026u },
+	{ 33030u, 33038u },
+	{ 33030u, 33039u }
+  },
+  {
+	{ 1112u, 0u },
+	{ 1087u, 0u },
+	{ 1096u, 0u },
+	{ 1086u, 1112u },
+	{ 1086u, 1087u },
+	{ 1086u, 1096u },
+	{ 1112u, 0u },
+	{ 1087u, 0u },
+	{ 1096u, 0u },
+	{ 1086u, 1112u },
+	{ 1086u, 1087u },
+	{ 1098u, 1096u },
+	{ 1099u, 1112u },
+	{ 1087u, 0u },
+	{ 1096u, 0u },
+	{ 1098u, 1112u },
+	{ 1098u, 1087u },
+	{ 1098u, 1096u },
+	{ 33880u, 0u },
+	{ 33855u, 0u },
+	{ 33864u, 0u },
+	{ 33854u, 33880u },
+	{ 33854u, 33855u },
+	{ 33854u, 33864u },
+	{ 33880u, 0u },
+	{ 33855u, 0u },
+	{ 33864u, 0u },
+	{ 33854u, 33880u },
+	{ 33854u, 33855u },
+	{ 33866u, 33864u },
+	{ 33867u, 33880u },
+	{ 33855u, 0u },
+	{ 33864u, 0u },
+	{ 33866u, 33880u },
+	{ 33866u, 33855u },
+	{ 33866u, 33864u }
+  },
+  {
+	{ 1115u, 0u },
+	{ 1089u, 0u },
+	{ 1097u, 0u },
+	{ 1088u, 1115u },
+	{ 1088u, 1089u },
+	{ 1088u, 1097u },
+	{ 1115u, 0u },
+	{ 1089u, 0u },
+	{ 1097u, 0u },
+	{ 1088u, 1115u },
+	{ 1088u, 1089u },
+	{ 1100u, 1097u },
+	{ 1101u, 1115u },
+	{ 1089u, 0u },
+	{ 1097u, 0u },
+	{ 1100u, 1115u },
+	{ 1100u, 1089u },
+	{ 1100u, 1097u },
+	{ 33883u, 0u },
+	{ 33857u, 0u },
+	{ 33865u, 0u },
+	{ 33856u, 33883u },
+	{ 33856u, 33857u },
+	{ 33856u, 33865u },
+	{ 33883u, 0u },
+	{ 33857u, 0u },
+	{ 33865u, 0u },
+	{ 33856u, 33883u },
+	{ 33856u, 33857u },
+	{ 33868u, 33865u },
+	{ 33869u, 33883u },
+	{ 33857u, 0u },
+	{ 33865u, 0u },
+	{ 33868u, 33883u },
+	{ 33868u, 33857u },
+	{ 33868u, 33865u }
+  }
+};
+
+WORD word_41FF6C[][36][2] =
+{
+  {
+	{ 36864u, 0u },
+	{ 36865u, 0u },
+	{ 36868u, 36866u },
+	{ 36867u, 36864u },
+	{ 36867u, 36865u },
+	{ 36867u, 36866u },
+	{ 36864u, 0u },
+	{ 36865u, 0u },
+	{ 36868u, 36866u },
+	{ 36867u, 36864u },
+	{ 36867u, 36865u },
+	{ 36869u, 36866u },
+	{ 36870u, 36864u },
+	{ 36865u, 0u },
+	{ 36866u, 0u },
+	{ 36869u, 36864u },
+	{ 36869u, 36865u },
+	{ 36869u, 36866u },
+	{ 4096u, 0u },
+	{ 4097u, 0u },
+	{ 4100u, 4098u },
+	{ 4099u, 4096u },
+	{ 4099u, 4097u },
+	{ 4099u, 4098u },
+	{ 4096u, 0u },
+	{ 4097u, 0u },
+	{ 4100u, 4098u },
+	{ 4099u, 4096u },
+	{ 4099u, 4097u },
+	{ 4101u, 4098u },
+	{ 4102u, 4096u },
+	{ 4097u, 0u },
+	{ 4098u, 0u },
+	{ 4101u, 4096u },
+	{ 4101u, 4097u },
+	{ 4101u, 4098u }
+  },
+  {
+	{ 37376u, 0u },
+	{ 37377u, 0u },
+	{ 37380u, 37378u },
+	{ 37379u, 37376u },
+	{ 37379u, 37377u },
+	{ 37379u, 37378u },
+	{ 37376u, 0u },
+	{ 37377u, 0u },
+	{ 37378u, 0u },
+	{ 37379u, 37376u },
+	{ 37379u, 37377u },
+	{ 37381u, 37378u },
+	{ 37382u, 37376u },
+	{ 37377u, 0u },
+	{ 37378u, 0u },
+	{ 37381u, 37376u },
+	{ 37381u, 37377u },
+	{ 37381u, 37378u },
+	{ 4608u, 0u },
+	{ 4609u, 0u },
+	{ 4612u, 4610u },
+	{ 4611u, 4608u },
+	{ 4611u, 4609u },
+	{ 4611u, 4610u },
+	{ 4608u, 0u },
+	{ 4609u, 0u },
+	{ 4610u, 0u },
+	{ 4611u, 4608u },
+	{ 4611u, 4609u },
+	{ 4613u, 4610u },
+	{ 4614u, 4608u },
+	{ 4609u, 0u },
+	{ 4610u, 0u },
+	{ 4613u, 4608u },
+	{ 4613u, 4609u },
+	{ 4613u, 4610u }
+  },
+  {
+	{ 37632u, 0u },
+	{ 37633u, 0u },
+	{ 37636u, 37634u },
+	{ 37635u, 37632u },
+	{ 37635u, 37633u },
+	{ 37635u, 37634u },
+	{ 37632u, 0u },
+	{ 37633u, 0u },
+	{ 37634u, 0u },
+	{ 37635u, 37632u },
+	{ 37635u, 37633u },
+	{ 37637u, 37634u },
+	{ 37638u, 37632u },
+	{ 37633u, 0u },
+	{ 37634u, 0u },
+	{ 37637u, 37632u },
+	{ 37637u, 37633u },
+	{ 37637u, 37634u },
+	{ 4864u, 0u },
+	{ 4865u, 0u },
+	{ 4868u, 4866u },
+	{ 4867u, 4864u },
+	{ 4867u, 4865u },
+	{ 4867u, 4866u },
+	{ 4864u, 0u },
+	{ 4865u, 0u },
+	{ 4866u, 0u },
+	{ 4867u, 4864u },
+	{ 4867u, 4865u },
+	{ 4869u, 4866u },
+	{ 4870u, 4864u },
+	{ 4865u, 0u },
+	{ 4866u, 0u },
+	{ 4869u, 4864u },
+	{ 4869u, 4865u },
+	{ 4869u, 4866u }
+  }
+};
+
+WORD word_42011C[][2][2] =
+{
+  { { 3072u, 3073u }, { 35840u, 35841u } },
+  { { 3109u, 3074u }, { 35877u, 35842u } },
+  { { 3076u, 3075u }, { 35844u, 35843u } },
+  { { 3080u, 3081u }, { 35848u, 35849u } },
+  { { 3072u, 3085u }, { 35840u, 35853u } }
+};
+
 int __cdecl sub_4033A4(WORD* dst, int a2)
 {
 	DWORD v3;
 	DWORD v4;
-
-	static WORD word_41FDA4[][36][2] =
-	{
-		258,   0, 270,   0, 264, 271, 261, 258, 261, 270, 261, 271, 258,   0, 270,   0, 264, 271, 261, 258, 261, 270, 262, 271, 263, 258, 270,   0, 271,   0, 262, 258, 262, 270, 262, 271,
-		33026,   0,33038,   0,33032,33039,33029,33026,33029,33038,33029,33039,33026,   0,33038,   0,33032,33039,33029,33026,33029,33038,33030,33039,33031,33026,33038,   0,33039,   0,33030,33026,33030,33038,33030,33039,
-		1112,   0,1087,   0,1096,   0,1086,1112,1086,1087,1086,1096,1112,   0,1087,   0,1096,   0,1086,1112,1086,1087,1098,1096,1099,1112,1087,   0,1096,   0,1098,1112,1098,1087,1098,1096,
-		33880,   0,33855,   0,33864,   0,33854,33880,33854,33855,33854,33864,33880,   0,33855,   0,33864,   0,33854,33880,33854,33855,33866,33864,33867,33880,33855,   0,33864,   0,33866,33880,33866,33855,33866,33864,
-		1115,   0,1089,   0,1097,   0,1088,1115,1088,1089,1088,1097,1115,   0,1089,   0,1097,   0,1088,1115,1088,1089,1100,1097,1101,1115,1089,   0,1097,   0,1100,1115,1100,1089,1100,1097,
-		33883,   0,33857,   0,33865,   0,33856,33883,33856,33857,33856,33865,33883,   0,33857,   0,33865,   0,33856,33883,33856,33857,33868,33865,33869,33883,33857,   0,33865,   0,33868,33883,33868,33857,33868,33865
-	};
-	static WORD word_42011C[][2][2] =
-	{
-		3072,3073,
-		35840,35841,
-		3109,3074,
-		35877,35842,
-		3076,3075,
-		35844,35843,
-		3080,3081,
-		35848,35849,
-		3072,3085,
-		35840,35853
-	};
-	static WORD word_41FF6C[][36][2] =
-	{
-		36864,   0,36865,   0,36868,36866,36867,36864,36867,36865,36867,36866,36864,   0,36865,   0,36868,36866,36867,36864,36867,36865,36869,36866,36870,36864,36865,   0,36866,   0,36869,36864,36869,36865,36869,36866,
-		4096,   0,4097,   0,4100,4098,4099,4096,4099,4097,4099,4098,4096,   0,4097,   0,4100,4098,4099,4096,4099,4097,4101,4098,4102,4096,4097,   0,4098,   0,4101,4096,4101,4097,4101,4098,
-		37376,   0,37377,   0,37380,37378,37379,37376,37379,37377,37379,37378,37376,   0,37377,   0,37378,   0,37379,37376,37379,37377,37381,37378,37382,37376,37377,   0,37378,   0,37381,37376,37381,37377,37381,37378,
-		4608,   0,4609,   0,4612,4610,4611,4608,4611,4609,4611,4610,4608,   0,4609,   0,4610,   0,4611,4608,4611,4609,4613,4610,4614,4608,4609,   0,4610,   0,4613,4608,4613,4609,4613,4610,
-		37632,   0,37633,   0,37636,37634,37635,37632,37635,37633,37635,37634,37632,   0,37633,   0,37634,   0,37635,37632,37635,37633,37637,37634,37638,37632,37633,   0,37634,   0,37637,37632,37637,37633,37637,37634,
-		4864,   0,4865,   0,4868,4866,4867,4864,4867,4865,4867,4866,4864,   0,4865,   0,4866,   0,4867,4864,4867,4865,4869,4866,4870,4864,4865,   0,4866,   0,4869,4864,4869,4865,4869,4866
-	};
 
 	if (a2)
 	{
@@ -280,25 +495,25 @@ int __cdecl sub_4033A4(WORD* dst, int a2)
 		{
 			if (vm_index5[25] == 1)
 			{
-				v4 = sprt_dat[1].type2 + 6 * sprt_dat[1].type + 18 * sprt_dat[1].type3;
-				if (sprt_dat[1].type0 != sprt_dat[1].type3)
+				v4 = ai_ent[1].type2 + 6 * ai_ent[1].type + 18 * ai_ent[1].type3;
+				if (ai_ent[1].type0 != ai_ent[1].type3)
 					v4 += 3;
 				dst[0] = word_41FF6C[vm_index5[6]][v4][0];
 				dst[1] = word_41FF6C[vm_index5[6]][v4][1];
 			}
 			else if (vm_index5[25] == 2)
 			{
-				if ((int)sprt_dat[1].type3 > 1)
-					sprt_dat[1].type3 = 1;
-				dst[0] = word_42011C[vm_index5[43]][sprt_dat[1].type3][sprt_dat[1].type2];
+				if ((int)ai_ent[1].type3 > 1)
+					ai_ent[1].type3 = 1;
+				dst[0] = word_42011C[vm_index5[43]][ai_ent[1].type3][ai_ent[1].type2];
 				dst[1] = 0;
 			}
 		}
 	}
 	else
 	{
-		v3 = sprt_dat[0].type2 + 6 * sprt_dat[0].type + 18 * sprt_dat[0].type3;
-		if (sprt_dat[0].type0 != sprt_dat[0].type3)
+		v3 = ai_ent[0].type2 + 6 * ai_ent[0].type + 18 * ai_ent[0].type3;
+		if (ai_ent[0].type0 != ai_ent[0].type3)
 			v3 += 3;
 		dst[0] = word_41FDA4[vm_index5[4]][v3][0];
 		dst[1] = word_41FDA4[vm_index5[4]][v3][1];
@@ -306,26 +521,26 @@ int __cdecl sub_4033A4(WORD* dst, int a2)
 	return 1;
 }
 
-void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4)
+void SprAnim(unsigned int id, WORD anim, WORD a3, WORD a4)
 {
 	WORD v5[2];
 
 	if (sprt_ent[id].enabled)
 	{
-		if (a2 == 0xFFFF)
+		if (anim == 0xFFFF)
 		{
 			if (sub_4033A4(v5, id))
 			{
-				sprt_ent[id].id = v5[0];
-				sprt_dat[id].field_14 = v5[1];
-				sprt_dat[id].enabled = 0;
-				sprt_dat[id].type0 = sprt_dat[id].type3;
-				sprt_dat[id].type = sprt_dat[id].type2;
+				sprt_ent[id].frame_id = v5[0];
+				ai_ent[id].anim = v5[1];
+				ai_ent[id].enabled = 0;
+				ai_ent[id].type0 = ai_ent[id].type3;
+				ai_ent[id].type = ai_ent[id].type2;
 			}
 		}
 		else
 		{
-			sprt_ent[id].id = a2;
+			sprt_ent[id].frame_id = anim;
 		}
 		sprt_ent[id].field_99 = a3;
 		sprt_ent[id].field_9B = a4 & 0xff;
@@ -334,48 +549,47 @@ void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4)
 		sprt_ent[id].UpdateXY();
 		sub_404346(id, 0);
 		sprt_ent[id].field_41 = 0;
-		sprt_ent[id].field_8D = 0;
+		sprt_ent[id].is_busy = 0;
 		if (id <= 1)
-			sprt_dat[id].field_14 = 0;
+			ai_ent[id].anim = 0;
 	}
 }
 
-void sub_402FAF()
+void SprCursorAnimate()
 {
-	RECT rcDst; // [esp+0h] [ebp-24h] BYREF
-	RECT rcSrc1; // [esp+10h] [ebp-14h] BYREF
-	int i; // [esp+20h] [ebp-4h]
+	PC_RECT rtrg, rcur;
+	int i;
 
-	rcSrc1.left = prog.mousePT.x + 1;
-	rcSrc1.right = prog.mousePT.x + 2;
-	rcSrc1.top = prog.mousePT.y + 1;
-	rcSrc1.bottom = prog.mousePT.y + 2;
-	if (prog.field_1A4)
+	rcur.left = prog.mousePT.x + 1;
+	rcur.right = prog.mousePT.x + 2;
+	rcur.top = prog.mousePT.y + 1;
+	rcur.bottom = prog.mousePT.y + 2;
+	if (prog.cur_enabled)
 	{
 		i = 0;
 		while (1)
 		{
 			if ((vm_index6[i + 10] & 0x10) == 0 && sub_403304(i))
 			{
-				rcDst.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
-				rcDst.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
-				rcDst.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
-				rcDst.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
-				if (intersectRect(&rcSrc1, &rcDst))
+				rtrg.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
+				rtrg.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
+				rtrg.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
+				rtrg.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
+				if (intersectRect(&rcur, &rtrg))
 					break;
 			}
 			if (++i >= 30)
 				goto LABEL_15;
 		}
-		prog.field_1A8 = vm_rects[i].left - (32 - (vm_rects[i].right - vm_rects[i].left)) / 2;
-		prog.field_1AC = vm_rects[i].top - (32 - (vm_rects[i].bottom - vm_rects[i].top)) / 2;
+		prog.triggerX = vm_rects[i].left - (32 - vm_rects[i].W()) / 2;
+		prog.triggerY = vm_rects[i].top - (32 - vm_rects[i].H()) / 2;
 		if (prog.field_14C)
 		{
 			if (prog.field_14C == 1)
 			{
-				if (sprt_ent[11].field_8D)
+				if (sprt_ent[11].is_busy)
 				{
-					sprt_ent[11].SetXY(prog.field_1A8, prog.field_1AC, 0x64u, 1);
+					sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
 					prog.field_14C = 2;
 				}
 			}
@@ -384,7 +598,7 @@ void sub_402FAF()
 				prog.field_14C = 1;
 				sprt_ent[11].field_99 = 0;
 				sprt_ent[11].Update();
-				sprt_ent[11].SetXY(prog.field_1A8, prog.field_1AC, 0x64u, 1);
+				sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
 			}
 		}
 		else
@@ -393,7 +607,7 @@ void sub_402FAF()
 			prog.field_14C = 1;
 			sprt_ent[11].field_99 = 0;
 			sprt_ent[11].Update();
-			sprt_ent[11].SetXY(prog.field_1A8, prog.field_1AC, 0x64u, 1);
+			sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
 		}
 	}
 	else
@@ -407,7 +621,7 @@ void sub_402FAF()
 		}
 		else if (prog.field_14C == 3)
 		{
-			if (sprt_ent[11].field_8D)
+			if (sprt_ent[11].is_busy)
 			{
 				prog.field_14C = 0;
 				if (prog.cur_type1 < 0)
@@ -417,7 +631,7 @@ void sub_402FAF()
 	}
 }
 
-void SpriteGetRect(SPRT_ENT* s, RECT* r)
+void SpriteGetRect(SPRT_ENT* s, PC_RECT* r)
 {
 	r->left = s->x3;
 	r->right = s->width + s->x3 - 1;
@@ -425,67 +639,48 @@ void SpriteGetRect(SPRT_ENT* s, RECT* r)
 	r->bottom = s->height + s->y3 - 1;
 }
 
-void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc)
+void SprDraw(SPRT_ENT* sprt, PC_RECT* lprcSrc)
 {
-	struct tagRECT v2; // [esp+0h] [ebp-40h] BYREF
-	struct tagRECT rcDst; // [esp+10h] [ebp-30h] BYREF
-	RECT rcSrc2; // [esp+20h] [ebp-20h] BYREF
-	int srcy; // [esp+30h] [ebp-10h]
-	int srcx; // [esp+34h] [ebp-Ch]
-	int dsty; // [esp+38h] [ebp-8h]
-	int dstx; // [esp+3Ch] [ebp-4h]
+	PC_RECT rxy, rspr, rcopy;
+	int srcx, srcy, dstx, dsty;
 
-	SpriteGetRect(sprt, &rcDst);
+	SpriteGetRect(sprt, &rspr);
 	if (lprcSrc)
 	{
-		copyRect(&rcSrc2, lprcSrc);
-		if (!intersectRect(&rcDst, &rcSrc2))
+		copyRect(&rcopy, lprcSrc);
+		if (!intersectRect(&rspr, &rcopy))
 			return;
 	}
 	else
 	{
-		TMapGetDstRect(&tmap, &rcSrc2);
-		if (!intersectRect(&rcDst, &rcSrc2))
+		TMapGetDstRect(&tmap, &rcopy);
+		if (!intersectRect(&rspr, &rcopy))
 			return;
 	}
-	TMapGetRect(&tmap, &v2);
-	if ((signed int)sprt->x3 < rcSrc2.left)
+
+	TMapGetRect(&tmap, &rxy);
+	if ((signed int)sprt->x3 < rcopy.left)
 	{
-		dstx = v2.left;
-		srcx = rcSrc2.left - sprt->x3;
+		dstx = rxy.left;
+		srcx = rcopy.left - sprt->x3;
 	}
 	else
 	{
-		dstx = v2.left + sprt->x3 - rcSrc2.left;
+		dstx = rxy.left + sprt->x3 - rcopy.left;
 		srcx = 0;
 	}
-	if ((signed int)sprt->y3 < rcSrc2.top)
+	if ((signed int)sprt->y3 < rcopy.top)
 	{
-		dsty = v2.top;
-		srcy = rcSrc2.top - sprt->y3;
+		dsty = rxy.top;
+		srcy = rcopy.top - sprt->y3;
 	}
 	else
 	{
-		dsty = v2.top + sprt->y3 - rcSrc2.top;
+		dsty = rxy.top + sprt->y3 - rcopy.top;
 		srcy = 0;
 	}
 
 	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
-
-	//RenderToOffScreen(
-	//	dst_x,
-	//	dsty,
-	//	srcx,
-	//	srcy,
-	//	sprt->width,
-	//	sprt->height,
-	//	sprt->width,
-	//	rcDst.right - rcDst.left + 1,
-	//	rcDst.bottom - rcDst.top + 1,
-	//	(BYTE*)sprt->field_5B,
-	//	sprt->bmp,
-	//	sprt->field_32,
-	//	sprt->field_37);
 }
 
 void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
@@ -504,13 +699,13 @@ void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int
 
 void CursorDispCk()
 {
-	RECT rcSrc1;
+	PC_RECT rcSrc1;
 
 	rcSrc1.left = prog.mousePT.x + 1;
 	rcSrc1.right = prog.mousePT.x + 2;
 	rcSrc1.top = prog.mousePT.y + 1;
 	rcSrc1.bottom = prog.mousePT.y + 2;
-	if (prog.vm_func != 1 || !intersectRect(&rcSrc1, &prog.render_rect) || prog.field_1A4 && !prog.field_14C)
+	if (prog.vm_func != 1 || !intersectRect(&rcSrc1, &prog.render_rect) || prog.cur_enabled && !prog.field_14C)
 	{
 		if (prog.cur_type1 < 0)
 			prog.cur_type1 = showCursor(1);
@@ -547,11 +742,11 @@ void SprUpdate(SPRT_ENT* s)
 {
 	unsigned int id;
 
-	if (s->field_8D)
+	if (s->is_busy)
 	{
 		if ((s->field_99 & 0x10) != 0)
 			goto update;
-		id = s->id & 0x3FFF;
+		id = s->frame_id & 0x3FFF;
 		if (id > 3081)
 		{
 			if (id == 3085 || (unsigned int)id - 4097 < 2 || (unsigned int)id - 4609 < 2 || (unsigned int)id - 4865 < 2)
@@ -615,8 +810,8 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	if (!spr->field_91)
 	{
 		if ((spr->field_99 & 2) != 0)
-			spr->field_8D = 1;
-		if (spr->field_8D)
+			spr->is_busy = 1;
+		if (spr->is_busy)
 			return 1;
 	}
 	v8 = ((int)id >> 8) & 0x3F;
@@ -628,6 +823,8 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		//if (!ReadPosiData_0())
 		//	return 0;
 	}
+
+	// no sprite data, assign
 	if (!spr->tim || LOWORD(spr->field_89) + LOWORD(spr->field_7D) != id)
 	{
 		if (!sprt_slot_manager.Read(spr, id))
@@ -639,7 +836,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		spr->field_81 = 0xFFFF;
 		spr->field_85 = 0;
 		spr->field_89 = id & 0xC000;
-		spr->field_8D = 0;
+		spr->is_busy = 0;
 	}
 
 	lo_id = id & 0xff;
@@ -663,7 +860,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 			spr->field_81 = spr->field_9B;
 		v13 = (WORD)spr->field_81;
 		//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
-		spr->field_8D = 0;
+		spr->is_busy = 0;
 		spr->field_91 = 0;
 		spr->field_41 = 1;
 		if (!v13)
@@ -695,7 +892,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 				break;
 			}
 			v13 = (WORD)spr->field_81;
-			spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
+			//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		}
 		else
 		{
@@ -714,13 +911,13 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 				if ((spr->field_99 & 8) != 0 && spr->field_9D <= (int)spr->field_81)
 				{
 					spr->field_85 = 1;
-					spr->field_8D = 1;
+					spr->is_busy = 1;
 				}
 			}
 			else
 			{
 				spr->field_85 = 1;
-				spr->field_8D = 1;
+				spr->is_busy = 1;
 				spr->field_81 = (unsigned __int16)v3[6] - 1;
 			}
 		}
@@ -731,14 +928,14 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 				if ((spr->field_99 & 8) != 0 && spr->field_9D == spr->field_81)
 				{
 					spr->field_85 = 1;
-					spr->field_8D = 1;
+					spr->is_busy = 1;
 					spr->field_81 = (unsigned __int16)v3[6] - 1;
 				}
 			}
 			else
 			{
 				spr->field_85 = 1;
-				spr->field_8D = 1;
+				spr->is_busy = 1;
 				spr->field_81 = 0;
 			}
 		}
@@ -829,12 +1026,12 @@ void sub_40245E()
 		s->x1 = s->x0;
 		flag1 = s->flag1;
 		SprUpdate(s);
-		if (s->id != 0xFFFF)
+		if (s->frame_id != 0xFFFF)
 		{
-			if ((s->id & 0x3FFF) >= 0x3800);
+			if ((s->frame_id & 0x3FFF) >= 0x3800);
 				//sub_4013B0(s);
 			else
-				SetSpriteData(s, s->id);
+				SetSpriteData(s, s->frame_id);
 		}
 		if (flag1 != s->flag1)
 			SprSetList(s);
@@ -842,14 +1039,6 @@ void sub_40245E()
 		s->CalcPan();
 	}
 	sub_403536();
-}
-
-DWORD __cdecl Vm_ent_wait(int a1)
-{
-	if (sprt_ent[a1].enabled)
-		return sprt_ent[a1].field_8D;
-	else
-		return 1;
 }
 
 void sub_40243A()
@@ -864,35 +1053,35 @@ void sub_40243A()
 void sub_401DB5()
 {
 	if (sprt_ent[0].lmx >= 0
-		&& (sprt_dat[0].type == 1 || sprt_dat[0].type == 2)
+		&& (ai_ent[0].type == 1 || ai_ent[0].type == 2)
 		&& sprt_ent[0].x0 <= sprt_ent[0].lmx
-		&& sprt_dat[0].type0 == 1)
+		&& ai_ent[0].type0 == 1)
 	{
-		sprt_dat[0].enabled = 1;
-		sprt_dat[0].type2 = 0;
-		sprt_dat[0].field_1C = 0;
-		sprt_dat[0].type3 = 1;
+		ai_ent[0].enabled = 1;
+		ai_ent[0].type2 = 0;
+		ai_ent[0].field_1C = 0;
+		ai_ent[0].type3 = 1;
 	}
 	if (sprt_ent[0].lmy >= 0
-		&& (sprt_dat[0].type == 1 || sprt_dat[0].type == 2)
+		&& (ai_ent[0].type == 1 || ai_ent[0].type == 2)
 		&& sprt_ent[0].x0 >= sprt_ent[0].lmy
-		&& !sprt_dat[0].type0)
+		&& !ai_ent[0].type0)
 	{
-		sprt_dat[0].enabled = 1;
-		sprt_dat[0].type2 = 0;
-		sprt_dat[0].field_1C = 0;
-		sprt_dat[0].type3 = 0;
+		ai_ent[0].enabled = 1;
+		ai_ent[0].type2 = 0;
+		ai_ent[0].field_1C = 0;
+		ai_ent[0].type3 = 0;
 	}
 }
 
-void __cdecl sub_401EB7(unsigned int a1)
+void __cdecl sub_401EB7(unsigned int id)
 {
-	if (sprt_ent[a1].field_8D)
+	if (sprt_ent[id].is_busy)
 	{
-		if (sprt_dat[a1].field_14)
+		if (ai_ent[id].anim)
 		{
-			SprAnim(a1, sprt_dat[a1].field_14, 0, 0);
-			sprt_dat[a1].field_14 = 0;
+			SprAnim(id, ai_ent[id].anim, 0, 0);
+			ai_ent[id].anim = 0;
 		}
 	}
 }
@@ -904,12 +1093,12 @@ int EntGetPan(int a1)
 
 void sub_4042C0(int id)
 {
-	sprt_dat[id].field_14 = 0;
-	sprt_dat[id].type4 = 0;
-	sprt_dat[id].enabled = 0;
-	sprt_dat[id].field_1C = 0;
-	sprt_dat[id].field_20 = 0;
-	sprt_dat[id].field_24 = 0;
+	ai_ent[id].anim = 0;
+	ai_ent[id].type4 = 0;
+	ai_ent[id].enabled = 0;
+	ai_ent[id].field_1C = 0;
+	ai_ent[id].field_20 = 0;
+	ai_ent[id].field_24 = 0;
 }
 
 void Vm_spr_dir(int id, int a2, int a3, int a4, int a5)
@@ -917,22 +1106,22 @@ void Vm_spr_dir(int id, int a2, int a3, int a4, int a5)
 	int t3;
 
 	if (a2 != -1)
-		sprt_dat[id].type0 = a2 >> 3;
+		ai_ent[id].type0 = a2 >> 3;
 	if (a4 == -1)
-		t3 = sprt_dat[id].type0;
+		t3 = ai_ent[id].type0;
 	else
 		t3 = a4 >> 3;
-	sprt_dat[id].type3 = t3;
+	ai_ent[id].type3 = t3;
 	if (a3 != -1)
-		sprt_dat[id].type = a3;
+		ai_ent[id].type = a3;
 	if (a5 == -1)
-		sprt_dat[id].type2 = sprt_dat[id].type;
+		ai_ent[id].type2 = ai_ent[id].type;
 	else
-		sprt_dat[id].type2 = a5;
+		ai_ent[id].type2 = a5;
 	sub_4042C0(id);
 }
 
-void rectSwapX(RECT* r)
+void rectSwapX(PC_RECT* r)
 {
 	if (r->left > r->right)
 		std::swap(r->left, r->right);
@@ -946,31 +1135,31 @@ void SprSetDest(int id, int cur_x, int dst_x, int running)
 	{
 		if (dst_x >= cur_x && (sprt_ent[id].lmy < 0 || sprt_ent[id].lmy > cur_x))
 		{
-			sprt_dat[id].type3 = 0;
+			ai_ent[id].type3 = 0;
 			if (running)
 			{
-				sprt_dat[id].type2 = 2;
-				sprt_dat[id].field_1C = 0;
+				ai_ent[id].type2 = 2;
+				ai_ent[id].field_1C = 0;
 			}
 			else
 			{
-				sprt_dat[id].type2 = 1;
-				sprt_dat[id].field_1C = 8;
+				ai_ent[id].type2 = 1;
+				ai_ent[id].field_1C = 8;
 			}
 		}
 	}
 	else
 	{
-		sprt_dat[id].type3 = 1;
+		ai_ent[id].type3 = 1;
 		if (running)
 		{
-			sprt_dat[id].type2 = 2;
-			sprt_dat[id].field_1C = 0;
+			ai_ent[id].type2 = 2;
+			ai_ent[id].field_1C = 0;
 		}
 		else
 		{
-			sprt_dat[id].type2 = 1;
-			sprt_dat[id].field_1C = 8;
+			ai_ent[id].type2 = 1;
+			ai_ent[id].field_1C = 8;
 		}
 	}
 }
@@ -979,7 +1168,7 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 {
 	static byte spd_tbl[] = { 12, 12, 10 };
 
-	RECT r;
+	CRect r;
 	int mmode;
 	int mleft, mright;
 	int dst_x, cur_x;
@@ -993,7 +1182,7 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 
 	left = r.left;
 	right = r.right;
-	center = (r.right - r.left) / 2;
+	center = r.W() / 2;
 
 	if (center < mleft)
 	{
@@ -1003,9 +1192,9 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 			mright = 0;
 	}
 	cur_x = sprt_ent[id].x0;
-	if (sprt_dat[id].type == 3)
+	if (ai_ent[id].type == 3)
 	{
-		if (sprt_dat[id].type0)
+		if (ai_ent[id].type0)
 			cur_x -= spd_tbl[vm_index5[4]];
 		else
 			cur_x += spd_tbl[vm_index5[4]];
@@ -1013,17 +1202,17 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 
 	if (center + r.left <= cur_x)
 	{
-		sprt_dat[id].field_1A = 1;
+		ai_ent[id].field_1A = 1;
 		vm_index5[29] = 1;
 	}
 	else
 	{
-		sprt_dat[id].field_1A = 0;
+		ai_ent[id].field_1A = 0;
 		vm_index5[29] = 0;
 	}
 
 	if (a4 != -1)
-		sprt_dat[id].field_1A = a4 >> 3;
+		ai_ent[id].field_1A = a4 >> 3;
 
 	if (left - mleft <= cur_x)
 	{
@@ -1063,18 +1252,18 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 		dst_x = left;
 	}
 
-	sprt_dat[id].field_18 = dst_x;
+	ai_ent[id].field_18 = dst_x;
 
 	switch (mmode)
 	{
 	case 0:
 		SprSetDest(id, cur_x, dst_x, running);
-		sprt_dat[id].type4 = 1;
-		sprt_dat[id].field_1C = 0;
+		ai_ent[id].type4 = 1;
+		ai_ent[id].field_1C = 0;
 		break;
 	case 1:
 	case 2:
-		sprt_dat[id].type4 = 2;
+		ai_ent[id].type4 = 2;
 		break;
 	}
 }
@@ -1083,53 +1272,52 @@ int sub_401F05()
 {
 	static WORD word_41FF54[4][4] =
 	{
-		349, 350,33117,33118, 349, 350,33117,33118,  73,  74,32841,32842
+		{ 349u, 350u, 33117u, 33118u },
+		{ 349u, 350u, 33117u, 33118u },
+		{ 73u, 74u, 32841u, 32842u },
+		{ 36864u, 0u, 36865u, 0u }
 	};
 
-	switch (sprt_dat[0].type)
+	switch (ai_ent[0].type)
 	{
 	case 3u:
 		vm_index5[2] += 2;
-		if (vm_index5[2] > 0x320u)
+		if (vm_index5[2] > 800)
 			vm_index5[2] = 800;
-		if (sprt_dat[0].type2 != 3)
+		if (ai_ent[0].type2 != 3)
 		{
-			sprt_dat[0].type = 5;
-			SprAnim(0, word_41FF54[vm_index5[4]][2 * sprt_dat[0].type0 + 1], 0, 0);
+			ai_ent[0].type = 5;
+			SprAnim(0, word_41FF54[vm_index5[4]][2 * ai_ent[0].type0 + 1], 0, 0);
 		}
 		return 1;
 	case 4u:
-		if (sprt_ent[0].field_8D)
+		if (sprt_ent[0].is_busy)
 		{
-			sprt_dat[0].type = 3;
-			sprt_dat[0].type2 = 3;
+			ai_ent[0].type = 3;
+			ai_ent[0].type2 = 3;
 		}
 		return 1;
 	case 5u:
-		if (sprt_ent[0].field_8D)
+		if (sprt_ent[0].is_busy)
 		{
-			sprt_dat[0].type = 0;
+			ai_ent[0].type = 0;
 			return 0;
 		}
-		else
-		{
-			return 1;
-		}
+		return 1;
 	default:
-		if (!sprt_dat[0].field_20)
+		if (!ai_ent[0].field_20)
 			return 0;
-		if (--sprt_dat[0].field_20
+
+		if (--ai_ent[0].field_20
 			|| sprt_ent[0].x0 - 80 < sprt_ent[0].lmx
 			|| sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 80 > sprt_ent[0].lmy)
-		{
 			return 0;
-		}
 		else
 		{
-			sprt_dat[0].type = 4;
-			sprt_dat[0].type2 = 4;
-			SprAnim(0, word_41FF54[vm_index5[4]][2 * sprt_dat[0].type0], 0, 0);
-			sprt_dat[0].field_14 = 0;
+			ai_ent[0].type = 4;
+			ai_ent[0].type2 = 4;
+			SprAnim(0, word_41FF54[vm_index5[4]][2 * ai_ent[0].type0], 0, 0);
+			ai_ent[0].anim = 0;
 			return 1;
 		}
 	}
@@ -1137,40 +1325,40 @@ int sub_401F05()
 
 void __cdecl sub_402DE5(int id)
 {
-	RECT a1; // [esp+0h] [ebp-10h] BYREF
+	PC_RECT a1; // [esp+0h] [ebp-10h] BYREF
 
-	switch (sprt_dat[id].type4)
+	switch (ai_ent[id].type4)
 	{
 	case 1u:
 		a1.left = sprt_ent[id].x0;
 		a1.right = sprt_ent[id].x1;
 		rectSwapX(&a1);
-		if (sprt_dat[id].field_18 >= LOWORD(a1.left) && sprt_dat[id].field_18 <= LOWORD(a1.right))
-			sprt_dat[id].type4 = 2;
+		if (ai_ent[id].field_18 >= LOWORD(a1.left) && ai_ent[id].field_18 <= LOWORD(a1.right))
+			ai_ent[id].type4 = 2;
 		break;
 	case 2u:
-		sprt_ent[id].SetXY(sprt_dat[id].field_18, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
-		if (sprt_dat[id].type == 1 || sprt_dat[id].type == 2)
+		sprt_ent[id].SetXY(ai_ent[id].field_18, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
+		if (ai_ent[id].type == 1 || ai_ent[id].type == 2)
 		{
-			sprt_dat[id].enabled = 1;
-			sprt_dat[id].type2 = 0;
+			ai_ent[id].enabled = 1;
+			ai_ent[id].type2 = 0;
 		}
-		sprt_dat[id].type4 = 3;
+		ai_ent[id].type4 = 3;
 		break;
 	case 3u:
-		if (sprt_dat[id].field_1A == LOWORD(sprt_dat[id].type0))
+		if (ai_ent[id].field_1A == LOWORD(ai_ent[id].type0))
 		{
-			sprt_dat[id].type4 = 0;
+			ai_ent[id].type4 = 0;
 		}
 		else
 		{
-			sprt_dat[id].type3 = (__int16)sprt_dat[id].field_1A;
-			sprt_dat[id].type4 = 4;
+			ai_ent[id].type3 = (__int16)ai_ent[id].field_1A;
+			ai_ent[id].type4 = 4;
 		}
 		break;
 	case 4u:
-		if (sprt_ent[id].field_8D)
-			sprt_dat[id].type4 = 0;
+		if (sprt_ent[id].is_busy)
+			ai_ent[id].type4 = 0;
 		break;
 	}
 }
@@ -1179,25 +1367,25 @@ void sub_4020BA()
 {
 	WORD a2[2];
 
-	if (sprt_dat[0].field_1C)
+	if (ai_ent[0].field_1C)
 	{
-		--sprt_dat[0].field_1C;
+		--ai_ent[0].field_1C;
 	}
-	else if (sprt_dat[0].type0 != sprt_dat[0].type3 || sprt_dat[0].type != sprt_dat[0].type2)
+	else if (ai_ent[0].type0 != ai_ent[0].type3 || ai_ent[0].type != ai_ent[0].type2)
 	{
 		sub_4033A4(a2, 0);
-		if (prog.field_128 && sprt_dat[0].type == 2)
-			sprt_dat[0].enabled = 1;
-		if (sprt_dat[0].enabled)
+		if (prog.field_128 && ai_ent[0].type == 2)
+			ai_ent[0].enabled = 1;
+		if (ai_ent[0].enabled)
 		{
 			if (a2[1])
 				a2[0] = a2[1];
 		}
 		SprAnim(0, a2[0], 0, 0);
-		sprt_dat[0].field_14 = a2[1];
-		sprt_dat[0].enabled = 0;
-		sprt_dat[0].type0 = sprt_dat[0].type3;
-		sprt_dat[0].type = sprt_dat[0].type2;
+		ai_ent[0].anim = a2[1];
+		ai_ent[0].enabled = 0;
+		ai_ent[0].type0 = ai_ent[0].type3;
+		ai_ent[0].type = ai_ent[0].type2;
 	}
 }
 
@@ -1207,7 +1395,7 @@ void sub_401D32()
 	sub_401EB7(0);
 	if (!sub_401F05())
 	{
-		if (sprt_dat[0].type == 2)
+		if (ai_ent[0].type == 2)
 		{
 			if (vm_index5[2])
 				--vm_index5[2];
@@ -1219,7 +1407,7 @@ void sub_401D32()
 
 void sub_40266A()
 {
-	RECT r0; // [esp+10h] [ebp-14h] BYREF
+	PC_RECT r0; // [esp+10h] [ebp-14h] BYREF
 	int v2; // [esp+20h] [ebp-4h]
 
 	if (!vm_index5[41])
@@ -1241,19 +1429,19 @@ void sub_40266A()
 
 void __cdecl sub_401E61()
 {
-	if (sprt_ent[1].lmx >= 0 && sprt_ent[1].x0 <= sprt_ent[1].lmx && sprt_dat[1].type0 == 1)
-		sprt_dat[1].type3 = 0;
-	if (sprt_ent[1].lmy >= 0 && sprt_ent[1].x0 >= sprt_ent[1].lmy && !sprt_dat[1].type0)
-		sprt_dat[1].type3 = 1;
+	if (sprt_ent[1].lmx >= 0 && sprt_ent[1].x0 <= sprt_ent[1].lmx && ai_ent[1].type0 == 1)
+		ai_ent[1].type3 = 0;
+	if (sprt_ent[1].lmy >= 0 && sprt_ent[1].x0 >= sprt_ent[1].lmy && !ai_ent[1].type0)
+		ai_ent[1].type3 = 1;
 }
 
 void __cdecl sub_402053()
 {
-	if (vm_index5[25] == 1 && vm_index5[39] && sprt_ent[1].field_8D && ++sprt_dat[1].field_24 >= 2u)
+	if (vm_index5[25] == 1 && vm_index5[39] && sprt_ent[1].is_busy && ++ai_ent[1].field_24 >= 2u)
 	{
-		sprt_dat[1].field_24 = 0;
-		sprt_dat[1].type2 = 1;
-		sprt_dat[1].type3 = sprt_ent[1].x0 - sprt_ent[0].x0 >= 0;
+		ai_ent[1].field_24 = 0;
+		ai_ent[1].type2 = 1;
+		ai_ent[1].type3 = sprt_ent[1].x0 - sprt_ent[0].x0 >= 0;
 	}
 }
 
@@ -1261,13 +1449,13 @@ void __cdecl sub_402178()
 {
 	WORD a2[2]; // [esp+0h] [ebp-4h] BYREF
 
-	if (sprt_dat[1].type0 != sprt_dat[1].type3 || sprt_dat[1].type != sprt_dat[1].type2)
+	if (ai_ent[1].type0 != ai_ent[1].type3 || ai_ent[1].type != ai_ent[1].type2)
 	{
 		sub_4033A4(a2, 1);
 		SprAnim(1u, a2[0], 0, 0);
-		sprt_dat[1].field_14 = a2[1];
-		sprt_dat[1].type0 = sprt_dat[1].type3;
-		sprt_dat[1].type = sprt_dat[1].type2;
+		ai_ent[1].anim = a2[1];
+		ai_ent[1].type0 = ai_ent[1].type3;
+		ai_ent[1].type = ai_ent[1].type2;
 	}
 }
 
@@ -1307,14 +1495,14 @@ __int16 sub_4022ED()
 	{
 		if (v2 <= 0)
 		{
-			if (!sprt_dat[1].type0 && word_420374[vm_index5[4]][0] >= v1
-				|| sprt_dat[1].type0 == 1 && word_420374[vm_index5[4]][1] >= v1)
+			if (!ai_ent[1].type0 && word_420374[vm_index5[4]][0] >= v1
+				|| ai_ent[1].type0 == 1 && word_420374[vm_index5[4]][1] >= v1)
 			{
 				return 2;
 			}
 		}
-		else if (sprt_dat[1].type0 == 1 && word_420374[vm_index5[4]][0] >= v1
-			|| !sprt_dat[1].type0 && word_420374[vm_index5[4]][1] >= v1)
+		else if (ai_ent[1].type0 == 1 && word_420374[vm_index5[4]][0] >= v1
+			|| !ai_ent[1].type0 && word_420374[vm_index5[4]][1] >= v1)
 		{
 			return 1;
 		}
@@ -1352,17 +1540,17 @@ void sub_4021DC()
 				{
 					if ((vm_index3[14] & 1) != 0)
 					{
-						if (!sprt_dat[0].type4 && !prog.field_128)
+						if (!ai_ent[0].type4 && !prog.field_128)
 							return;
-						sprt_dat[0].type4 = 0;
+						ai_ent[0].type4 = 0;
 						prog.field_128 = 0;
 						Vm_set_63();
 					}
 					vm_index5[27] = v0;
-					sprt_dat[0].field_20 = 0;
+					ai_ent[0].field_20 = 0;
 					Vm_mark_event(0x191u, 0);
-					sprt_dat[0].type4 = 0;
-					sprt_dat[1].type4 = 0;
+					ai_ent[0].type4 = 0;
+					ai_ent[1].type4 = 0;
 					if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
 						vm_index5[41] = 1;
 				}
@@ -1373,24 +1561,23 @@ void sub_4021DC()
 
 int intersect_triggers(int x, int y)
 {
-	struct tagRECT rcDst; // [esp+0h] [ebp-24h] BYREF
-	struct tagRECT rc; // [esp+10h] [ebp-14h] BYREF
-	int i; // [esp+20h] [ebp-4h]
+	PC_RECT rmark, rcurs;
+	int i;
 
 	if (vm_index5[41])
 		return -1;
-	SetRect(&rc, x + 1, y + 1, x + 2, y + 2);
+	SetRect(&rcurs, x + 1, y + 1, x + 2, y + 2);
 	for (i = 0; i < 30; ++i)
 	{
 		if ((vm_index6[i + 10] & 0x10) == 0)
 		{
 			if (sub_403304(i))
 			{
-				rcDst.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
-				rcDst.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
-				rcDst.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
-				rcDst.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
-				if (intersectRect(&rc, &rcDst))
+				rmark.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
+				rmark.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
+				rmark.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
+				rmark.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
+				if (intersectRect(&rcurs, &rmark))
 					return i;
 			}
 		}
@@ -1400,12 +1587,12 @@ int intersect_triggers(int x, int y)
 
 void RBtnClick(LONG x, LONG y)
 {
-	RECT rcSrc;
+	PC_RECT rcur;
 
 	if ((prog.click_bits & 1) == 0)
 	{
-		prog.click_bits |= 2u;
-		SetRect(&rcSrc, x, y, x + 1, y + 1);
+		prog.click_bits |= 2;
+		SetRect(&rcur, x, y, x + 1, y + 1);
 		if (prog.vm_func == 1)
 		{
 			if (vm_index5[28])
@@ -1418,15 +1605,15 @@ void RBtnClick(LONG x, LONG y)
 						++vm_index5[44];
 				}
 			}
-			else if (intersectRect(&rcSrc, &prog.render_rect) && prog.field_12E && sprt_dat[0].type <= 2)
+			else if (intersectRect(&rcur, &prog.render_rect) && prog.field_12E && ai_ent[0].type <= 2)
 			{
-				sprt_dat[0].type2 = 0;
-				sprt_dat[0].field_1C = 0;
-				if (!sprt_dat[0].field_20 && !vm_index5[40])
-					sprt_dat[0].field_20 = 100;
-				if (sprt_dat[0].type4)
+				ai_ent[0].type2 = 0;
+				ai_ent[0].field_1C = 0;
+				if (!ai_ent[0].field_20 && !vm_index5[40])
+					ai_ent[0].field_20 = 100;
+				if (ai_ent[0].type4)
 				{
-					sprt_dat[0].type4 = 0;
+					ai_ent[0].type4 = 0;
 					Vm_set_63();
 					vm_index5[45] = 1;
 				}
@@ -1437,29 +1624,29 @@ void RBtnClick(LONG x, LONG y)
 
 void LBtnClick(int is_double, LONG x, LONG y)
 {
-	RECT click; // [esp+10h] [ebp-28h] BYREF
-	int v7; // [esp+24h] [ebp-14h]
+	PC_RECT rcur;
+	int item_hit; // [esp+24h] [ebp-14h]
 	int trg; // [esp+2Ch] [ebp-Ch]
 
 	prog.click_bits |= 1;
-	click.left = x;
-	click.right = x + 1;
-	click.top = y;
-	click.bottom = y + 1;
+	rcur.left = x;
+	rcur.right = x + 1;
+	rcur.top = y;
+	rcur.bottom = y + 1;
 	if (prog.vm_func == 1)
 	{
 		// check if it's inside the game area
-		if (intersectRect(&click, &prog.render_rect))
+		if (intersectRect(&rcur, &prog.render_rect))
 		{
 			vm_index3[22] = prog.screen_x + x - prog.render_rect.left <= sprt_ent[0].x0;
-			if ((prog.field_12E || prog.field_130) && sprt_dat[0].type != 4 && sprt_dat[0].type != 5)
+			if ((prog.field_12E || prog.field_130) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
 			{
-				sprt_dat[0].field_20 = 0;
+				ai_ent[0].field_20 = 0;
 				trg = intersect_triggers(x, y);
 				if (trg == -1)
 				{
 					// free click, move around
-					if (prog.field_12E && !sprt_dat[0].type4)
+					if (prog.field_12E && !ai_ent[0].type4)
 					{
 						if (vm_index5[40])
 							is_double = 0;
@@ -1468,32 +1655,32 @@ void LBtnClick(int is_double, LONG x, LONG y)
 				}
 				else if (Vm_mark_event(trg + 10, 0))
 				{
-					sprt_dat[0].type2 = 0;
-					sprt_dat[0].field_1C = 0;
+					ai_ent[0].type2 = 0;
+					ai_ent[0].field_1C = 0;
 					prog.field_128 = 1;
 				}
 			}
 		}
 		// check if it's inside the inventory space
-		else if (vm_index5[45] && intersectRect(&click, &prog.menu_rect))
+		else if (vm_index5[45] && intersectRect(&rcur, &prog.menu_rect))
 		{
-			v7 = -1;
+			item_hit = -1;
 			int i;
 			for (i = 0; i < 15; i++)
 			{
-				RECT r;
+				PC_RECT r;
 				SetRect(&r, item_xy_tbl[i][0] * 2, item_xy_tbl[i][1] * 2, item_xy_tbl[i][0] * 2 + 32, item_xy_tbl[i][1] * 2 + 32);
-				if (intersectRect(&click, &r))
+				if (intersectRect(&rcur, &r))
 				{
-					v7 = i;
+					item_hit = i;
 					break;
 				}
 			}
 
-			if (v7 != -1 && inventory[v7] != 0xffff)
+			if (item_hit != -1 && inventory[item_hit] != 0xffff)
 			{
-				itemptr2_index = v7;
-				prog.field_13C = 1;
+				itemptr2_index = item_hit;
+				prog.click_on_item = 1;
 			}
 		}
 	}

@@ -117,10 +117,10 @@ void ItemListDisp()
 void ItemRender()
 {
 	prog.field_148 = 1;
-	if (prog.field_13C)
+	if (prog.click_on_item)
 	{
 		ItemListDisp();
-		prog.field_13C = 0;
+		prog.click_on_item = 0;
 		prog.field_148 = 1;
 	}
 }

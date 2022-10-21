@@ -11,7 +11,7 @@ struct TMAP
 	int scroll;
 	int w;
 	int h;
-	RECT clip;
+	PC_RECT clip;
 	int x1;
 	int y1;
 	int scrlx;
@@ -43,9 +43,9 @@ int TMapOpenAll(TMAP* tmap, LPCSTR filename_dib, LPCSTR filename_map);
 void TMapCache(LPCSTR dib_name, LPCSTR map_name);
 
 void TMapSetClipArea(TMAP* tmap, int x, int y, int w, int h);
-void TMapGetRect(TMAP* tmap, RECT* lprcDst);
-void TMapGetDstRect(TMAP* a1, RECT* dst);
-int TMapGetSize(TMAP* tmap, RECT* dst);
+void TMapGetRect(TMAP* tmap, PC_RECT* lprcDst);
+void TMapGetDstRect(TMAP* a1, PC_RECT* dst);
+int TMapGetSize(TMAP* tmap, PC_RECT* dst);
 void TMapRenderScroll(TMAP* s, int wx, int wy, int ww, int wh, int xpos, int ypos);
 void TMapRenderScroll2(TMAP* s, int x, int y, int w, int h);
 void TMapRender(TMAP* tmap);

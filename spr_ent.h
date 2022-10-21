@@ -7,14 +7,14 @@ struct PATTERN_DATA
 };
 
 
-struct SPRT_DAT
+struct AI_ENT
 {
 	DWORD type0;
 	DWORD type;
 	DWORD type3;
 	DWORD type2;
 	DWORD enabled;
-	WORD field_14;
+	WORD anim;
 	WORD type4;
 	WORD field_18;
 	WORD field_1A;
@@ -35,7 +35,7 @@ struct SPRT_ENT
 	void CalcPan();
 
 	DWORD flip;
-	DWORD field_4;
+	DWORD linked;
 	SPRT_ENT* next;
 	SPRT_ENT* prev;
 	DWORD enabled;
@@ -53,7 +53,7 @@ struct SPRT_ENT
 	DWORD field_32;
 	char bmp;
 	DWORD field_37;
-	WORD id;
+	WORD frame_id;
 	DWORD flag0;
 	DWORD field_41;
 	DWORD field_45;
@@ -76,7 +76,7 @@ struct SPRT_ENT
 	DWORD field_81;
 	DWORD field_85;
 	DWORD field_89;
-	DWORD field_8D;
+	DWORD is_busy;
 	DWORD field_91;
 	DWORD field_95;
 	WORD field_99;
@@ -85,11 +85,11 @@ struct SPRT_ENT
 };
 
 extern SPRT_ENT sprt_ent[21];
-extern SPRT_DAT sprt_dat[2];
+extern AI_ENT ai_ent[2];
 
 void Vm_spr_lmt(int a1, int lmx, int lmy);
 void sub_404346(int a1, int a2);
-void sub_402FAF();
+void SprCursorAnimate();
 void CursorDispCk();
 void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr);
 void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag);
@@ -99,7 +99,7 @@ void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4);
 int SetSpriteData(SPRT_ENT* spr, unsigned int id);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs);
 
-void Render_sprite(SPRT_ENT* sprt, RECT* lprcSrc);
+void SprDraw(SPRT_ENT* sprt, PC_RECT* lprcSrc);
 
 void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 
@@ -109,6 +109,7 @@ void sub_40243A();
 
 int EntGetPan(int a1);
 
+void Vm_spr_ent(int a1, DWORD a2, DWORD a3, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD a9);
 void Vm_spr_dir(int id, int a2, int a3, int a4, int a5);
 void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running);
 
