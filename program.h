@@ -11,14 +11,8 @@ struct PROGRAM
 		field_190 = 0;
 		tick_now = 0;
 		tick_delta = 30;
-		render_rect.left = 80;
-		render_rect.top = 0;
-		render_rect.right = 559;
-		render_rect.bottom = 303;
-		menu_rect.left = 144;
-		menu_rect.top = 320;
-		menu_rect.right = 607;
-		menu_rect.bottom = 431;
+		render_rect.Set(80, 0, 559, 303);
+		menu_rect.Set(144, 320, 607, 431);
 		//sprt = 0;
 		screen_on = 0;
 		map_attr = 0;
@@ -71,7 +65,7 @@ struct PROGRAM
 	int field_15C;
 	int screen_x;
 	int screen_y;
-	PC_RECT render_rect,
+	CRect render_rect,
 		menu_rect;
 	int tick_delta;
 	DWORD tick_now;

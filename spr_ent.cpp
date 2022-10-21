@@ -557,13 +557,10 @@ void SprAnim(unsigned int id, WORD anim, WORD a3, WORD a4)
 
 void SprCursorAnimate()
 {
-	PC_RECT rtrg, rcur;
+	CRect rtrg, rcur;
 	int i;
 
-	rcur.left = prog.mousePT.x + 1;
-	rcur.right = prog.mousePT.x + 2;
-	rcur.top = prog.mousePT.y + 1;
-	rcur.bottom = prog.mousePT.y + 2;
+	rcur.SetXYWH(prog.mousePT.x + 1, prog.mousePT.y + 1, 1, 1);
 	if (prog.cur_enabled)
 	{
 		i = 0;
@@ -571,18 +568,18 @@ void SprCursorAnimate()
 		{
 			if ((vm_index6[i + 10] & 0x10) == 0 && sub_403304(i))
 			{
-				rtrg.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
-				rtrg.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
-				rtrg.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
-				rtrg.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
+				rtrg.Set(prog.render_rect.X0() + vm_rects[i].X0() - prog.screen_x,
+					prog.render_rect.X0() + vm_rects[i].X1() - prog.screen_x,
+					prog.render_rect.Y0() + vm_rects[i].Y0() - prog.screen_y,
+					prog.render_rect.Y0() + vm_rects[i].Y1() - prog.screen_y);
 				if (intersectRect(&rcur, &rtrg))
 					break;
 			}
 			if (++i >= 30)
 				goto LABEL_15;
 		}
-		prog.triggerX = vm_rects[i].left - (32 - vm_rects[i].W()) / 2;
-		prog.triggerY = vm_rects[i].top - (32 - vm_rects[i].H()) / 2;
+		prog.triggerX = vm_rects[i].X0() - (32 - vm_rects[i].W()) / 2;
+		prog.triggerY = vm_rects[i].Y0() - (32 - vm_rects[i].H()) / 2;
 		if (prog.field_14C)
 		{
 			if (prog.field_14C == 1)
@@ -631,17 +628,14 @@ void SprCursorAnimate()
 	}
 }
 
-void SpriteGetRect(SPRT_ENT* s, PC_RECT* r)
+void SpriteGetRect(SPRT_ENT* s, CRect* r)
 {
-	r->left = s->x3;
-	r->right = s->width + s->x3 - 1;
-	r->top = s->y3;
-	r->bottom = s->height + s->y3 - 1;
+	r->SetXYWH(s->x3, s->width, s->y3, s->height);
 }
 
-void SprDraw(SPRT_ENT* sprt, PC_RECT* lprcSrc)
+void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 {
-	PC_RECT rxy, rspr, rcopy;
+	CRect rxy, rspr, rcopy;
 	int srcx, srcy, dstx, dsty;
 
 	SpriteGetRect(sprt, &rspr);
@@ -659,24 +653,24 @@ void SprDraw(SPRT_ENT* sprt, PC_RECT* lprcSrc)
 	}
 
 	TMapGetRect(&tmap, &rxy);
-	if ((signed int)sprt->x3 < rcopy.left)
+	if ((signed int)sprt->x3 < rcopy.X0())
 	{
-		dstx = rxy.left;
-		srcx = rcopy.left - sprt->x3;
+		dstx = rxy.X0();
+		srcx = rcopy.X0() - sprt->x3;
 	}
 	else
 	{
-		dstx = rxy.left + sprt->x3 - rcopy.left;
+		dstx = rxy.X0() + sprt->x3 - rcopy.X0();
 		srcx = 0;
 	}
-	if ((signed int)sprt->y3 < rcopy.top)
+	if ((signed int)sprt->y3 < rcopy.Y0())
 	{
-		dsty = rxy.top;
-		srcy = rcopy.top - sprt->y3;
+		dsty = rxy.Y0();
+		srcy = rcopy.Y0() - sprt->y3;
 	}
 	else
 	{
-		dsty = rxy.top + sprt->y3 - rcopy.top;
+		dsty = rxy.Y0() + sprt->y3 - rcopy.Y0();
 		srcy = 0;
 	}
 
@@ -699,12 +693,9 @@ void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int
 
 void CursorDispCk()
 {
-	PC_RECT rcSrc1;
+	CRect rcSrc1;
 
-	rcSrc1.left = prog.mousePT.x + 1;
-	rcSrc1.right = prog.mousePT.x + 2;
-	rcSrc1.top = prog.mousePT.y + 1;
-	rcSrc1.bottom = prog.mousePT.y + 2;
+	rcSrc1.SetXYWH(prog.mousePT.x + 1, 1, prog.mousePT.y + 1, 1);
 	if (prog.vm_func != 1 || !intersectRect(&rcSrc1, &prog.render_rect) || prog.cur_enabled && !prog.field_14C)
 	{
 		if (prog.cur_type1 < 0)
@@ -1121,10 +1112,10 @@ void Vm_spr_dir(int id, int a2, int a3, int a4, int a5)
 	sub_4042C0(id);
 }
 
-void rectSwapX(PC_RECT* r)
+void rectSwapX(CRect* r)
 {
-	if (r->left > r->right)
-		std::swap(r->left, r->right);
+	if (r->X0() > r->X1())
+		r->SwapX();
 }
 
 void SprSetDest(int id, int cur_x, int dst_x, int running)
@@ -1176,12 +1167,11 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 
 	mleft = 8;
 	mright = 8;
-	r.left = x0;
-	r.right = x1;
+	r.Set(x0, x1, 0, 0);
 	rectSwapX(&r);
 
-	left = r.left;
-	right = r.right;
+	left = r.X0();
+	right = r.X1();
 	center = r.W() / 2;
 
 	if (center < mleft)
@@ -1200,7 +1190,7 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 			cur_x += spd_tbl[vm_index5[4]];
 	}
 
-	if (center + r.left <= cur_x)
+	if (center + r.X0() <= cur_x)
 	{
 		ai_ent[id].field_1A = 1;
 		vm_index5[29] = 1;
@@ -1325,15 +1315,14 @@ int sub_401F05()
 
 void __cdecl sub_402DE5(int id)
 {
-	PC_RECT a1; // [esp+0h] [ebp-10h] BYREF
+	CRect pt; // [esp+0h] [ebp-10h] BYREF
 
 	switch (ai_ent[id].type4)
 	{
 	case 1u:
-		a1.left = sprt_ent[id].x0;
-		a1.right = sprt_ent[id].x1;
-		rectSwapX(&a1);
-		if (ai_ent[id].field_18 >= LOWORD(a1.left) && ai_ent[id].field_18 <= LOWORD(a1.right))
+		pt.Set(sprt_ent[id].x0, sprt_ent[id].x1, 0, 0);
+		rectSwapX(&pt);
+		if (ai_ent[id].field_18 >= pt.X0() && ai_ent[id].field_18 <= pt.X1())
 			ai_ent[id].type4 = 2;
 		break;
 	case 2u:
@@ -1407,15 +1396,12 @@ void sub_401D32()
 
 void sub_40266A()
 {
-	PC_RECT r0; // [esp+10h] [ebp-14h] BYREF
+	CRect r0; // [esp+10h] [ebp-14h] BYREF
 	int v2; // [esp+20h] [ebp-4h]
 
 	if (!vm_index5[41])
 	{
-		r0.left = sprt_ent[0].x0;
-		r0.right = sprt_ent[0].x1;
-		r0.top = sprt_ent[0].y0;
-		r0.bottom = sprt_ent[0].y0 + 1;
+		r0.Set(sprt_ent[0].x0, sprt_ent[0].x1, sprt_ent[0].y0, sprt_ent[0].y0 + 1);
 		rectSwapX(&r0);
 		v2 = 0;
 		while ((vm_index6[v2 + 10] & 0x10) == 0 || !sub_403304(v2) || !intersectRect(&r0, &vm_rects[v2]))
@@ -1561,22 +1547,22 @@ void sub_4021DC()
 
 int intersect_triggers(int x, int y)
 {
-	PC_RECT rmark, rcurs;
+	CRect rmark, rcurs;
 	int i;
 
 	if (vm_index5[41])
 		return -1;
-	SetRect(&rcurs, x + 1, y + 1, x + 2, y + 2);
+	setRect(&rcurs, x + 1, y + 1, x + 2, y + 2);
 	for (i = 0; i < 30; ++i)
 	{
 		if ((vm_index6[i + 10] & 0x10) == 0)
 		{
 			if (sub_403304(i))
 			{
-				rmark.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
-				rmark.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
-				rmark.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
-				rmark.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
+				rmark.Set(prog.render_rect.X0() + vm_rects[i].X0() - prog.screen_x,
+					prog.render_rect.X0() + vm_rects[i].X1() - prog.screen_x,
+					prog.render_rect.Y0() + vm_rects[i].Y0() - prog.screen_y,
+					prog.render_rect.Y0() + vm_rects[i].Y1() - prog.screen_y);
 				if (intersectRect(&rcurs, &rmark))
 					return i;
 			}
@@ -1587,12 +1573,12 @@ int intersect_triggers(int x, int y)
 
 void RBtnClick(LONG x, LONG y)
 {
-	PC_RECT rcur;
+	CRect rcur;
 
 	if ((prog.click_bits & 1) == 0)
 	{
 		prog.click_bits |= 2;
-		SetRect(&rcur, x, y, x + 1, y + 1);
+		setRect(&rcur, x, y, x + 1, y + 1);
 		if (prog.vm_func == 1)
 		{
 			if (vm_index5[28])
@@ -1624,21 +1610,18 @@ void RBtnClick(LONG x, LONG y)
 
 void LBtnClick(int is_double, LONG x, LONG y)
 {
-	PC_RECT rcur;
+	CRect rcur;
 	int item_hit; // [esp+24h] [ebp-14h]
 	int trg; // [esp+2Ch] [ebp-Ch]
 
 	prog.click_bits |= 1;
-	rcur.left = x;
-	rcur.right = x + 1;
-	rcur.top = y;
-	rcur.bottom = y + 1;
+	rcur.SetXYWH(x, y, 1, 1);
 	if (prog.vm_func == 1)
 	{
 		// check if it's inside the game area
 		if (intersectRect(&rcur, &prog.render_rect))
 		{
-			vm_index3[22] = prog.screen_x + x - prog.render_rect.left <= sprt_ent[0].x0;
+			vm_index3[22] = prog.screen_x + x - prog.render_rect.X0() <= sprt_ent[0].x0;
 			if ((prog.field_12E || prog.field_130) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
 			{
 				ai_ent[0].field_20 = 0;
@@ -1650,7 +1633,7 @@ void LBtnClick(int is_double, LONG x, LONG y)
 					{
 						if (vm_index5[40])
 							is_double = 0;
-						SprSetDest(0, sprt_ent[0].x0, prog.screen_x + x - prog.render_rect.left, is_double);
+						SprSetDest(0, sprt_ent[0].x0, prog.screen_x + x - prog.render_rect.X0(), is_double);
 					}
 				}
 				else if (Vm_mark_event(trg + 10, 0))
@@ -1668,8 +1651,8 @@ void LBtnClick(int is_double, LONG x, LONG y)
 			int i;
 			for (i = 0; i < 15; i++)
 			{
-				PC_RECT r;
-				SetRect(&r, item_xy_tbl[i][0] * 2, item_xy_tbl[i][1] * 2, item_xy_tbl[i][0] * 2 + 32, item_xy_tbl[i][1] * 2 + 32);
+				CRect r;
+				setRect(&r, item_xy_tbl[i][0] * 2, item_xy_tbl[i][1] * 2, item_xy_tbl[i][0] * 2 + 32, item_xy_tbl[i][1] * 2 + 32);
 				if (intersectRect(&rcur, &r))
 				{
 					item_hit = i;

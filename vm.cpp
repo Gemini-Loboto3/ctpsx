@@ -184,12 +184,12 @@ void(*vm_funcs[])() =
 
 void Vm_all_spr_disp()
 {
-	PC_RECT rcDst, rinv, rmap;
+	CRect rcDst, rinv, rmap;
 	SPRT_ENT* sprt;
 
 	TMapGetDstRect(&tmap, &rmap);
 	TMapGetRect(&tmap, &rinv);
-	OffsetRect(&rinv, -rinv.left, -rinv.top);
+	offsetRect(&rinv, -rinv.X0(), -rinv.Y0());
 
 	// sprite entities
 	for (sprt = prog.sprt; sprt; sprt = sprt->next)
@@ -212,8 +212,8 @@ void Vm_all_spr_disp()
 			if (prog.field_14C == 3)
 			{
 				TMapGetRect(&tmap, &rcDst);
-				sprt_ent[11].SetXY(prog.screen_x + prog.mousePT.x - rcDst.left - 16,
-					prog.screen_y + prog.mousePT.y - rcDst.top - 16, 0x64u, 1);
+				sprt_ent[11].SetXY(prog.screen_x + prog.mousePT.x - rcDst.X0() - 16,
+					prog.screen_y + prog.mousePT.y - rcDst.Y0() - 16, 0x64u, 1);
 			}
 			SetSpriteData(&sprt_ent[11], sprt_ent[11].frame_id);
 			SprDraw(&sprt_ent[11], &rmap);
@@ -1657,7 +1657,7 @@ void VM::op_set_proc()
 
 void VM::op_set_mark()
 {
-	WORD mark; // ax
+	WORD x0; // ax
 
 	updateIndex();
 	for (int i = 0; i < 30; ++i)
@@ -1666,15 +1666,16 @@ void VM::op_set_mark()
 	int i = 0;
 	do
 	{
-		mark = read16();
-		if (mark == EVT_END)
+		x0 = read16();
+		if (x0 == EVT_END)
 			loop_end = 1;
 		else
 		{
-			vm_rects[i].left = (short)mark;
-			vm_rects[i].top = read16s();
-			vm_rects[i].right = read16s();
-			vm_rects[i].bottom = read16s();
+			int y0 = read16s();
+			int x1 = read16s();
+			int y1 = read16s();
+
+			vm_rects[i].Set(x0, x1, y0, y1);
 			vm_index6[500 + i] = consume();
 			i++;
 		}
@@ -1974,11 +1975,11 @@ void VM::op_map_disp()
 	{
 		if (vm_index6[i + 500] != 0xffff
 			&& vm_index2[vm_index6[i + 500]]
-			&& vm_rects[i].left >= scrl_x
-			&& vm_rects[i].top >= scrl_y)
+			&& vm_rects[i].X0() >= scrl_x
+			&& vm_rects[i].Y0() >= scrl_y)
 		{
-			int x0 = scroll_x + vm_rects[i].left - scrl_x;
-			int y0 = scroll_y + vm_rects[i].top - scrl_y;
+			int x0 = scroll_x + vm_rects[i].X0() - scrl_x;
+			int y0 = scroll_y + vm_rects[i].Y0() - scrl_y;
 			int x1 = vm_rects[i].W() + x0;
 			int y1 = vm_rects[i].H() + y0;
 

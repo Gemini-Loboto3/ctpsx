@@ -99,7 +99,7 @@ void SprAnim(unsigned int id, WORD a2, WORD a3, WORD a4);
 int SetSpriteData(SPRT_ENT* spr, unsigned int id);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs);
 
-void SprDraw(SPRT_ENT* sprt, PC_RECT* lprcSrc);
+void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc);
 
 void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 

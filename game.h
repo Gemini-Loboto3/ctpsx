@@ -44,7 +44,7 @@ struct RENDER_BMP
 	HGDIOBJ old_obj;
 	int w;
 	int h;
-	PC_RECT rect;
+	CRect rect;
 	int screen_on;
 	BITMAP_DATA* bmp_info;
 	int flipped_h;

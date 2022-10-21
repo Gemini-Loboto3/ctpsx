@@ -426,6 +426,9 @@ void LoadTMC(int id)
 		default:
 			goto other_case;
 		}
+
+		sprintf_s(path, MAX_PATH, "%s.TMC", fname);
+		fname = path;
 	}
 	else
 	{
@@ -437,7 +440,7 @@ other_case:
 		if (num == 0xa00)
 			fp += tmc_lut[vm_index5[0]] * 58 + 10;
 
-		sprintf_s(path, MAX_PATH, "SPRT\\CHARTMC%s", sprt_name7[fp]);
+		sprintf_s(path, MAX_PATH, "SPRT\\CHARTMC%s.TMC", sprt_name7[fp]);
 		fname = path;
 	}
 }

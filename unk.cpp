@@ -58,12 +58,12 @@ void TriggerDebug()
 	{
 		if (sub_403304(i))
 		{
-			rtrg.left = prog.render_rect.left + vm_rects[i].left - prog.screen_x;
-			rtrg.right = prog.render_rect.left + vm_rects[i].right - prog.screen_x;
-			rtrg.top = prog.render_rect.top + vm_rects[i].top - prog.screen_y;
-			rtrg.bottom = prog.render_rect.top + vm_rects[i].bottom - prog.screen_y;
+			rtrg.Set(prog.render_rect.X0() + vm_rects[i].X0() - prog.screen_x,
+				prog.render_rect.X0() + vm_rects[i].X1() - prog.screen_x,
+				prog.render_rect.Y0() + vm_rects[i].Y0() - prog.screen_y,
+				prog.render_rect.Y0() + vm_rects[i].Y1() - prog.screen_y);
 			if (intersectRect(&prog.render_rect, &rtrg))
-				RenderTile(GETX(rtrg.left), GETY(rtrg.top), rtrg.W() / 2, rtrg.H() / 2, 0, 0xff, 0xff, 0x80);
+				RenderTile(GETX(rtrg.X0()), GETY(rtrg.Y0()), rtrg.W() / 2, rtrg.H() / 2, 0, 0xff, 0xff, 0x80);
 		}
 	}
 }

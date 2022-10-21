@@ -63,7 +63,7 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 	// resize window
 	BOOL menu = (GetMenu(prog.hWnd) != nullptr);
 	auto dwStyle = GetWindowLongA(prog.hWnd, GWL_STYLE);
-	PC_RECT rc;
+	RECT rc;
 	SetRect(&rc, 0, 0, w, h);
 
 	//SetWindowLongA(hWnd, GWL_STYLE, dwStyle);
