@@ -93,7 +93,7 @@ void InputRead()
 
 		if (event != -1)
 		{
-			vm_index3[16] = event;
+			vm_data.vm_index3[16] = event;
 			Vm_set_63();
 			Vm_mark_event(0x190, 1);
 		}

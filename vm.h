@@ -456,21 +456,46 @@ struct VM
 	__int16 field_35C2;
 };
 
-extern WORD vm_usage[5],
-	vm_evt_pos,
-	vm_index0[500],
-	vm_var0,
-	vm_index1[30],
-	vm_index2[512],
-	vm_index3[64],
-	vm_index4[64],
-	vm_index5[128],
-	//vm_index6[500],
-	//vm_index7[30];
-	vm_index6[530];
+struct VM_Data
+{
+	WORD vm_usage[5],
+		vm_evt_pos,
+		vm_index0[500],
+		vm_var0,
+		vm_index1[30],
+		vm_index2[512],
+		vm_index3[64],
+		vm_index4[64],
+		vm_index5[128],
+		vm_index6[530];
+	CRect vm_rects[30];
+	WORD vm_count_index,
+		render_x,
+		render_y,
+		render_w,
+		render_h,
+		word_42694A,
+		word_42694C,
+		word_42694E,
+		word_426950[12];
+};
 
-extern CRect vm_rects[30];
+//extern WORD vm_data.vm_usage[5],
+//	vm_data.vm_evt_pos,
+//	vm_data.vm_index0[500],
+//	vm_data.vm_var0,
+//	vm_data.vm_index1[30],
+//	vm_data.vm_index2[512],
+//	vm_data.vm_index3[64],
+//	vm_data.vm_index4[64],
+//	vm_data.vm_index5[128],
+//	//vm_data.vm_index6[500],
+//	//vm_index7[30];
+//	vm_data.vm_index6[530];
+
+//extern CRect vm_rects[30];
 extern int error_no;
+extern VM_Data vm_data;
 
 void vm_func7();
 

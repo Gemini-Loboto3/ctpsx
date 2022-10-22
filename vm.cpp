@@ -7,26 +7,28 @@
 
 #define MAX_STR_SIZE	80
 
-WORD vm_usage[5],
-	vm_evt_pos,
-	vm_index0[500],
-	vm_var0,
-	vm_index1[30],
-	vm_index2[512],
-	vm_index3[64],
-	vm_index4[64],
-	vm_index5[128],
-	vm_index6[530/*500*/],
+VM_Data vm_data;
+
+//WORD vm_data.vm_usage[5],
+//	vm_data.vm_evt_pos,
+//	vm_data.vm_index0[500],
+//	vm_data.vm_var0,
+//	vm_data.vm_index1[30],
+//	vm_data.vm_index2[512],
+//	vm_data.vm_index3[64],
+//	vm_data.vm_index4[64],
+//	vm_data.vm_index5[128],
+//	vm_data.vm_index6[530/*500*/],
 	//vm_index7[30],
-	word_42069E;
+WORD word_42069E;
 
-CRect vm_rects[30];
-
-WORD word_426940;
-WORD render_x,
-	render_y,
-	render_w,
-	render_h;
+//CRect vm_rects[30];
+//
+//WORD vm_count_index;
+//WORD vm_data.render_x,
+//	vm_data.render_y,
+//	vm_data.render_w,
+//	vm_data.render_h;
 
 int error_no;
 
@@ -65,9 +67,9 @@ void vm_func_null() {}
 void vm_func_del_data()
 {
 	if (game_state_get(0))
-		vm_index5[30] = 1;
+		vm_data.vm_index5[30] = 1;
 	else
-		vm_index5[30] = 0;
+		vm_data.vm_index5[30] = 0;
 }
 
 void vm_func2()
@@ -81,24 +83,30 @@ void vm_func2()
 
 	static WORD word_420358[][2] =
 	{
-		518,35840, 532,35850, 534,35852, 258,35854, 533,   0, 277,   0, 272
+		{ 518u, 35840u },
+		{ 532u, 35850u },
+		{ 534u, 35852u },
+		{ 258u, 35854u },
+		{ 533u, 0u },
+		{ 277u, 0u },
+		{ 272u, 0u }
 	};
 
-	WORD v0 = render_x;
-	if (vm_index5[25] == 1)
+	WORD v0 = vm_data.render_x;
+	if (vm_data.vm_index5[25] == 1)
 	{
-		vm_index5[30] = word_4202F8[vm_index5[4]][v0 * 2];
-		vm_index5[31] = word_4202F8[vm_index5[4]][v0 * 2 + 1];
+		vm_data.vm_index5[30] = word_4202F8[vm_data.vm_index5[4]][v0 * 2];
+		vm_data.vm_index5[31] = word_4202F8[vm_data.vm_index5[4]][v0 * 2 + 1];
 	}
-	else if (vm_index5[25] == 2)
+	else if (vm_data.vm_index5[25] == 2)
 	{
-		vm_index5[30] = word_420358[v0][0];
-		vm_index5[31] = word_420358[v0][1];
+		vm_data.vm_index5[30] = word_420358[v0][0];
+		vm_data.vm_index5[31] = word_420358[v0][1];
 	}
-	if (vm_index5[27] == 2)
+	if (vm_data.vm_index5[27] == 2)
 	{
-		vm_index5[30] ^= 0x8000u;
-		vm_index5[31] ^= 0x8000u;
+		vm_data.vm_index5[30] ^= 0x8000;
+		vm_data.vm_index5[31] ^= 0x8000;
 	}
 }
 
@@ -116,28 +124,28 @@ void vm_func3()
 	bool v0; // [esp+0h] [ebp-8h]
 	__int16 v1 = 0; // [esp+6h] [ebp-2h]
 
-	v0 = vm_index5[27] == 2;
-	if (vm_index5[25] == 1)
-		v1 = word_420384[vm_index5[4]][v0];
-	else if (vm_index5[25] == 2)
-		v1 = v1 = word_420384[vm_index5[41] + 3][v0];
+	v0 = vm_data.vm_index5[27] == 2;
+	if (vm_data.vm_index5[25] == 1)
+		v1 = word_420384[vm_data.vm_index5[4]][v0];
+	else if (vm_data.vm_index5[25] == 2)
+		v1 = v1 = word_420384[vm_data.vm_index5[41] + 3][v0];
 
-	vm_index5[30] = v1 + sprt_ent[0].x0;
+	vm_data.vm_index5[30] = v1 + sprt_ent[0].x0;
 }
 
 void vm_func5()
 {
-	if (render_x <= 1)
-		ai_ent[render_x].type4 = 0;
+	if (vm_data.render_x <= 1)
+		ai_ent[vm_data.render_x].type4 = 0;
 }
 
 void vm_func6()
 {
-	if (render_x < 9 && !prog.field_1D4[render_x])
+	if (vm_data.render_x < 9 && !prog.field_1D4[vm_data.render_x])
 	{
 		vm_func7();
 		game_state_get(0);
-		prog.field_1D4[render_x] = 1;
+		prog.field_1D4[vm_data.render_x] = 1;
 		WriteData();
 	}
 }
@@ -154,12 +162,12 @@ void vm_func7()
 void vm_func8()
 {
 	for (int i = 0; i < 9; ++i)
-		vm_index3[i + 30] = prog.field_1D4[i];
+		vm_data.vm_index3[i + 30] = prog.field_1D4[i];
 }
 
 void vm_func_clear()
 {
-	RenderTile(render_x / 2, render_y / 2, render_w / 2, render_h / 2, 0, 0, 0);
+	RenderTile(vm_data.render_x / 2, vm_data.render_y / 2, vm_data.render_w / 2, vm_data.render_h / 2, 0, 0, 0);
 }
 
 void(*vm_funcs[])() =
@@ -296,8 +304,8 @@ void Vm_sce_init()
 	int id = sub_4035DC();
 	prog.pal_obj.f4091AD(id);
 	Vm_slant_clr();
-	vm_index5[28] = 0;
-	//vm_index5[48] = 18;	// psx
+	vm_data.vm_index5[28] = 0;
+	//vm_data.vm_index5[48] = 18;	// psx
 }
 
 int ReadData(int reload)
@@ -318,9 +326,9 @@ int ReadData(int reload)
 		else
 		{
 			fp.Read(prog.field_1E6, 0x24);
-			if (fp.Read(vm_index2, 1024) == 1024)
+			if (fp.Read(vm_data.vm_index2, 1024) == 1024)
 			{
-				if (fp.Read(vm_index5, 256) != 256)
+				if (fp.Read(vm_data.vm_index5, 256) != 256)
 					ret = 7;
 			}
 			else
@@ -347,9 +355,9 @@ int WriteData()
 	{
 		if (fp.Write(prog.field_1E6, 36) == 36)
 		{
-			if (fp.Write(vm_index2, 1024) == 1024)
+			if (fp.Write(vm_data.vm_index2, 1024) == 1024)
 			{
-				if (fp.Write(vm_index5, 256) != 256)
+				if (fp.Write(vm_data.vm_index5, 256) != 256)
 					ret = 8;
 			}
 			else
@@ -453,19 +461,19 @@ void game_state_rand()
 	prog.field_1E6[p[2] + 13] = word_41D668[4];
 	prog.field_1E6[p[3] + 13] = word_41D668[5];
 	prog.field_1E6[p[4] + 13] = word_41D668[6];
-	vm_index5[38] = word_41D668[p[4] + 13];
+	vm_data.vm_index5[38] = word_41D668[p[4] + 13];
 }
 
 void __cdecl Vm_cont_init()
 {
 	if (game_state_get(0))
 	{
-		vm_index5[30] = 0;
+		vm_data.vm_index5[30] = 0;
 	}
 	else
 	{
 		game_state_set();
-		vm_index5[30] = 1;
+		vm_data.vm_index5[30] = 1;
 	}
 }
 
@@ -474,21 +482,21 @@ void Vm_enable_event(VM* vm, int index)
 	WORD posbk; // [esp+0h] [ebp-4h]
 	WORD i; // [esp+2h] [ebp-2h]
 
-	posbk = vm_evt_pos;
+	posbk = vm_data.vm_evt_pos;
 	i = 0;
-	while (vm_usage[i])
+	while (vm_data.vm_usage[i])
 	{
 		if (++i >= 5)
 			goto LABEL_5;
 	}
 
-	vm_evt_pos = i;
+	vm_data.vm_evt_pos = i;
 LABEL_5:
-	vm_usage[vm_evt_pos] = 1;
-	vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[index]].w.w[0];
-	vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[index]].b.b[2];
+	vm_data.vm_usage[vm_data.vm_evt_pos] = 1;
+	vm->ado_pos0[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[index]].w.w[0];
+	vm->ado_pos1[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[index]].b.b[2];
 	vm->updateIndex();
-	vm_evt_pos = posbk;
+	vm_data.vm_evt_pos = posbk;
 }
 
 void Vm_dest(VM* vm, int index)
@@ -499,48 +507,48 @@ void Vm_dest(VM* vm, int index)
 	int v5; // eax
 	unsigned __int16 a2; // [esp+5Eh] [ebp-2h]
 
-	if (vm_index4[index])
+	if (vm_data.vm_index4[index])
 	{
-		a2 = vm_index4[index + 1];
+		a2 = vm_data.vm_index4[index + 1];
 		if (vm->field_209C[a2] != 0xFF1F)
 		{
-			if (vm_index4[59])
+			if (vm_data.vm_index4[59])
 				printf("Event destination: 0x%X\n", vm->adt[vm->field_209C[a2]].dw);
 
-			vm->ado_pos_bk[0][vm_evt_pos] = vm->ado_pos0[vm_evt_pos];
-			vm->ado_pos_bk[1][vm_evt_pos] = vm->ado_pos1[vm_evt_pos];
-			v2 = vm_index6[a2] & 3;
+			vm->ado_pos_bk[0][vm_data.vm_evt_pos] = vm->ado_pos0[vm_data.vm_evt_pos];
+			vm->ado_pos_bk[1][vm_data.vm_evt_pos] = vm->ado_pos1[vm_data.vm_evt_pos];
+			v2 = vm_data.vm_index6[a2] & 3;
 			v3 = v2 == 0;
 			v4 = v2 - 1;
 			if (v3)
 			{
-				if (vm_var0 == 1)
-					vm->ado_pos_bk[2][vm_evt_pos] = vm->ado_pos2[vm_evt_pos];
-				vm->field_24B6[vm_evt_pos][vm->ado_pos2[vm_evt_pos]] = (vm->ado_pos1[vm_evt_pos] << 16) & 0xFF0000;
-				v5 = vm->ado_pos2[vm_evt_pos];
-				vm->field_24B6[vm_evt_pos][v5] |= vm->ado_pos0[vm_evt_pos];
-				vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[0];
-				vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[1];
-				++vm->ado_pos2[vm_evt_pos];
+				if (vm_data.vm_var0 == 1)
+					vm->ado_pos_bk[2][vm_data.vm_evt_pos] = vm->ado_pos2[vm_data.vm_evt_pos];
+				vm->field_24B6[vm_data.vm_evt_pos][vm->ado_pos2[vm_data.vm_evt_pos]] = (vm->ado_pos1[vm_data.vm_evt_pos] << 16) & 0xFF0000;
+				v5 = vm->ado_pos2[vm_data.vm_evt_pos];
+				vm->field_24B6[vm_data.vm_evt_pos][v5] |= vm->ado_pos0[vm_data.vm_evt_pos];
+				vm->ado_pos0[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[0];
+				vm->ado_pos1[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[1];
+				++vm->ado_pos2[vm_data.vm_evt_pos];
 				vm->updateIndex();
-				vm_index4[index] = 0;
+				vm_data.vm_index4[index] = 0;
 			}
 			else
 			{
 				if (v4)
 				{
-					vm_index4[index + 1] = vm_index4[index + 3];
+					vm_data.vm_index4[index + 1] = vm_data.vm_index4[index + 3];
 					Vm_enable_event(vm, a2);
 				}
 				else
 				{
-					vm->ado_pos_bk[2][vm_evt_pos] = vm->ado_pos2[vm_evt_pos];
-					vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[0];
-					vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[a2]].b.b[2];
+					vm->ado_pos_bk[2][vm_data.vm_evt_pos] = vm->ado_pos2[vm_data.vm_evt_pos];
+					vm->ado_pos0[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[a2]].w.w[0];
+					vm->ado_pos1[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[a2]].b.b[2];
 					vm->updateIndex();
-					vm->ado_pos2[vm_evt_pos] = 0;
+					vm->ado_pos2[vm_data.vm_evt_pos] = 0;
 				}
-				vm_index4[index] = 0;
+				vm_data.vm_index4[index] = 0;
 			}
 		}
 	}
@@ -550,51 +558,51 @@ void Vm_event(VM* vm)
 {
 	unsigned __int16 i; // [esp+0h] [ebp-2h]
 
-	if (vm_index4[38])
+	if (vm_data.vm_index4[38])
 	{
-		if (vm_index4[38] == 1)
+		if (vm_data.vm_index4[38] == 1)
 		{
-			if (!vm_index4[60] && !vm_index4[61])
+			if (!vm_data.vm_index4[60] && !vm_data.vm_index4[61])
 			{
-				vm_index4[8] = 1;
-				--vm_index4[38];
+				vm_data.vm_index4[8] = 1;
+				--vm_data.vm_index4[38];
 			}
 		}
 		else
 		{
-			--vm_index4[38];
+			--vm_data.vm_index4[38];
 		}
 	}
-	if (vm_index4[39])
+	if (vm_data.vm_index4[39])
 	{
-		if (vm_index4[39] == 1)
+		if (vm_data.vm_index4[39] == 1)
 		{
-			if (!vm_index4[60] && !vm_index4[61])
+			if (!vm_data.vm_index4[60] && !vm_data.vm_index4[61])
 			{
-				vm_index4[9] = 1;
-				--vm_index4[39];
+				vm_data.vm_index4[9] = 1;
+				--vm_data.vm_index4[39];
 			}
 		}
 		else
 		{
-			--vm_index4[39];
+			--vm_data.vm_index4[39];
 		}
 	}
-	if (vm_index4[37])
+	if (vm_data.vm_index4[37])
 	{
 		vm->field_35C2 = (vm->field_35C2 + 1) & 0x1F;
 		if (!vm->field_35C2)
 		{
-			if (vm_index4[37] == 1)
-				vm_index4[7] = 1;
-			--vm_index4[37];
+			if (vm_data.vm_index4[37] == 1)
+				vm_data.vm_index4[7] = 1;
+			--vm_data.vm_index4[37];
 		}
 	}
 	for (i = 0; i < 10u; ++i)
 	{
-		if (vm_index4[i] && vm->field_209C[i] != 0xFF1F)
+		if (vm_data.vm_index4[i] && vm->field_209C[i] != 0xFF1F)
 		{
-			if (vm_index4[59])
+			if (vm_data.vm_index4[59])
 			{
 				if (i == 7)
 					printf("Firing clock timer event.\n");
@@ -603,21 +611,21 @@ void Vm_event(VM* vm)
 				if (i == 9)
 					printf("Starting interval timer 2 event.\n");
 			}
-			if (vm_var0 == 1)
-				vm->ado_pos_bk[2][vm_evt_pos] = vm->ado_pos2[vm_evt_pos];
-			vm->ado_pos_bk[0][vm_evt_pos] = vm->ado_pos0[vm_evt_pos];
-			vm->ado_pos_bk[1][vm_evt_pos] = vm->ado_pos1[vm_evt_pos];
-			vm->ado_pos0[vm_evt_pos] = vm->adt[vm->field_209C[i]].w.w[0];
-			vm->ado_pos1[vm_evt_pos] = vm->adt[vm->field_209C[i]].b.b[2];
+			if (vm_data.vm_var0 == 1)
+				vm->ado_pos_bk[2][vm_data.vm_evt_pos] = vm->ado_pos2[vm_data.vm_evt_pos];
+			vm->ado_pos_bk[0][vm_data.vm_evt_pos] = vm->ado_pos0[vm_data.vm_evt_pos];
+			vm->ado_pos_bk[1][vm_data.vm_evt_pos] = vm->ado_pos1[vm_data.vm_evt_pos];
+			vm->ado_pos0[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[i]].w.w[0];
+			vm->ado_pos1[vm_data.vm_evt_pos] = vm->adt[vm->field_209C[i]].b.b[2];
 			vm->updateIndex();
-			vm_index4[i] = 0;
-			vm_index4[60] = 1;
+			vm_data.vm_index4[i] = 0;
+			vm_data.vm_index4[60] = 1;
 		}
 	}
 
-	if (vm_index4[40])
+	if (vm_data.vm_index4[40])
 		Vm_dest(vm, 0x28u);
-	if (vm_index4[50])
+	if (vm_data.vm_index4[50])
 		Vm_dest(vm, 0x32u);
 }
 
@@ -625,7 +633,7 @@ void Vm_game_init()
 {
 	game_state_rand();
 	game_state_set();
-	vm_index5[2] = 800;
+	vm_data.vm_index5[2] = 800;
 }
 
 void Vm_sce_end()
@@ -661,26 +669,26 @@ void __cdecl Vm_user_ctr(__int16 a1)
 {
 	prog.field_12E = a1 & 1;
 	prog.field_130 = a1 & 2;
-	vm_index5[45] = a1 & 1;
+	vm_data.vm_index5[45] = a1 & 1;
 	Vm_spr_dir(0, -1, 0, -1, -1);
 }
 
 void Vm_work_clr()
 {
-	vm_var0 = 0;
-	vm_index4[60] = 0;
-	vm_index4[61] = 0;
+	vm_data.vm_var0 = 0;
+	vm_data.vm_index4[60] = 0;
+	vm_data.vm_index4[61] = 0;
 	for (int i = 0; i < 64; ++i)
-		vm_index3[i] = 0;
+		vm_data.vm_index3[i] = 0;
 	for (int i = 0; i < 64; ++i)
 	{
 		if (i != 7 && i != 37)
-			vm_index4[i] = 0;
+			vm_data.vm_index4[i] = 0;
 	}
 	for (int i = 0; i < 128; ++i)
-		vm_index5[i] = 0;
+		vm_data.vm_index5[i] = 0;
 	for (int i = 0; i < 512; ++i)
-		vm_index2[i] = 0;
+		vm_data.vm_index2[i] = 0;
 }
 
 void __cdecl Vm_mes_print(VM* game)
@@ -768,7 +776,7 @@ int Vm_mark_event(WORD index, WORD a2)
 	ret = 1;
 	if (index < 0xAu)
 	{
-		if ((vm_index6[index] & 0x40) == 0 && vm_var0 && (vm_index6[vm_index1[vm_var0]] & 0x20) == 0 && vm_index4[index])
+		if ((vm_data.vm_index6[index] & 0x40) == 0 && vm_data.vm_var0 && (vm_data.vm_index6[vm_data.vm_index1[vm_data.vm_var0]] & 0x20) == 0 && vm_data.vm_index4[index])
 		{
 			printf("The event being activated now has the interrupt disabled attribute.\n");
 			ret = 0;
@@ -776,93 +784,93 @@ int Vm_mark_event(WORD index, WORD a2)
 		if ((index == 7 || index == 8 || index == 9) && !a2)
 		{
 			ret = 0;
-			vm_index4[index] = 0;
-			vm_index4[index + 30] = 0;
+			vm_data.vm_index4[index] = 0;
+			vm_data.vm_index4[index + 30] = 0;
 		}
 		if (ret == 1)
 		{
-			vm_index1[++vm_var0] = index;
-			vm_index4[index] = 1;
-			vm_index4[index + 20] = 0;
-			vm_index4[index + 30] = a2;
-			vm_index0[index] = vm_evt_pos;
+			vm_data.vm_index1[++vm_data.vm_var0] = index;
+			vm_data.vm_index4[index] = 1;
+			vm_data.vm_index4[index + 20] = 0;
+			vm_data.vm_index4[index + 30] = a2;
+			vm_data.vm_index0[index] = vm_data.vm_evt_pos;
 			if (index == 7 || index == 8 || index == 9)
-				vm_index4[index] = 0;
+				vm_data.vm_index4[index] = 0;
 		}
 		return ret;
 	}
 	id = 50;
 	if (index < 0x28u)
 		id = 40;
-	if ((vm_index6[index] & 3) == 2)
+	if ((vm_data.vm_index6[index] & 3) == 2)
 	{
 	LABEL_43:
-		if (vm_index1[vm_var0] == index && vm_index4[61])
+		if (vm_data.vm_index1[vm_data.vm_var0] == index && vm_data.vm_index4[61])
 		{
-			if (vm_index4[59])
+			if (vm_data.vm_index4[59])
 				printf("The same event has already started.\n");
 			ret = 0;
 		}
 		if (ret == 1)
 		{
-			if ((vm_index6[index] & 3) == 2)
+			if ((vm_data.vm_index6[index] & 3) == 2)
 			{
-				vm_index4[id + 3] = vm_index4[id + 1];
+				vm_data.vm_index4[id + 3] = vm_data.vm_index4[id + 1];
 			}
 			else
 			{
-				vm_index4[61] = 1;
-				vm_index1[++vm_var0] = index;
-				vm_index4[id + 2] = vm_index4[id + 1];
-				vm_index4[id + 3] = a2;
+				vm_data.vm_index4[61] = 1;
+				vm_data.vm_index1[++vm_data.vm_var0] = index;
+				vm_data.vm_index4[id + 2] = vm_data.vm_index4[id + 1];
+				vm_data.vm_index4[id + 3] = a2;
 			}
-			vm_index4[id + 1] = index;
-			vm_index4[id] = 1;
-			vm_index0[index] = vm_evt_pos;
-			if (vm_index4[59])
+			vm_data.vm_index4[id + 1] = index;
+			vm_data.vm_index4[id] = 1;
+			vm_data.vm_index0[index] = vm_data.vm_evt_pos;
+			if (vm_data.vm_index4[59])
 				printf("Triggering event number %d.\n", index);
 		}
 		return ret;
 	}
 	if (index >= 40u)
 		goto LABEL_32;
-	if (vm_index6[index + 490] == 0xffff)
+	if (vm_data.vm_index6[index + 490] == 0xffff)
 	{
-		if (vm_index4[59])
+		if (vm_data.vm_index4[59])
 			printf("Mark variable is not defined.\n");
 		return 0;
 	}
-	if (vm_index2[vm_index6[index + 490]])
+	if (vm_data.vm_index2[vm_data.vm_index6[index + 490]])
 	{
 	LABEL_32:
-		if ((vm_index6[index] & 0x40) == 0 && (vm_index4[61] || vm_index4[60]) && vm_var0)
+		if ((vm_data.vm_index6[index] & 0x40) == 0 && (vm_data.vm_index4[61] || vm_data.vm_index4[60]) && vm_data.vm_var0)
 		{
-			if (vm_index1[vm_var0] >= 0xAu)
+			if (vm_data.vm_index1[vm_data.vm_var0] >= 0xAu)
 			{
-				if ((vm_index6[vm_index1[vm_var0]] & 0x20) == 0)
+				if ((vm_data.vm_index6[vm_data.vm_index1[vm_data.vm_var0]] & 0x20) == 0)
 				{
-					if (vm_index4[59])
+					if (vm_data.vm_index4[59])
 						printf("The event being activated now has the interrupt disabled attribute.\n");
 					ret = 0;
 				}
 			}
-			else if ((vm_index6[index] & 3) != 1 && (vm_index6[vm_index1[vm_var0]] & 0x20) == 0)
+			else if ((vm_data.vm_index6[index] & 3) != 1 && (vm_data.vm_index6[vm_data.vm_index1[vm_data.vm_var0]] & 0x20) == 0)
 			{
-				if (vm_index4[59])
+				if (vm_data.vm_index4[59])
 					printf("The event being activated now has the interrupt disabled attribute.\n");
 				ret = 0;
 			}
 		}
 		goto LABEL_43;
 	}
-	if (vm_index4[59])
+	if (vm_data.vm_index4[59])
 		printf("Mark variable is 0.\n");
 	return 0;
 }
 
 void Vm_set_63()
 {
-	vm_index4[63] = 1;
+	vm_data.vm_index4[63] = 1;
 }
 
 void Vm_reset(VM* vm)
@@ -888,9 +896,9 @@ void Vm_reset(VM* vm)
 		vm->adt[i].dw = 0;
 
 	for (int i = 0; i < 30; ++i)
-		vm_index6[i + 500] = 0xffff;
+		vm_data.vm_index6[i + 500] = 0xffff;
 	for (int i = 0; i < 500; ++i)
-		vm_index6[i] = 0;
+		vm_data.vm_index6[i] = 0;
 
 	for (int i = 0; i < 21; ++i)
 	{
@@ -931,10 +939,10 @@ void Vm_reset(VM* vm)
 		vm->sample_usage[i] = 255;
 	}
 
-	vm_usage[0] = 1;
+	vm_data.vm_usage[0] = 1;
 	for (int i = 1; i < 5; ++i)
 	{
-		vm_usage[i] = 0;
+		vm_data.vm_usage[i] = 0;
 		vm->field_4[i] = 0;
 	}
 
@@ -962,18 +970,18 @@ void Vm_reset(VM* vm)
 	vm->field_35C2 = 0;
 	vm->field_28A2 = 0;
 	vm->field_289E = 1;
-	vm_evt_pos = 0;
-	vm->field_4[vm_evt_pos] = 0;
-	vm_index4[7] = 0;
-	vm_index4[37] = 0;
+	vm_data.vm_evt_pos = 0;
+	vm->field_4[vm_data.vm_evt_pos] = 0;
+	vm_data.vm_index4[7] = 0;
+	vm_data.vm_index4[37] = 0;
 
 	Vm_work_clr();
 }
 
 void Vm_door_no_set()
 {
-	vm_index5[30] = word_41D574[vm_index5[30]];
-	vm_index5[31] = word_41D68C[vm_index5[30]];
+	vm_data.vm_index5[30] = word_41D574[vm_data.vm_index5[30]];
+	vm_data.vm_index5[31] = word_41D68C[vm_data.vm_index5[30]];
 }
 
 BYTE op_size_tbl[] =
@@ -1028,58 +1036,58 @@ WORD* Vm_get_env_var(VM* vm, WORD var)
 	switch (var & 0xFF00)
 	{
 	case 0xC000:
-		return &vm_index5[idx];
+		return &vm_data.vm_index5[idx];
 	case 0xE000:
-		return &vm_index4[idx];
+		return &vm_data.vm_index4[idx];
 	case 0xF000:
-		return &vm_index3[idx];
+		return &vm_data.vm_index3[idx];
 	}
 
-	return &vm_index2[idx];
+	return &vm_data.vm_index2[idx];
 }
 
 void VM::reset_pos()
 {
-	if (vm_index4[63])
+	if (vm_data.vm_index4[63])
 	{
-		vm_var0 = 0;
-		ado_pos0[vm_evt_pos] = ado_pos_bk[0][vm_evt_pos];
-		ado_pos1[vm_evt_pos] = ado_pos_bk[1][vm_evt_pos];
-		ado_pos2[vm_evt_pos] = ado_pos_bk[2][vm_evt_pos];
-		vm_index4[42] = 0;
-		vm_index4[52] = 0;
-		vm_index4[60] = 0;
-		vm_index4[61] = 0;
-		vm_index4[62] = 0;
-		vm_index3[14] = 0;
-		vm_index4[63] = 0;
+		vm_data.vm_var0 = 0;
+		ado_pos0[vm_data.vm_evt_pos] = ado_pos_bk[0][vm_data.vm_evt_pos];
+		ado_pos1[vm_data.vm_evt_pos] = ado_pos_bk[1][vm_data.vm_evt_pos];
+		ado_pos2[vm_data.vm_evt_pos] = ado_pos_bk[2][vm_data.vm_evt_pos];
+		vm_data.vm_index4[42] = 0;
+		vm_data.vm_index4[52] = 0;
+		vm_data.vm_index4[60] = 0;
+		vm_data.vm_index4[61] = 0;
+		vm_data.vm_index4[62] = 0;
+		vm_data.vm_index3[14] = 0;
+		vm_data.vm_index4[63] = 0;
 	}
 }
 
 void VM::updateIndex()
 {
-	ado_pos0[vm_evt_pos] += 2;
-	if (ado_pos0[vm_evt_pos] >= 0x8000)
+	ado_pos0[vm_data.vm_evt_pos] += 2;
+	if (ado_pos0[vm_data.vm_evt_pos] >= 0x8000)
 	{
-		++ado_pos1[vm_evt_pos];
-		ado_pos0[vm_evt_pos] = 0;
+		++ado_pos1[vm_data.vm_evt_pos];
+		ado_pos0[vm_data.vm_evt_pos] = 0;
 	}
 }
 
 void VM::rewindIndex()
 {
-	if (ado_pos0[vm_evt_pos])
-		ado_pos0[vm_evt_pos] -= 2;
+	if (ado_pos0[vm_data.vm_evt_pos])
+		ado_pos0[vm_data.vm_evt_pos] -= 2;
 	else
 	{
-		--ado_pos1[vm_evt_pos];
-		ado_pos0[vm_evt_pos] = 0x8000 - 2;
+		--ado_pos1[vm_data.vm_evt_pos];
+		ado_pos0[vm_data.vm_evt_pos] = 0x8000 - 2;
 	}
 }
 
 WORD VM::consume()
 {
-	WORD ret = *(WORD*)&ado[ado_pos1[vm_evt_pos]][ado_pos0[vm_evt_pos]];
+	WORD ret = *(WORD*)&ado[ado_pos1[vm_data.vm_evt_pos]][ado_pos0[vm_data.vm_evt_pos]];
 
 	updateIndex();
 	return ret;
@@ -1087,7 +1095,7 @@ WORD VM::consume()
 
 WORD VM::consumeInPlace()
 {
-	WORD ret = *(WORD*)&ado[ado_pos1[vm_evt_pos]][ado_pos0[vm_evt_pos]];
+	WORD ret = *(WORD*)&ado[ado_pos1[vm_data.vm_evt_pos]][ado_pos0[vm_data.vm_evt_pos]];
 
 	rewindIndex();
 	return ret;
@@ -1095,16 +1103,16 @@ WORD VM::consumeInPlace()
 
 WORD VM::read16()
 {
-	WORD ret = *(WORD*)&ado[ado_pos1[vm_evt_pos]][ado_pos0[vm_evt_pos]];
+	WORD ret = *(WORD*)&ado[ado_pos1[vm_data.vm_evt_pos]][ado_pos0[vm_data.vm_evt_pos]];
 
 	if (ret >= 0xF000 && ret <= 0xF1FF)
-		ret = vm_index3[ret & 0x1FF];
+		ret = vm_data.vm_index3[ret & 0x1FF];
 	if (ret >= 0xE000 && ret <= 0xE1FF)
-		ret = vm_index4[ret & 0x1FF];
+		ret = vm_data.vm_index4[ret & 0x1FF];
 	if (ret >= 0xC000 && ret <= 0xC1FF)
-		ret = vm_index5[ret & 0x1FF];
+		ret = vm_data.vm_index5[ret & 0x1FF];
 	if (ret >= 0xD000 && ret <= 0xD1FF)
-		ret = vm_index2[ret & 0x1FF];
+		ret = vm_data.vm_index2[ret & 0x1FF];
 
 	updateIndex();
 	return ret;
@@ -1229,7 +1237,7 @@ label52:
 
 void VM::stop()
 {
-	if (!field_4[vm_evt_pos])
+	if (!field_4[vm_data.vm_evt_pos])
 		evt_can_stop = 1;
 }
 
@@ -1274,7 +1282,7 @@ void VM::queue(WORD code)
 	WORD mode;
 
 	updateIndex();
-	field_24A2[vm_evt_pos] = consume();
+	field_24A2[vm_data.vm_evt_pos] = consume();
 	WORD r0 = consume();
 	int ck = condition(r0);
 	if (code == EVT_IF)
@@ -1283,18 +1291,18 @@ void VM::queue(WORD code)
 		mode = EVT_ENDWHILE;
 	if (ck)
 	{
-		if (vm_index4[58])
+		if (vm_data.vm_index4[58])
 			printf("Condition has been met.\n");
 	}
 	else
 	{
-		if (vm_index4[58])
+		if (vm_data.vm_index4[58])
 			printf("Condition was not met.\n");
 		int exit_loop = 0;
 		do
 		{
 			WORD mode_now = consume();
-			if ((mode_now == mode || mode_now == EVT_ELSE && mode == EVT_ENDIF) && field_24A2[vm_evt_pos] == consume())
+			if ((mode_now == mode || mode_now == EVT_ELSE && mode == EVT_ENDIF) && field_24A2[vm_data.vm_evt_pos] == consume())
 				exit_loop = 1;
 		} while (!exit_loop);
 	}
@@ -1324,7 +1332,7 @@ int VM::condition(WORD code)
 			dst = Vm_get_env_var(this, env);
 			var_ck = read16();
 			++cnt;
-			if (vm_index4[58])
+			if (vm_data.vm_index4[58])
 				printf("Condition %d, work value=%d, compare value=%d\n", cnt, *dst, var_ck);
 
 			switch (type)
@@ -1380,17 +1388,17 @@ void VM::op_default(WORD code)
 
 void VM::op_nop()
 {
-	if (wait_tbl2[vm_evt_pos])
-		--wait_tbl2[vm_evt_pos];
-	else if (wait_tbl2[vm_evt_pos + 5])
+	if (wait_tbl2[vm_data.vm_evt_pos])
+		--wait_tbl2[vm_data.vm_evt_pos];
+	else if (wait_tbl2[vm_data.vm_evt_pos + 5])
 	{
 		DWORD tick = (DWORD)getTime();
-		if (!field_2736[vm_evt_pos] && (vm_index3[0] & 1) != 0)
-			tick = 1000 * wait_tbl2[vm_evt_pos + 5];
-		if (tick - wait_tbl[vm_evt_pos] >= 1000u * wait_tbl2[vm_evt_pos + 5])
+		if (!field_2736[vm_data.vm_evt_pos] && (vm_data.vm_index3[0] & 1) != 0)
+			tick = 1000 * wait_tbl2[vm_data.vm_evt_pos + 5];
+		if (tick - wait_tbl[vm_data.vm_evt_pos] >= 1000u * wait_tbl2[vm_data.vm_evt_pos + 5])
 		{
 			updateIndex();
-			wait_tbl2[vm_evt_pos + 5] = 0;
+			wait_tbl2[vm_data.vm_evt_pos + 5] = 0;
 		}
 	}
 	else
@@ -1420,14 +1428,14 @@ void VM::op_jmp()
 
 	if (r < 0xF000)
 	{
-		ado_pos0[vm_evt_pos] = adt[r].w.w[0];
-		ado_pos1[vm_evt_pos] = adt[r].w.w[1];
-		if (vm_index4[58])
+		ado_pos0[vm_data.vm_evt_pos] = adt[r].w.w[0];
+		ado_pos1[vm_data.vm_evt_pos] = adt[r].w.w[1];
+		if (vm_data.vm_index4[58])
 		{
 			if (word_42069E != r)
 			{
 				word_42069E = r;
-				printf("JMP=%d,0x%X\n", r, ado_pos0[vm_evt_pos]);
+				printf("JMP=%d,0x%X\n", r, ado_pos0[vm_data.vm_evt_pos]);
 			}
 		}
 		updateIndex();
@@ -1446,21 +1454,21 @@ void VM::op_call()
 
 	if (r < 0xf000)
 	{
-		field_24B6[vm_evt_pos][ado_pos2[vm_evt_pos]] = (ado_pos1[vm_evt_pos] << 16) & 0xFF0000;
-		WORD v1 = ado_pos2[vm_evt_pos];
-		field_24B6[vm_evt_pos][v1] |= ado_pos0[vm_evt_pos];
-		ado_pos0[vm_evt_pos] = adt[r].w.w[0];
-		ado_pos1[vm_evt_pos] = adt[r].w.w[1];
-		if (vm_index4[58] && word_42069E != r)
+		field_24B6[vm_data.vm_evt_pos][ado_pos2[vm_data.vm_evt_pos]] = (ado_pos1[vm_data.vm_evt_pos] << 16) & 0xFF0000;
+		WORD v1 = ado_pos2[vm_data.vm_evt_pos];
+		field_24B6[vm_data.vm_evt_pos][v1] |= ado_pos0[vm_data.vm_evt_pos];
+		ado_pos0[vm_data.vm_evt_pos] = adt[r].w.w[0];
+		ado_pos1[vm_data.vm_evt_pos] = adt[r].w.w[1];
+		if (vm_data.vm_index4[58] && word_42069E != r)
 		{
 			word_42069E = r;
-			printf("Call=%d,0x%X\n", r, ado_pos0[vm_evt_pos]);
+			printf("Call=%d,0x%X\n", r, ado_pos0[vm_data.vm_evt_pos]);
 		}
 		updateIndex();
 
-		++ado_pos2[vm_evt_pos];
-		if (vm_index4[61] || vm_index4[60])
-			++vm_index4[62];
+		++ado_pos2[vm_data.vm_evt_pos];
+		if (vm_data.vm_index4[61] || vm_data.vm_index4[60])
+			++vm_data.vm_index4[62];
 	}
 	else
 	{
@@ -1474,7 +1482,7 @@ void VM::op_else()
 	int exit_loop = 0;
 	do
 	{
-		if (consume() == EVT_ENDIF && field_24A2[vm_evt_pos] == consume())
+		if (consume() == EVT_ENDIF && field_24A2[vm_data.vm_evt_pos] == consume())
 			exit_loop = 1;
 	} while (!exit_loop);
 }
@@ -1532,7 +1540,7 @@ void VM::op_evdef()
 	v2 = consume();
 	v1 = read16();
 	field_209C[v1] = v2;
-	vm_index6[v1] = read16();
+	vm_data.vm_index6[v1] = read16();
 }
 
 void Game_40C792(VM* g)
@@ -1546,9 +1554,9 @@ void Game_40C792(VM* g)
 	do
 	{
 		Game_RedrawAll(g);
-	} while (g->field_28B8[vm_evt_pos]);
+	} while (g->field_28B8[vm_data.vm_evt_pos]);
 
-	vm_usage[vm_evt_pos] = 0;
+	vm_data.vm_usage[vm_data.vm_evt_pos] = 0;
 }
 
 WORD Game_AdoMatch(VM* a1)
@@ -1562,7 +1570,7 @@ WORD Game_AdoMatch(VM* a1)
 	do
 	{
 		v3 = a1->adt[v4].dw;
-		if ((a1->ado_pos0[vm_evt_pos] | (a1->ado_pos1[vm_evt_pos] << 16)) == v3)
+		if ((a1->ado_pos0[vm_data.vm_evt_pos] | (a1->ado_pos1[vm_data.vm_evt_pos] << 16)) == v3)
 			v2 = 1;
 		else if (v3)
 			++v4;
@@ -1578,60 +1586,60 @@ WORD Game_AdoMatch(VM* a1)
 
 void VM::op_evret()
 {
-	if (ado_pos2[vm_evt_pos])
+	if (ado_pos2[vm_data.vm_evt_pos])
 	{
-		ado_pos0[vm_evt_pos] = (WORD)field_24B6[vm_evt_pos][--ado_pos2[vm_evt_pos]];
-		ado_pos1[vm_evt_pos] = (field_24B6[vm_evt_pos][ado_pos2[vm_evt_pos]] & 0xFF0000) >> 16;
-		if ((vm_index4[61] || vm_index4[60]) && vm_index0[vm_index1[vm_var0]] == vm_evt_pos)
+		ado_pos0[vm_data.vm_evt_pos] = (WORD)field_24B6[vm_data.vm_evt_pos][--ado_pos2[vm_data.vm_evt_pos]];
+		ado_pos1[vm_data.vm_evt_pos] = (field_24B6[vm_data.vm_evt_pos][ado_pos2[vm_data.vm_evt_pos]] & 0xFF0000) >> 16;
+		if ((vm_data.vm_index4[61] || vm_data.vm_index4[60]) && vm_data.vm_index0[vm_data.vm_index1[vm_data.vm_var0]] == vm_data.vm_evt_pos)
 		{
-			if (vm_index4[62])
-				--vm_index4[62];
+			if (vm_data.vm_index4[62])
+				--vm_data.vm_index4[62];
 			else
 			{
-				if (vm_index4[59])
-					printf("Event number %d is complete. (call over)\n", vm_index1[vm_var0]);
+				if (vm_data.vm_index4[59])
+					printf("Event number %d is complete. (call over)\n", vm_data.vm_index1[vm_data.vm_var0]);
 
-				if (vm_index1[vm_var0] >= 0xAu)
-					vm_index4[61] = 0;
+				if (vm_data.vm_index1[vm_data.vm_var0] >= 0xAu)
+					vm_data.vm_index4[61] = 0;
 				else
-					vm_index4[60] = 0;
-				--vm_var0;
+					vm_data.vm_index4[60] = 0;
+				--vm_data.vm_var0;
 			}
 		}
 	}
-	else if (vm_index4[60] || vm_index4[61])
+	else if (vm_data.vm_index4[60] || vm_data.vm_index4[61])
 	{
-		if (vm_index0[vm_index1[vm_var0]] == vm_evt_pos)
+		if (vm_data.vm_index0[vm_data.vm_index1[vm_data.vm_var0]] == vm_data.vm_evt_pos)
 		{
-			if (vm_index4[59])
-				printf("Event number %d is complete.\n", vm_index1[vm_var0]);
+			if (vm_data.vm_index4[59])
+				printf("Event number %d is complete.\n", vm_data.vm_index1[vm_data.vm_var0]);
 
-			if (vm_index1[vm_var0] >= 0xAu)
-				vm_index4[61] = 0;
+			if (vm_data.vm_index1[vm_data.vm_var0] >= 0xAu)
+				vm_data.vm_index4[61] = 0;
 			else
-				vm_index4[60] = 0;
-			ado_pos0[vm_evt_pos] = ado_pos_bk[0][vm_evt_pos];
-			ado_pos1[vm_evt_pos] = ado_pos_bk[1][vm_evt_pos];
-			--vm_var0;
+				vm_data.vm_index4[60] = 0;
+			ado_pos0[vm_data.vm_evt_pos] = ado_pos_bk[0][vm_data.vm_evt_pos];
+			ado_pos1[vm_data.vm_evt_pos] = ado_pos_bk[1][vm_data.vm_evt_pos];
+			--vm_data.vm_var0;
 		}
-		else if (vm_evt_pos)
+		else if (vm_data.vm_evt_pos)
 		{
 			Game_40C792(this);
 			evt_can_stop = 1;
-			if (vm_index4[59])
-				printf("Task number %d is complete.\n", vm_evt_pos);
+			if (vm_data.vm_index4[59])
+				printf("Task number %d is complete.\n", vm_data.vm_evt_pos);
 		}
 	}
-	else if (vm_evt_pos)
+	else if (vm_data.vm_evt_pos)
 	{
 		Game_40C792(this);
 		evt_can_stop = 1;
-		if (vm_index4[59])
-			printf("Task number %d is complete.\n", vm_evt_pos);
+		if (vm_data.vm_index4[59])
+			printf("Task number %d is complete.\n", vm_data.vm_evt_pos);
 	}
 	else
 	{
-		vm_index4[0] = Game_AdoMatch(this);
+		vm_data.vm_index4[0] = Game_AdoMatch(this);
 		updateIndex();
 	}
 }
@@ -1661,7 +1669,7 @@ void VM::op_set_mark()
 
 	updateIndex();
 	for (int i = 0; i < 30; ++i)
-		vm_index6[i + 500] = -1;
+		vm_data.vm_index6[i + 500] = -1;
 	int loop_end = 0;
 	int i = 0;
 	do
@@ -1675,8 +1683,8 @@ void VM::op_set_mark()
 			int x1 = read16s();
 			int y1 = read16s();
 
-			vm_rects[i].Set(x0, x1, y0, y1);
-			vm_index6[500 + i] = consume();
+			vm_data.vm_rects[i].Set(x0, x1, y0, y1);
+			vm_data.vm_index6[500 + i] = consume();
 			i++;
 		}
 	} while (!loop_end);
@@ -1703,8 +1711,8 @@ void VM::op_set_msgcol(int size)
 void VM::op_wait()
 {
 	updateIndex();
-	wait_tbl2[vm_evt_pos] = read16();
-	field_270E[vm_evt_pos + 5] = read16();
+	wait_tbl2[vm_data.vm_evt_pos] = read16();
+	field_270E[vm_data.vm_evt_pos + 5] = read16();
 }
 
 void VM::op_fawait()	// fade
@@ -1717,7 +1725,7 @@ void VM::op_btwait()
 {
 	updateIndex();
 	WORD bt = read16();
-	if ((bt & 1) != 0 && (vm_index3[0] & 1) == 0 || (bt & 2) != 0 && (vm_index3[0] & 2) == 0)
+	if ((bt & 1) != 0 && (vm_data.vm_index3[0] & 1) == 0 || (bt & 2) != 0 && (vm_data.vm_index3[0] & 2) == 0)
 	{
 		rewindIndex();
 		rewindIndex();
@@ -1726,17 +1734,17 @@ void VM::op_btwait()
 
 void VM::op_bg_wait()
 {
-	if (Vm_bg_scrolling() && !field_28A2 && !field_28B8[vm_evt_pos])
+	if (Vm_bg_scrolling() && !field_28A2 && !field_28B8[vm_data.vm_evt_pos])
 		updateIndex();
 }
 
 void VM::op_tmwait()
 {
 	updateIndex();
-	wait_tbl2[vm_evt_pos + 5] = read16();
-	field_2736[vm_evt_pos] = read16();
-	wait_tbl[vm_evt_pos] = getTime();
-	vm_index3[0] = 0;
+	wait_tbl2[vm_data.vm_evt_pos + 5] = read16();
+	field_2736[vm_data.vm_evt_pos] = read16();
+	wait_tbl[vm_data.vm_evt_pos] = getTime();
+	vm_data.vm_index3[0] = 0;
 }
 
 void VM::op_screen_clr()
@@ -1867,25 +1875,25 @@ void VM::op_bg_file_disp()
 
 void VM::op_bg_anim()
 {
-	field_2926[vm_evt_pos] = 0;
+	field_2926[vm_data.vm_evt_pos] = 0;
 	updateIndex();
 
-	field_28E0[vm_evt_pos] = read16();
-	field_28E8[vm_evt_pos + 1] = read16();
-	field_28CC[vm_evt_pos + 5] = read16();
-	field_28FE[vm_evt_pos] = read16();
-	field_28B8[vm_evt_pos + 5] = read16();
-	field_28CC[vm_evt_pos] = field_28B8[vm_evt_pos + 5];
-	field_28B8[vm_evt_pos] = read16();
-	field_2908[vm_evt_pos] = read16();
-	if (++field_28CC[vm_evt_pos + 5] >= 0x15u)
-		field_28CC[vm_evt_pos + 5] = _id;
-	rect_xy_index[vm_evt_pos] = field_28CC[vm_evt_pos + 5];
-	if (!field_28B8[vm_evt_pos + 5])
+	field_28E0[vm_data.vm_evt_pos] = read16();
+	field_28E8[vm_data.vm_evt_pos + 1] = read16();
+	field_28CC[vm_data.vm_evt_pos + 5] = read16();
+	field_28FE[vm_data.vm_evt_pos] = read16();
+	field_28B8[vm_data.vm_evt_pos + 5] = read16();
+	field_28CC[vm_data.vm_evt_pos] = field_28B8[vm_data.vm_evt_pos + 5];
+	field_28B8[vm_data.vm_evt_pos] = read16();
+	field_2908[vm_data.vm_evt_pos] = read16();
+	if (++field_28CC[vm_data.vm_evt_pos + 5] >= 0x15u)
+		field_28CC[vm_data.vm_evt_pos + 5] = _id;
+	rect_xy_index[vm_data.vm_evt_pos] = field_28CC[vm_data.vm_evt_pos + 5];
+	if (!field_28B8[vm_data.vm_evt_pos + 5])
 	{
-		for (int i = 0; field_28B8[vm_evt_pos] > i; ++i)
+		for (int i = 0; field_28B8[vm_data.vm_evt_pos] > i; ++i)
 			Game_RedrawScene(this);
-		field_28B8[vm_evt_pos] = 0;
+		field_28B8[vm_data.vm_evt_pos] = 0;
 	}
 }
 
@@ -1973,15 +1981,15 @@ void VM::op_map_disp()
 	Vm_map_disp(this);
 	for (int i = 0; i < 30; ++i)
 	{
-		if (vm_index6[i + 500] != 0xffff
-			&& vm_index2[vm_index6[i + 500]]
-			&& vm_rects[i].X0() >= scrl_x
-			&& vm_rects[i].Y0() >= scrl_y)
+		if (vm_data.vm_index6[i + 500] != 0xffff
+			&& vm_data.vm_index2[vm_data.vm_index6[i + 500]]
+			&& vm_data.vm_rects[i].X0() >= scrl_x
+			&& vm_data.vm_rects[i].Y0() >= scrl_y)
 		{
-			int x0 = scroll_x + vm_rects[i].X0() - scrl_x;
-			int y0 = scroll_y + vm_rects[i].Y0() - scrl_y;
-			int x1 = vm_rects[i].W() + x0;
-			int y1 = vm_rects[i].H() + y0;
+			int x0 = scroll_x + vm_data.vm_rects[i].X0() - scrl_x;
+			int y0 = scroll_y + vm_data.vm_rects[i].Y0() - scrl_y;
+			int x1 = vm_data.vm_rects[i].W() + x0;
+			int y1 = vm_data.vm_rects[i].H() + y0;
 
 			RenderTile(GETX(x0), GETY(y0), (x1 - x0) / 2, (y1 - y0) / 2, 0, 255, 0);
 		}
@@ -2010,7 +2018,7 @@ void VM::op_map_wrt()
 void VM::op_msg_attr(int cnt)
 {
 	read(&texcol_r, cnt);
-	vm_index3[13] = (field_3434 & 2) != 0;
+	vm_data.vm_index3[13] = (field_3434 & 2) != 0;
 }
 
 void VM::op_msg_init(int size)
@@ -2028,7 +2036,7 @@ void VM::op_msg_out()
 	int v4; // [esp+84h] [ebp-8h]
 	int end_loop; // [esp+88h] [ebp-4h]
 
-	vm_index3[0] = 0;
+	vm_data.vm_index3[0] = 0;
 	field_2944 = 0;
 	updateIndex();
 	v3 = read16();
@@ -2049,7 +2057,7 @@ void VM::op_msg_out()
 			break;
 		case EVT_ALLEND:
 			end_loop = 1;
-			ado_pos0[vm_evt_pos] -= 2;
+			ado_pos0[vm_data.vm_evt_pos] -= 2;
 			break;
 		case EVT_END:
 			end_loop = 1;
@@ -2071,7 +2079,7 @@ void VM::op_msg_out()
 	} while (!end_loop);
 
 	buf[mes_len] = 0;
-	if (vm_index3[15])
+	if (vm_data.vm_index3[15])
 	{
 		wchar_t wbuf[128];
 
@@ -2232,14 +2240,14 @@ void VM::op_se_req_pv()
 
 void VM::op_sce_reset()
 {
-	WORD posbk = vm_evt_pos;
+	WORD posbk = vm_data.vm_evt_pos;
 	for (int i = 0; i < 5; ++i)
 	{
-		vm_evt_pos = i;
-		vm_index4[63] = 1;
+		vm_data.vm_evt_pos = i;
+		vm_data.vm_index4[63] = 1;
 		reset_pos();
 		field_28A2 = 0;
-		field_28B8[vm_evt_pos] = 0;
+		field_28B8[vm_data.vm_evt_pos] = 0;
 		auto v4 = field_2944;
 		field_2944 = 1;
 		Vm_mes_print(this);
@@ -2250,15 +2258,15 @@ void VM::op_sce_reset()
 	}
 
 	for (int i = 1; i < 5; ++i)
-		vm_usage[i] = 0;
+		vm_data.vm_usage[i] = 0;
 
-	vm_evt_pos = posbk;
+	vm_data.vm_evt_pos = posbk;
 	ado_pos0[0] = ado_pos0[posbk];
-	ado_pos1[0] = ado_pos1[vm_evt_pos];
-	vm_index4[8] = 0;
-	vm_index4[9] = 0;
-	vm_index4[38] = 0;
-	vm_index4[39] = 0;
+	ado_pos1[0] = ado_pos1[vm_data.vm_evt_pos];
+	vm_data.vm_index4[8] = 0;
+	vm_data.vm_index4[9] = 0;
+	vm_data.vm_index4[38] = 0;
+	vm_data.vm_index4[39] = 0;
 }
 
 void VM::op_pal_set()
@@ -2337,30 +2345,30 @@ void VM::op_bg_buf_clr()
 
 void VM::op_bg_spr_anim()
 {
-	field_2926[vm_evt_pos] = 1;
+	field_2926[vm_data.vm_evt_pos] = 1;
 	updateIndex();
-	field_28E0[vm_evt_pos] = read16();
-	field_28E8[vm_evt_pos + 1] = read16();
-	*((WORD*)&field_28F4 + vm_evt_pos) = read16();
-	field_28CC[vm_evt_pos + 5] = read16();
-	field_28FE[vm_evt_pos] = read16();
-	field_28B8[vm_evt_pos + 5] = read16();
-	field_28CC[vm_evt_pos] = field_28B8[vm_evt_pos + 5];
-	field_28B8[vm_evt_pos] = read16();
-	field_2908[vm_evt_pos] = 0;
-	if (++field_28CC[vm_evt_pos + 5] >= 0x15u)
-		field_28CC[vm_evt_pos + 5] = _id;
-	rect_xy_index[vm_evt_pos] = field_28CC[vm_evt_pos + 5];
-	ent_index[vm_evt_pos] = read16();
+	field_28E0[vm_data.vm_evt_pos] = read16();
+	field_28E8[vm_data.vm_evt_pos + 1] = read16();
+	*((WORD*)&field_28F4 + vm_data.vm_evt_pos) = read16();
+	field_28CC[vm_data.vm_evt_pos + 5] = read16();
+	field_28FE[vm_data.vm_evt_pos] = read16();
+	field_28B8[vm_data.vm_evt_pos + 5] = read16();
+	field_28CC[vm_data.vm_evt_pos] = field_28B8[vm_data.vm_evt_pos + 5];
+	field_28B8[vm_data.vm_evt_pos] = read16();
+	field_2908[vm_data.vm_evt_pos] = 0;
+	if (++field_28CC[vm_data.vm_evt_pos + 5] >= 0x15u)
+		field_28CC[vm_data.vm_evt_pos + 5] = _id;
+	rect_xy_index[vm_data.vm_evt_pos] = field_28CC[vm_data.vm_evt_pos + 5];
+	ent_index[vm_data.vm_evt_pos] = read16();
 	if (read16())
-		field_2912[vm_evt_pos] = 1;
+		field_2912[vm_data.vm_evt_pos] = 1;
 	else
-		field_2912[vm_evt_pos] = 0;
-	if (!field_28B8[vm_evt_pos + 5])
+		field_2912[vm_data.vm_evt_pos] = 0;
+	if (!field_28B8[vm_data.vm_evt_pos + 5])
 	{
-		for (int i = 0; field_28B8[vm_evt_pos] > i; ++i)
+		for (int i = 0; field_28B8[vm_data.vm_evt_pos] > i; ++i)
 			Game_RedrawScene(this);
-		field_28B8[vm_evt_pos] = 0;
+		field_28B8[vm_data.vm_evt_pos] = 0;
 	}
 }
 
@@ -2533,9 +2541,9 @@ void VM::op_spc_func()
 {
 	updateIndex();
 	WORD fnc = read16();
-	word_426940 = read16();
-	for (int i = 0; i < word_426940; ++i)
-		*(&render_x + i) = read16();
+	vm_data.vm_count_index = read16();
+	for (int i = 0; i < vm_data.vm_count_index; ++i)
+		*(&vm_data.render_x + i) = read16();
 	Vm_func_call(fnc);
 }
 
@@ -2693,7 +2701,7 @@ int Vm_execute(VM* vm)
 	int ret = 0;
 	WORD size = 0;
 
-	if ((vm_index3[0] & 1) != 0)
+	if ((vm_data.vm_index3[0] & 1) != 0)
 		vm->field_2944 = 1;
 
 	do
@@ -2701,18 +2709,18 @@ int Vm_execute(VM* vm)
 		vm->evt_can_stop = 0;
 		ret = 0;
 
-		WORD op = vm->ado[vm->ado_pos1[vm_evt_pos]][vm->ado_pos0[vm_evt_pos]];
-		op |= vm->ado[vm->ado_pos1[vm_evt_pos]][vm->ado_pos0[vm_evt_pos] + 1] << 8;
+		WORD op = vm->ado[vm->ado_pos1[vm_data.vm_evt_pos]][vm->ado_pos0[vm_data.vm_evt_pos]];
+		op |= vm->ado[vm->ado_pos1[vm_data.vm_evt_pos]][vm->ado_pos0[vm_data.vm_evt_pos] + 1] << 8;
 
 		EVT_CODES code = (EVT_CODES)op;
 
 		if (op >= EVT_ALLEND && op != EVT_BAD_OPC)
 		{
 			size = vm->size_tbl[op - EVT_ALLEND];
-			if (vm_index4[58])
+			if (vm_data.vm_index4[58])
 			{
 				if (op != EVT_JMP && op != EVT_CALL && op != EVT_WAIT && op != EVT_NOP && op != EVT_SPRWAIT && op != EVT_BGWAIT && op != EVT_MSG_WAIT)
-					printf("0x%X %s\n", (vm->ado_pos1[vm_evt_pos] << 15) + vm->ado_pos0[vm_evt_pos], op_names[op - EVT_ALLEND]);
+					printf("0x%X %s\n", (vm->ado_pos1[vm_data.vm_evt_pos] << 15) + vm->ado_pos0[vm_data.vm_evt_pos], op_names[op - EVT_ALLEND]);
 			}
 		}
 
@@ -2813,10 +2821,10 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_SCREENCLR:
 			TMapCache(nullptr, nullptr);
-			render_x = 0;
-			render_y = 0;
-			render_w = 640;
-			render_h = 480;
+			vm_data.render_x = 0;
+			vm_data.render_y = 0;
+			vm_data.render_w = 640;
+			vm_data.render_h = 480;
 			Vm_func_call(9);
 			vm->op_screen_clr();
 			vm->stop();
@@ -2982,8 +2990,8 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_EVSTOP:
 			vm->updateIndex();
-			vm->ado_pos_bk[0][vm_evt_pos] = vm->ado_pos0[vm_evt_pos];
-			vm->ado_pos_bk[1][vm_evt_pos] = vm->ado_pos1[vm_evt_pos];
+			vm->ado_pos_bk[0][vm_data.vm_evt_pos] = vm->ado_pos0[vm_data.vm_evt_pos];
+			vm->ado_pos_bk[1][vm_data.vm_evt_pos] = vm->ado_pos1[vm_data.vm_evt_pos];
 			vm->op_sce_reset();
 			break;
 		case EVT_SEREQPV:
@@ -2994,10 +3002,10 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_SCERESET:
 			vm->updateIndex();
-			vm->ado_pos_bk[2][vm_evt_pos] = 0;
-			vm->ado_pos_bk[0][vm_evt_pos] = vm->ado_pos0[vm_evt_pos];
-			vm->ado_pos_bk[1][vm_evt_pos] = vm->ado_pos1[vm_evt_pos];
-			vm->field_4[vm_evt_pos] = 0;
+			vm->ado_pos_bk[2][vm_data.vm_evt_pos] = 0;
+			vm->ado_pos_bk[0][vm_data.vm_evt_pos] = vm->ado_pos0[vm_data.vm_evt_pos];
+			vm->ado_pos_bk[1][vm_data.vm_evt_pos] = vm->ado_pos1[vm_data.vm_evt_pos];
+			vm->field_4[vm_data.vm_evt_pos] = 0;
 			vm->op_sce_reset();
 			break;
 		case EVT_BGSPRENT:
@@ -3036,11 +3044,11 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_DEBUG:
 			vm->updateIndex();
-			vm_index4[59] = vm->read16();
+			vm_data.vm_index4[59] = vm->read16();
 			break;
 		case EVT_TRACE:
 			vm->updateIndex();
-			vm_index4[58] = vm->read16();
+			vm_data.vm_index4[58] = vm->read16();
 			break;
 		case EVT_TMWAIT:
 			vm->op_tmwait();
@@ -3056,11 +3064,11 @@ int Vm_execute(VM* vm)
 			break;
 		case EVT_NEXTCOM:
 			vm->updateIndex();
-			vm->field_4[vm_evt_pos] = vm->read16();
+			vm->field_4[vm_data.vm_evt_pos] = vm->read16();
 			break;
 		case EVT_WORKCLR:
 			vm->updateIndex();
-			vm->field_4[vm_evt_pos] = 0;
+			vm->field_4[vm_data.vm_evt_pos] = 0;
 			Vm_work_clr();
 			break;
 		case EVT_BGBUFCLR:
@@ -3108,9 +3116,9 @@ void Vm_update(VM* vm, int mode)
 	Vm_update_ent_pan(vm);
 	for (int i = 0; i < 5; ++i)
 	{
-		if (vm_usage[i] == 1)
+		if (vm_data.vm_usage[i] == 1)
 		{
-			vm_evt_pos = i;
+			vm_data.vm_evt_pos = i;
 			vm->reset_pos();
 			Vm_mes_print(vm);
 			Game_BgDispTrn_1(vm);
@@ -3120,6 +3128,6 @@ void Vm_update(VM* vm, int mode)
 				Vm_execute(vm);
 		}
 	}
-	vm_evt_pos = 0;
+	vm_data.vm_evt_pos = 0;
 	sub_41259E();
 }

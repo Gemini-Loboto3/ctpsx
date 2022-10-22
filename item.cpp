@@ -76,12 +76,12 @@ void ItemUpdate()
 		inventory[i] = -1;
 	for (int i = 0; i < 16; ++i)
 	{
-		if (item_lut[i] >= 0 && vm_index5[i + 8])
+		if (item_lut[i] >= 0 && vm_data.vm_index5[i + 8])
 			inventory[item_lut[i]] = i;
 	}
 	if (inventory[itemptr2_index] == -1)
 		itemptr2_index = 0;
-	vm_index5[24] = inventory[itemptr2_index];
+	vm_data.vm_index5[24] = inventory[itemptr2_index];
 }
 
 void DispCursor()

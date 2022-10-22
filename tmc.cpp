@@ -372,7 +372,7 @@ void LoadTMC(int id)
 
 	int bits = -1;
 	short num = id;
-	switch (vm_index5[0])
+	switch (vm_data.vm_index5[0])
 	{
 	case 0x04:
 	case 0x05:
@@ -400,7 +400,7 @@ void LoadTMC(int id)
 
 	if ((~bits & 0xffff) >> 0xf != 0)
 	{
-		switch (vm_index5[0])
+		switch (vm_data.vm_index5[0])
 		{
 		case 0x04:
 			fname = sprt_name2[bits];
@@ -434,11 +434,11 @@ void LoadTMC(int id)
 	{
 other_case:
 		if (num < 0x501)
-			fp += tmc_lut[vm_index5[0]] * 58;
+			fp += tmc_lut[vm_data.vm_index5[0]] * 58;
 		if (num >= 0xfff && num < 0x1301)
-			fp += tmc_lut[vm_index5[0]] * 58;
+			fp += tmc_lut[vm_data.vm_index5[0]] * 58;
 		if (num == 0xa00)
-			fp += tmc_lut[vm_index5[0]] * 58 + 10;
+			fp += tmc_lut[vm_data.vm_index5[0]] * 58 + 10;
 
 		sprintf_s(path, MAX_PATH, "SPRT\\CHARTMC%s.TMC", sprt_name7[fp]);
 		fname = path;

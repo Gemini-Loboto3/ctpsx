@@ -459,7 +459,7 @@ void TMap_scroller()
 
 void TMap_scroller2()
 {
-	if (vm_index5[46])
+	if (vm_data.vm_index5[46])
 	{
 		int xspd, spd;
 		++prog.field_196;

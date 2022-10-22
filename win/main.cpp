@@ -74,7 +74,7 @@ void Init()
 	//Vm_set_snd_mode(0);
 	Vm_set_proc(0);
 	//BmpInitRect(&prog.render_bmp, 80, 0, 480, 304);
-	vm_index5[0] = 0;
+	vm_data.vm_index5[0] = 0;
 	ai_ent[0].type4 = 0;
 	ai_ent[1].type4 = 0;
 
@@ -244,7 +244,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Tmc tm;
 	tm.open("SPRT\\CHARTMC2\\A_ACT01.TMC");
 
-	//vm_index4[58] = 1;
+	//vm_data.vm_index4[58] = 1;
 
 	startTime();
 	WinLoop();

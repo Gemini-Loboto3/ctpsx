@@ -124,7 +124,7 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 
 void InitRender()
 {
-	CreateOffScreenBitmap(&prog.render_bmp, 640, 480);
+	CreateOffScreenBitmap(&prog.render_bmp, RENDER_W, RENDER_H);
 }
 
 LPDIRECT3DSURFACE9 targ;

@@ -138,7 +138,7 @@ void SPRT_ENT::CalcPan()
 			v3 = -1;//off_41F094[v4][field_95];
 			if (v3 != -1)
 			{
-				if (vm_index5[47])
+				if (vm_data.vm_index5[47])
 				{
 					switch (v3)
 					{
@@ -491,21 +491,21 @@ int __cdecl sub_4033A4(WORD* dst, int a2)
 	{
 		if (a2 != 1)
 			return 0;
-		if (vm_index5[25])
+		if (vm_data.vm_index5[25])
 		{
-			if (vm_index5[25] == 1)
+			if (vm_data.vm_index5[25] == 1)
 			{
 				v4 = ai_ent[1].type2 + 6 * ai_ent[1].type + 18 * ai_ent[1].type3;
 				if (ai_ent[1].type0 != ai_ent[1].type3)
 					v4 += 3;
-				dst[0] = word_41FF6C[vm_index5[6]][v4][0];
-				dst[1] = word_41FF6C[vm_index5[6]][v4][1];
+				dst[0] = word_41FF6C[vm_data.vm_index5[6]][v4][0];
+				dst[1] = word_41FF6C[vm_data.vm_index5[6]][v4][1];
 			}
-			else if (vm_index5[25] == 2)
+			else if (vm_data.vm_index5[25] == 2)
 			{
 				if ((int)ai_ent[1].type3 > 1)
 					ai_ent[1].type3 = 1;
-				dst[0] = word_42011C[vm_index5[43]][ai_ent[1].type3][ai_ent[1].type2];
+				dst[0] = word_42011C[vm_data.vm_index5[43]][ai_ent[1].type3][ai_ent[1].type2];
 				dst[1] = 0;
 			}
 		}
@@ -515,8 +515,8 @@ int __cdecl sub_4033A4(WORD* dst, int a2)
 		v3 = ai_ent[0].type2 + 6 * ai_ent[0].type + 18 * ai_ent[0].type3;
 		if (ai_ent[0].type0 != ai_ent[0].type3)
 			v3 += 3;
-		dst[0] = word_41FDA4[vm_index5[4]][v3][0];
-		dst[1] = word_41FDA4[vm_index5[4]][v3][1];
+		dst[0] = word_41FDA4[vm_data.vm_index5[4]][v3][0];
+		dst[1] = word_41FDA4[vm_data.vm_index5[4]][v3][1];
 	}
 	return 1;
 }
@@ -566,20 +566,20 @@ void SprCursorAnimate()
 		i = 0;
 		while (1)
 		{
-			if ((vm_index6[i + 10] & 0x10) == 0 && sub_403304(i))
+			if ((vm_data.vm_index6[i + 10] & 0x10) == 0 && sub_403304(i))
 			{
-				rtrg.Set(prog.render_rect.X0() + vm_rects[i].X0() - prog.screen_x,
-					prog.render_rect.X0() + vm_rects[i].X1() - prog.screen_x,
-					prog.render_rect.Y0() + vm_rects[i].Y0() - prog.screen_y,
-					prog.render_rect.Y0() + vm_rects[i].Y1() - prog.screen_y);
+				rtrg.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
+					prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
+					prog.render_rect.Y0() + vm_data.vm_rects[i].Y0() - prog.screen_y,
+					prog.render_rect.Y0() + vm_data.vm_rects[i].Y1() - prog.screen_y);
 				if (intersectRect(&rcur, &rtrg))
 					break;
 			}
 			if (++i >= 30)
 				goto LABEL_15;
 		}
-		prog.triggerX = vm_rects[i].X0() - (32 - vm_rects[i].W()) / 2;
-		prog.triggerY = vm_rects[i].Y0() - (32 - vm_rects[i].H()) / 2;
+		prog.triggerX = vm_data.vm_rects[i].X0() - (32 - vm_data.vm_rects[i].W()) / 2;
+		prog.triggerY = vm_data.vm_rects[i].Y0() - (32 - vm_data.vm_rects[i].H()) / 2;
 		if (prog.field_14C)
 		{
 			if (prog.field_14C == 1)
@@ -709,11 +709,11 @@ void CursorDispCk()
 
 __int16 sub_403619()
 {
-	if (vm_index5[2] <= 200)
+	if (vm_data.vm_index5[2] <= 200)
 		return 0;
-	if (vm_index5[2] <= 400)
+	if (vm_data.vm_index5[2] <= 400)
 		return 1;
-	if (vm_index5[2] > 600)
+	if (vm_data.vm_index5[2] > 600)
 		return 3;
 	return 2;
 }
@@ -722,7 +722,7 @@ __int16 sub_4035DC()
 {
 	WORD v3; // al
 
-	if (!vm_index5[28])
+	if (!vm_data.vm_index5[28])
 		return 3 - sub_403619();
 	v3 = prog.field_194;
 	--prog.field_194;
@@ -1120,7 +1120,7 @@ void rectSwapX(CRect* r)
 
 void SprSetDest(int id, int cur_x, int dst_x, int running)
 {
-	if (!id && vm_index5[25] == 1)
+	if (!id && vm_data.vm_index5[25] == 1)
 		running = 1;
 	if (dst_x >= cur_x || sprt_ent[id].lmx >= cur_x)
 	{
@@ -1185,20 +1185,20 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 	if (ai_ent[id].type == 3)
 	{
 		if (ai_ent[id].type0)
-			cur_x -= spd_tbl[vm_index5[4]];
+			cur_x -= spd_tbl[vm_data.vm_index5[4]];
 		else
-			cur_x += spd_tbl[vm_index5[4]];
+			cur_x += spd_tbl[vm_data.vm_index5[4]];
 	}
 
 	if (center + r.X0() <= cur_x)
 	{
 		ai_ent[id].field_1A = 1;
-		vm_index5[29] = 1;
+		vm_data.vm_index5[29] = 1;
 	}
 	else
 	{
 		ai_ent[id].field_1A = 0;
-		vm_index5[29] = 0;
+		vm_data.vm_index5[29] = 0;
 	}
 
 	if (a4 != -1)
@@ -1271,13 +1271,13 @@ int sub_401F05()
 	switch (ai_ent[0].type)
 	{
 	case 3u:
-		vm_index5[2] += 2;
-		if (vm_index5[2] > 800)
-			vm_index5[2] = 800;
+		vm_data.vm_index5[2] += 2;
+		if (vm_data.vm_index5[2] > 800)
+			vm_data.vm_index5[2] = 800;
 		if (ai_ent[0].type2 != 3)
 		{
 			ai_ent[0].type = 5;
-			SprAnim(0, word_41FF54[vm_index5[4]][2 * ai_ent[0].type0 + 1], 0, 0);
+			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0 + 1], 0, 0);
 		}
 		return 1;
 	case 4u:
@@ -1306,7 +1306,7 @@ int sub_401F05()
 		{
 			ai_ent[0].type = 4;
 			ai_ent[0].type2 = 4;
-			SprAnim(0, word_41FF54[vm_index5[4]][2 * ai_ent[0].type0], 0, 0);
+			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0], 0, 0);
 			ai_ent[0].anim = 0;
 			return 1;
 		}
@@ -1386,8 +1386,8 @@ void sub_401D32()
 	{
 		if (ai_ent[0].type == 2)
 		{
-			if (vm_index5[2])
-				--vm_index5[2];
+			if (vm_data.vm_index5[2])
+				--vm_data.vm_index5[2];
 		}
 		sub_4020BA();
 		sub_402DE5(0);
@@ -1399,12 +1399,12 @@ void sub_40266A()
 	CRect r0; // [esp+10h] [ebp-14h] BYREF
 	int v2; // [esp+20h] [ebp-4h]
 
-	if (!vm_index5[41])
+	if (!vm_data.vm_index5[41])
 	{
 		r0.Set(sprt_ent[0].x0, sprt_ent[0].x1, sprt_ent[0].y0, sprt_ent[0].y0 + 1);
 		rectSwapX(&r0);
 		v2 = 0;
-		while ((vm_index6[v2 + 10] & 0x10) == 0 || !sub_403304(v2) || !intersectRect(&r0, &vm_rects[v2]))
+		while ((vm_data.vm_index6[v2 + 10] & 0x10) == 0 || !sub_403304(v2) || !intersectRect(&r0, &vm_data.vm_rects[v2]))
 		{
 			if (++v2 >= 30)
 				return;
@@ -1423,7 +1423,7 @@ void __cdecl sub_401E61()
 
 void __cdecl sub_402053()
 {
-	if (vm_index5[25] == 1 && vm_index5[39] && sprt_ent[1].is_busy && ++ai_ent[1].field_24 >= 2u)
+	if (vm_data.vm_index5[25] == 1 && vm_data.vm_index5[39] && sprt_ent[1].is_busy && ++ai_ent[1].field_24 >= 2u)
 	{
 		ai_ent[1].field_24 = 0;
 		ai_ent[1].type2 = 1;
@@ -1447,7 +1447,7 @@ void __cdecl sub_402178()
 
 void sub_401D74()
 {
-	if (vm_index5[25] && !vm_index5[27])
+	if (vm_data.vm_index5[25] && !vm_data.vm_index5[27])
 	{
 		if (sprt_ent[1].enabled)
 		{
@@ -1477,23 +1477,23 @@ __int16 sub_4022ED()
 	v3 = 0;
 	v2 = LOWORD(sprt_ent[1].x0) - LOWORD(sprt_ent[0].x0);
 	v1 = abs(LOWORD(sprt_ent[1].x0) - LOWORD(sprt_ent[0].x0));
-	if (vm_index5[25] == 1)
+	if (vm_data.vm_index5[25] == 1)
 	{
 		if (v2 <= 0)
 		{
-			if (!ai_ent[1].type0 && word_420374[vm_index5[4]][0] >= v1
-				|| ai_ent[1].type0 == 1 && word_420374[vm_index5[4]][1] >= v1)
+			if (!ai_ent[1].type0 && word_420374[vm_data.vm_index5[4]][0] >= v1
+				|| ai_ent[1].type0 == 1 && word_420374[vm_data.vm_index5[4]][1] >= v1)
 			{
 				return 2;
 			}
 		}
-		else if (ai_ent[1].type0 == 1 && word_420374[vm_index5[4]][0] >= v1
-			|| !ai_ent[1].type0 && word_420374[vm_index5[4]][1] >= v1)
+		else if (ai_ent[1].type0 == 1 && word_420374[vm_data.vm_index5[4]][0] >= v1
+			|| !ai_ent[1].type0 && word_420374[vm_data.vm_index5[4]][1] >= v1)
 		{
 			return 1;
 		}
 	}
-	else if (vm_index5[25] == 2)
+	else if (vm_data.vm_index5[25] == 2)
 	{
 		static WORD word_420380[2] = { 0x5A, 0x50 };
 
@@ -1515,16 +1515,16 @@ void sub_4021DC()
 {
 	__int16 v0; // [esp+0h] [ebp-2h]
 
-	if (vm_index5[25])
+	if (vm_data.vm_index5[25])
 	{
-		if (vm_index5[26])
+		if (vm_data.vm_index5[26])
 		{
-			if (!vm_index5[27] && vm_index5[4] == vm_index5[6] && vm_index5[3] == vm_index5[5])
+			if (!vm_data.vm_index5[27] && vm_data.vm_index5[4] == vm_data.vm_index5[6] && vm_data.vm_index5[3] == vm_data.vm_index5[5])
 			{
 				v0 = sub_4022ED();
 				if (v0)
 				{
-					if ((vm_index3[14] & 1) != 0)
+					if ((vm_data.vm_index3[14] & 1) != 0)
 					{
 						if (!ai_ent[0].type4 && !prog.field_128)
 							return;
@@ -1532,13 +1532,13 @@ void sub_4021DC()
 						prog.field_128 = 0;
 						Vm_set_63();
 					}
-					vm_index5[27] = v0;
+					vm_data.vm_index5[27] = v0;
 					ai_ent[0].field_20 = 0;
 					Vm_mark_event(0x191u, 0);
 					ai_ent[0].type4 = 0;
 					ai_ent[1].type4 = 0;
 					if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
-						vm_index5[41] = 1;
+						vm_data.vm_index5[41] = 1;
 				}
 			}
 		}
@@ -1550,19 +1550,19 @@ int intersect_triggers(int x, int y)
 	CRect rmark, rcurs;
 	int i;
 
-	if (vm_index5[41])
+	if (vm_data.vm_index5[41])
 		return -1;
 	setRect(&rcurs, x + 1, y + 1, x + 2, y + 2);
 	for (i = 0; i < 30; ++i)
 	{
-		if ((vm_index6[i + 10] & 0x10) == 0)
+		if ((vm_data.vm_index6[i + 10] & 0x10) == 0)
 		{
 			if (sub_403304(i))
 			{
-				rmark.Set(prog.render_rect.X0() + vm_rects[i].X0() - prog.screen_x,
-					prog.render_rect.X0() + vm_rects[i].X1() - prog.screen_x,
-					prog.render_rect.Y0() + vm_rects[i].Y0() - prog.screen_y,
-					prog.render_rect.Y0() + vm_rects[i].Y1() - prog.screen_y);
+				rmark.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
+					prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
+					prog.render_rect.Y0() + vm_data.vm_rects[i].Y0() - prog.screen_y,
+					prog.render_rect.Y0() + vm_data.vm_rects[i].Y1() - prog.screen_y);
 				if (intersectRect(&rcurs, &rmark))
 					return i;
 			}
@@ -1581,27 +1581,27 @@ void RBtnClick(LONG x, LONG y)
 		setRect(&rcur, x, y, x + 1, y + 1);
 		if (prog.vm_func == 1)
 		{
-			if (vm_index5[28])
+			if (vm_data.vm_index5[28])
 			{
-				if (vm_index5[28] != 0xFFFF)
-					++vm_index5[28];
-				if (vm_index5[44])
+				if (vm_data.vm_index5[28] != 0xFFFF)
+					++vm_data.vm_index5[28];
+				if (vm_data.vm_index5[44])
 				{
-					if (vm_index5[44] != 0xFFFF)
-						++vm_index5[44];
+					if (vm_data.vm_index5[44] != 0xFFFF)
+						++vm_data.vm_index5[44];
 				}
 			}
 			else if (intersectRect(&rcur, &prog.render_rect) && prog.field_12E && ai_ent[0].type <= 2)
 			{
 				ai_ent[0].type2 = 0;
 				ai_ent[0].field_1C = 0;
-				if (!ai_ent[0].field_20 && !vm_index5[40])
+				if (!ai_ent[0].field_20 && !vm_data.vm_index5[40])
 					ai_ent[0].field_20 = 100;
 				if (ai_ent[0].type4)
 				{
 					ai_ent[0].type4 = 0;
 					Vm_set_63();
-					vm_index5[45] = 1;
+					vm_data.vm_index5[45] = 1;
 				}
 			}
 		}
@@ -1621,7 +1621,7 @@ void LBtnClick(int is_double, LONG x, LONG y)
 		// check if it's inside the game area
 		if (intersectRect(&rcur, &prog.render_rect))
 		{
-			vm_index3[22] = prog.screen_x + x - prog.render_rect.X0() <= sprt_ent[0].x0;
+			vm_data.vm_index3[22] = prog.screen_x + x - prog.render_rect.X0() <= sprt_ent[0].x0;
 			if ((prog.field_12E || prog.field_130) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
 			{
 				ai_ent[0].field_20 = 0;
@@ -1631,7 +1631,7 @@ void LBtnClick(int is_double, LONG x, LONG y)
 					// free click, move around
 					if (prog.field_12E && !ai_ent[0].type4)
 					{
-						if (vm_index5[40])
+						if (vm_data.vm_index5[40])
 							is_double = 0;
 						SprSetDest(0, sprt_ent[0].x0, prog.screen_x + x - prog.render_rect.X0(), is_double);
 					}
@@ -1645,7 +1645,7 @@ void LBtnClick(int is_double, LONG x, LONG y)
 			}
 		}
 		// check if it's inside the inventory space
-		else if (vm_index5[45] && intersectRect(&rcur, &prog.menu_rect))
+		else if (vm_data.vm_index5[45] && intersectRect(&rcur, &prog.menu_rect))
 		{
 			item_hit = -1;
 			int i;

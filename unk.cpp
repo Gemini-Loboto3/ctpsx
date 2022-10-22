@@ -5,49 +5,49 @@
 
 void sub_4017BB()
 {
-	prog.click_on_item |= vm_index5[7];
-	vm_index5[7] = 0;
+	prog.click_on_item |= vm_data.vm_index5[7];
+	vm_data.vm_index5[7] = 0;
 }
 
 void Vm_update_state()
 {
-	vm_index3[0]  = ((4 * ~prog.click_old) | 3) & (5 * prog.click_bits);
+	vm_data.vm_index3[0]  = ((4 * ~prog.click_old) | 3) & (5 * prog.click_bits);
 	prog.click_old = prog.click_bits;
 	//GetCursorPos(&prog.mousePT);
 	prog.mousePT.x = mouseX;
 	prog.mousePT.y = mouseY;
 	//ScreenToClient(prog.hWnd, &prog.mousePT);
-	vm_index3[1]  = (WORD)prog.mousePT.x;
-	vm_index3[2]  = (WORD)prog.mousePT.y;
-	vm_index3[3]  = prog.key_is_down;
-	vm_index3[4]  = prog.in_key;
-	vm_index3[5]  = sprt_ent[0].x0;
-	vm_index3[6]  = sprt_ent[0].y0;
-	vm_index3[7]  = WORD(8 * ai_ent[0].type0 + 4);
-	vm_index3[8]  = (WORD)ai_ent[0].type;
-	vm_index3[9]  = sprt_ent[1].x0;
-	vm_index3[10] = sprt_ent[1].y0;
-	vm_index3[11] = WORD(8 * ai_ent[1].type0 + 4);
-	vm_index3[12] = (WORD)ai_ent[1].type;
-	vm_index3[17] = (WORD)sprt_ent[0].flag1;
-	vm_index3[18] = (WORD)sprt_ent[1].flag1;
-	vm_index3[19] = prog.screen_x;
-	vm_index3[20] = prog.screen_y;
-	vm_index3[21] = prog.pal_obj.type;
+	vm_data.vm_index3[1]  = (WORD)prog.mousePT.x;
+	vm_data.vm_index3[2]  = (WORD)prog.mousePT.y;
+	vm_data.vm_index3[3]  = prog.key_is_down;
+	vm_data.vm_index3[4]  = prog.in_key;
+	vm_data.vm_index3[5]  = sprt_ent[0].x0;
+	vm_data.vm_index3[6]  = sprt_ent[0].y0;
+	vm_data.vm_index3[7]  = WORD(8 * ai_ent[0].type0 + 4);
+	vm_data.vm_index3[8]  = (WORD)ai_ent[0].type;
+	vm_data.vm_index3[9]  = sprt_ent[1].x0;
+	vm_data.vm_index3[10] = sprt_ent[1].y0;
+	vm_data.vm_index3[11] = WORD(8 * ai_ent[1].type0 + 4);
+	vm_data.vm_index3[12] = (WORD)ai_ent[1].type;
+	vm_data.vm_index3[17] = (WORD)sprt_ent[0].flag1;
+	vm_data.vm_index3[18] = (WORD)sprt_ent[1].flag1;
+	vm_data.vm_index3[19] = prog.screen_x;
+	vm_data.vm_index3[20] = prog.screen_y;
+	vm_data.vm_index3[21] = prog.pal_obj.type;
 }
 
 void sub_41259E()
 {
-	vm_index3[14] = 0;
-	if (vm_index4[60])
-		vm_index3[14] = 2;
-	if (vm_index4[61])
-		vm_index3[14] |= 1;
+	vm_data.vm_index3[14] = 0;
+	if (vm_data.vm_index4[60])
+		vm_data.vm_index3[14] = 2;
+	if (vm_data.vm_index4[61])
+		vm_data.vm_index3[14] |= 1;
 }
 
 int sub_403304(int a1)
 {
-	return vm_index6[a1 + 500] != 0xFFFF && vm_index2[vm_index6[a1 + 500]];
+	return vm_data.vm_index6[a1 + 500] != 0xFFFF && vm_data.vm_index2[vm_data.vm_index6[a1 + 500]];
 }
 
 void TriggerDebug()
@@ -58,10 +58,10 @@ void TriggerDebug()
 	{
 		if (sub_403304(i))
 		{
-			rtrg.Set(prog.render_rect.X0() + vm_rects[i].X0() - prog.screen_x,
-				prog.render_rect.X0() + vm_rects[i].X1() - prog.screen_x,
-				prog.render_rect.Y0() + vm_rects[i].Y0() - prog.screen_y,
-				prog.render_rect.Y0() + vm_rects[i].Y1() - prog.screen_y);
+			rtrg.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
+				prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
+				prog.render_rect.Y0() + vm_data.vm_rects[i].Y0() - prog.screen_y,
+				prog.render_rect.Y0() + vm_data.vm_rects[i].Y1() - prog.screen_y);
 			if (intersectRect(&prog.render_rect, &rtrg))
 				RenderTile(GETX(rtrg.X0()), GETY(rtrg.Y0()), rtrg.W() / 2, rtrg.H() / 2, 0, 0xff, 0xff, 0x80);
 		}
