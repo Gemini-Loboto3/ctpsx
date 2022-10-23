@@ -75,8 +75,8 @@ void Init()
 	Vm_set_proc(0);
 	//BmpInitRect(&prog.render_bmp, 80, 0, 480, 304);
 	vm_data.vm_index5[0] = 0;
-	ai_ent[0].type4 = 0;
-	ai_ent[1].type4 = 0;
+	ai_ent[0].state = 0;
+	ai_ent[1].state = 0;
 
 #ifdef NDEBUG
 	char path[MAX_PATH];
@@ -133,14 +133,14 @@ void DispCursor();
 // game
 void draw_func1()
 {
-	sub_40266A();
+	TriggerUpdate();
 	TMap_scroller();
 	TMap_scroller2();
-	sub_401D32();
-	sub_401D74();
+	MoveJennifer();
+	MoveStalker();
 	sub_4021DC();
-	sub_40243A();
-	sub_40245E();
+	EventWait();
+	SprUpdater();
 	int pal = sub_4035DC();
 	prog.pal_obj.f4091AD(pal);
 	DrawQSprites();
@@ -152,7 +152,7 @@ void draw_func1()
 // opening / title screen
 void draw_func2()
 {
-	sub_40245E();
+	SprUpdater();
 	DrawQSprites();
 	SwapBuffer();
 	CursorDispCk();

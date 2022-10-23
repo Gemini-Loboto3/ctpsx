@@ -130,7 +130,7 @@ void SPRT_ENT::CalcPan()
 	int v3; // [esp+4h] [ebp-4h]
 	unsigned __int16 v4; // [esp+6h] [ebp-2h]
 
-	if (!field_45 && field_41 == 1)
+	if (!is_bg_spr && field_41 == 1)
 	{
 		v4 = (frame_id & 0x3FFF) >> 8;
 		if (v4 <= 0x12u)
@@ -164,9 +164,9 @@ void Vm_spr_lmt(int id, int lmx, int lmy)
 	sprt_ent[id].lmy = lmy;
 }
 
-void sub_404346(int id, int val)
+void SetBgIsSpr(int id, int is_bg)
 {
-	sprt_ent[id].field_45 = val;
+	sprt_ent[id].is_bg_spr = is_bg;
 }
 
 void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
@@ -179,21 +179,21 @@ void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
 		//sprt_ent[id].bmp = ptr[(h - 1) * w];
 		sprt_ent[id].field_37 = 0;
 		sprt_ent[id].frame_id = -1;
-		sub_404346(id, 1);
+		SetBgIsSpr(id, 1);
 		sprt_ent[id].field_41 = 0;
 		sprt_ent[id].is_busy = 0;
 	}
 }
 
-void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag)
+void BgSprPos(int id, __int16 x, __int16 y, __int16 flag)
 {
-	if (sprt_ent[a1].enabled)
+	if (sprt_ent[id].enabled)
 	{
-		sprt_ent[a1].x3 = x;
-		sprt_ent[a1].y3 = y;
-		sprt_ent[a1].x0 = x;
-		sprt_ent[a1].y0 = y;
-		sprt_ent[a1].flag1 = flag;
+		sprt_ent[id].x3 = x;
+		sprt_ent[id].y3 = y;
+		sprt_ent[id].x0 = x;
+		sprt_ent[id].y0 = y;
+		sprt_ent[id].flag1 = flag;
 	}
 }
 
@@ -237,291 +237,9 @@ void SprPos(int id, int x, int y, DWORD flags)
 		sprt_ent[id].SetXY(x, y, flags, 0);
 }
 
-WORD word_41FDA4[][36][2] =
-{
-  {
-	{ 258u, 0u },
-	{ 270u, 0u },
-	{ 264u, 271u },
-	{ 261u, 258u },
-	{ 261u, 270u },
-	{ 261u, 271u },
-	{ 258u, 0u },
-	{ 270u, 0u },
-	{ 264u, 271u },
-	{ 261u, 258u },
-	{ 261u, 270u },
-	{ 262u, 271u },
-	{ 263u, 258u },
-	{ 270u, 0u },
-	{ 271u, 0u },
-	{ 262u, 258u },
-	{ 262u, 270u },
-	{ 262u, 271u },
-	{ 33026u, 0u },
-	{ 33038u, 0u },
-	{ 33032u, 33039u },
-	{ 33029u, 33026u },
-	{ 33029u, 33038u },
-	{ 33029u, 33039u },
-	{ 33026u, 0u },
-	{ 33038u, 0u },
-	{ 33032u, 33039u },
-	{ 33029u, 33026u },
-	{ 33029u, 33038u },
-	{ 33030u, 33039u },
-	{ 33031u, 33026u },
-	{ 33038u, 0u },
-	{ 33039u, 0u },
-	{ 33030u, 33026u },
-	{ 33030u, 33038u },
-	{ 33030u, 33039u }
-  },
-  {
-	{ 1112u, 0u },
-	{ 1087u, 0u },
-	{ 1096u, 0u },
-	{ 1086u, 1112u },
-	{ 1086u, 1087u },
-	{ 1086u, 1096u },
-	{ 1112u, 0u },
-	{ 1087u, 0u },
-	{ 1096u, 0u },
-	{ 1086u, 1112u },
-	{ 1086u, 1087u },
-	{ 1098u, 1096u },
-	{ 1099u, 1112u },
-	{ 1087u, 0u },
-	{ 1096u, 0u },
-	{ 1098u, 1112u },
-	{ 1098u, 1087u },
-	{ 1098u, 1096u },
-	{ 33880u, 0u },
-	{ 33855u, 0u },
-	{ 33864u, 0u },
-	{ 33854u, 33880u },
-	{ 33854u, 33855u },
-	{ 33854u, 33864u },
-	{ 33880u, 0u },
-	{ 33855u, 0u },
-	{ 33864u, 0u },
-	{ 33854u, 33880u },
-	{ 33854u, 33855u },
-	{ 33866u, 33864u },
-	{ 33867u, 33880u },
-	{ 33855u, 0u },
-	{ 33864u, 0u },
-	{ 33866u, 33880u },
-	{ 33866u, 33855u },
-	{ 33866u, 33864u }
-  },
-  {
-	{ 1115u, 0u },
-	{ 1089u, 0u },
-	{ 1097u, 0u },
-	{ 1088u, 1115u },
-	{ 1088u, 1089u },
-	{ 1088u, 1097u },
-	{ 1115u, 0u },
-	{ 1089u, 0u },
-	{ 1097u, 0u },
-	{ 1088u, 1115u },
-	{ 1088u, 1089u },
-	{ 1100u, 1097u },
-	{ 1101u, 1115u },
-	{ 1089u, 0u },
-	{ 1097u, 0u },
-	{ 1100u, 1115u },
-	{ 1100u, 1089u },
-	{ 1100u, 1097u },
-	{ 33883u, 0u },
-	{ 33857u, 0u },
-	{ 33865u, 0u },
-	{ 33856u, 33883u },
-	{ 33856u, 33857u },
-	{ 33856u, 33865u },
-	{ 33883u, 0u },
-	{ 33857u, 0u },
-	{ 33865u, 0u },
-	{ 33856u, 33883u },
-	{ 33856u, 33857u },
-	{ 33868u, 33865u },
-	{ 33869u, 33883u },
-	{ 33857u, 0u },
-	{ 33865u, 0u },
-	{ 33868u, 33883u },
-	{ 33868u, 33857u },
-	{ 33868u, 33865u }
-  }
-};
 
-WORD word_41FF6C[][36][2] =
-{
-  {
-	{ 36864u, 0u },
-	{ 36865u, 0u },
-	{ 36868u, 36866u },
-	{ 36867u, 36864u },
-	{ 36867u, 36865u },
-	{ 36867u, 36866u },
-	{ 36864u, 0u },
-	{ 36865u, 0u },
-	{ 36868u, 36866u },
-	{ 36867u, 36864u },
-	{ 36867u, 36865u },
-	{ 36869u, 36866u },
-	{ 36870u, 36864u },
-	{ 36865u, 0u },
-	{ 36866u, 0u },
-	{ 36869u, 36864u },
-	{ 36869u, 36865u },
-	{ 36869u, 36866u },
-	{ 4096u, 0u },
-	{ 4097u, 0u },
-	{ 4100u, 4098u },
-	{ 4099u, 4096u },
-	{ 4099u, 4097u },
-	{ 4099u, 4098u },
-	{ 4096u, 0u },
-	{ 4097u, 0u },
-	{ 4100u, 4098u },
-	{ 4099u, 4096u },
-	{ 4099u, 4097u },
-	{ 4101u, 4098u },
-	{ 4102u, 4096u },
-	{ 4097u, 0u },
-	{ 4098u, 0u },
-	{ 4101u, 4096u },
-	{ 4101u, 4097u },
-	{ 4101u, 4098u }
-  },
-  {
-	{ 37376u, 0u },
-	{ 37377u, 0u },
-	{ 37380u, 37378u },
-	{ 37379u, 37376u },
-	{ 37379u, 37377u },
-	{ 37379u, 37378u },
-	{ 37376u, 0u },
-	{ 37377u, 0u },
-	{ 37378u, 0u },
-	{ 37379u, 37376u },
-	{ 37379u, 37377u },
-	{ 37381u, 37378u },
-	{ 37382u, 37376u },
-	{ 37377u, 0u },
-	{ 37378u, 0u },
-	{ 37381u, 37376u },
-	{ 37381u, 37377u },
-	{ 37381u, 37378u },
-	{ 4608u, 0u },
-	{ 4609u, 0u },
-	{ 4612u, 4610u },
-	{ 4611u, 4608u },
-	{ 4611u, 4609u },
-	{ 4611u, 4610u },
-	{ 4608u, 0u },
-	{ 4609u, 0u },
-	{ 4610u, 0u },
-	{ 4611u, 4608u },
-	{ 4611u, 4609u },
-	{ 4613u, 4610u },
-	{ 4614u, 4608u },
-	{ 4609u, 0u },
-	{ 4610u, 0u },
-	{ 4613u, 4608u },
-	{ 4613u, 4609u },
-	{ 4613u, 4610u }
-  },
-  {
-	{ 37632u, 0u },
-	{ 37633u, 0u },
-	{ 37636u, 37634u },
-	{ 37635u, 37632u },
-	{ 37635u, 37633u },
-	{ 37635u, 37634u },
-	{ 37632u, 0u },
-	{ 37633u, 0u },
-	{ 37634u, 0u },
-	{ 37635u, 37632u },
-	{ 37635u, 37633u },
-	{ 37637u, 37634u },
-	{ 37638u, 37632u },
-	{ 37633u, 0u },
-	{ 37634u, 0u },
-	{ 37637u, 37632u },
-	{ 37637u, 37633u },
-	{ 37637u, 37634u },
-	{ 4864u, 0u },
-	{ 4865u, 0u },
-	{ 4868u, 4866u },
-	{ 4867u, 4864u },
-	{ 4867u, 4865u },
-	{ 4867u, 4866u },
-	{ 4864u, 0u },
-	{ 4865u, 0u },
-	{ 4866u, 0u },
-	{ 4867u, 4864u },
-	{ 4867u, 4865u },
-	{ 4869u, 4866u },
-	{ 4870u, 4864u },
-	{ 4865u, 0u },
-	{ 4866u, 0u },
-	{ 4869u, 4864u },
-	{ 4869u, 4865u },
-	{ 4869u, 4866u }
-  }
-};
 
-WORD word_42011C[][2][2] =
-{
-  { { 3072u, 3073u }, { 35840u, 35841u } },
-  { { 3109u, 3074u }, { 35877u, 35842u } },
-  { { 3076u, 3075u }, { 35844u, 35843u } },
-  { { 3080u, 3081u }, { 35848u, 35849u } },
-  { { 3072u, 3085u }, { 35840u, 35853u } }
-};
-
-int __cdecl sub_4033A4(WORD* dst, int a2)
-{
-	DWORD v3;
-	DWORD v4;
-
-	if (a2)
-	{
-		if (a2 != 1)
-			return 0;
-		if (vm_data.vm_index5[25])
-		{
-			if (vm_data.vm_index5[25] == 1)
-			{
-				v4 = ai_ent[1].type2 + 6 * ai_ent[1].type + 18 * ai_ent[1].type3;
-				if (ai_ent[1].type0 != ai_ent[1].type3)
-					v4 += 3;
-				dst[0] = word_41FF6C[vm_data.vm_index5[6]][v4][0];
-				dst[1] = word_41FF6C[vm_data.vm_index5[6]][v4][1];
-			}
-			else if (vm_data.vm_index5[25] == 2)
-			{
-				if ((int)ai_ent[1].type3 > 1)
-					ai_ent[1].type3 = 1;
-				dst[0] = word_42011C[vm_data.vm_index5[43]][ai_ent[1].type3][ai_ent[1].type2];
-				dst[1] = 0;
-			}
-		}
-	}
-	else
-	{
-		v3 = ai_ent[0].type2 + 6 * ai_ent[0].type + 18 * ai_ent[0].type3;
-		if (ai_ent[0].type0 != ai_ent[0].type3)
-			v3 += 3;
-		dst[0] = word_41FDA4[vm_data.vm_index5[4]][v3][0];
-		dst[1] = word_41FDA4[vm_data.vm_index5[4]][v3][1];
-	}
-	return 1;
-}
-
-void SprAnim(unsigned int id, WORD anim, WORD a3, WORD a4)
+void SprAnim(int id, WORD anim, WORD a3, WORD a4)
 {
 	WORD v5[2];
 
@@ -529,13 +247,13 @@ void SprAnim(unsigned int id, WORD anim, WORD a3, WORD a4)
 	{
 		if (anim == 0xFFFF)
 		{
-			if (sub_4033A4(v5, id))
+			if (GetAnimData(v5, id))
 			{
 				sprt_ent[id].frame_id = v5[0];
 				ai_ent[id].anim = v5[1];
 				ai_ent[id].enabled = 0;
-				ai_ent[id].type0 = ai_ent[id].type3;
-				ai_ent[id].type = ai_ent[id].type2;
+				ai_ent[id].type0 = ai_ent[id].direction;
+				ai_ent[id].type = ai_ent[id].type_next;
 			}
 		}
 		else
@@ -547,7 +265,7 @@ void SprAnim(unsigned int id, WORD anim, WORD a3, WORD a4)
 		sprt_ent[id].field_9D = a4 >> 8;
 		sprt_ent[id].Update();
 		sprt_ent[id].UpdateXY();
-		sub_404346(id, 0);
+		SetBgIsSpr(id, 0);
 		sprt_ent[id].field_41 = 0;
 		sprt_ent[id].is_busy = 0;
 		if (id <= 1)
@@ -630,7 +348,7 @@ void SprCursorAnimate()
 
 void SpriteGetRect(SPRT_ENT* s, CRect* r)
 {
-	r->SetXYWH(s->x3, s->width, s->y3, s->height);
+	r->SetXYWH(s->x3, s->y3, s->width, s->height);
 }
 
 void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
@@ -642,14 +360,14 @@ void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 	if (lprcSrc)
 	{
 		copyRect(&rcopy, lprcSrc);
-		if (!intersectRect(&rspr, &rcopy))
-			return;
+		//if (!intersectRect(&rspr, &rcopy))
+		//	return;
 	}
 	else
 	{
 		TMapGetDstRect(&tmap, &rcopy);
-		if (!intersectRect(&rspr, &rcopy))
-			return;
+		//if (!intersectRect(&rspr, &rcopy))
+		//	return;
 	}
 
 	TMapGetRect(&tmap, &rxy);
@@ -949,7 +667,6 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	{
 		spr->x3 = 768;
 		spr->y3 = 768;
-		return 1;
 	}
 	else
 	{
@@ -974,14 +691,14 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		// horizontal
 		if ((spr->field_89 & 0x8000) == 0)
 		{
-			spr->x0 += 4;
+			spr->x0 += 8;
 			spr->x3 = spr->x0 - 4;
 			//spr->x0 += v6;
 			//spr->x3 = (__int16)(LOWORD(spr->x0) - v3[6 * (__int16)v13 + 9]);
 		}
 		else
 		{
-			spr->x0 -= 4;
+			spr->x0 -= 8;
 			spr->x3 = spr->x0 + 4;
 			//spr->x0 -= v6;
 			//spr->x3 = (__int16)(LOWORD(spr->x0) + v3[6 * (__int16)v13 + 9] - v3[6 * (__int16)v13 + 7]);
@@ -990,23 +707,24 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		// vertical
 		if ((spr->field_89 & 0x4000) != 0)
 		{
-			spr->y0 -= 4;
+			spr->y0 -= 8;
 			spr->y3 = spr->y0 - 4;
 			//spr->y0 -= t3;
 			//spr->y3 = (__int16)(LOWORD(spr->y0) - v3[6 * (__int16)v13 + 10]);
 		}
 		else
 		{
-			spr->y0 += 4;
+			spr->y0 += 8;
 			spr->y3 = spr->y0 - spr->height + 4;
 			//spr->y0 += t3;
 			//spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->height));
 		}
-		return 1;
 	}
+
+	return 1;
 }
 
-void sub_40245E()
+void SprUpdater()
 {
 	DWORD flag1; // [esp+0h] [ebp-8h]
 	SPRT_ENT* s; // [esp+4h] [ebp-4h]
@@ -1032,7 +750,7 @@ void sub_40245E()
 	sub_403536();
 }
 
-void sub_40243A()
+void EventWait()
 {
 	if (prog.field_128)
 	{
@@ -1041,31 +759,9 @@ void sub_40243A()
 	}
 }
 
-void sub_401DB5()
-{
-	if (sprt_ent[0].lmx >= 0
-		&& (ai_ent[0].type == 1 || ai_ent[0].type == 2)
-		&& sprt_ent[0].x0 <= sprt_ent[0].lmx
-		&& ai_ent[0].type0 == 1)
-	{
-		ai_ent[0].enabled = 1;
-		ai_ent[0].type2 = 0;
-		ai_ent[0].field_1C = 0;
-		ai_ent[0].type3 = 1;
-	}
-	if (sprt_ent[0].lmy >= 0
-		&& (ai_ent[0].type == 1 || ai_ent[0].type == 2)
-		&& sprt_ent[0].x0 >= sprt_ent[0].lmy
-		&& !ai_ent[0].type0)
-	{
-		ai_ent[0].enabled = 1;
-		ai_ent[0].type2 = 0;
-		ai_ent[0].field_1C = 0;
-		ai_ent[0].type3 = 0;
-	}
-}
 
-void __cdecl sub_401EB7(unsigned int id)
+
+void __cdecl AnimateAI(unsigned int id)
 {
 	if (sprt_ent[id].is_busy)
 	{
@@ -1082,34 +778,34 @@ int EntGetPan(int a1)
 	return Sound_get_pan(sprt_ent[a1].x0 - prog.screen_x);
 }
 
-void sub_4042C0(int id)
+void ResetAI(int id)
 {
 	ai_ent[id].anim = 0;
-	ai_ent[id].type4 = 0;
+	ai_ent[id].state = 0;
 	ai_ent[id].enabled = 0;
-	ai_ent[id].field_1C = 0;
-	ai_ent[id].field_20 = 0;
+	ai_ent[id].timer2 = 0;
+	ai_ent[id].timer = 0;
 	ai_ent[id].field_24 = 0;
 }
 
 void Vm_spr_dir(int id, int a2, int a3, int a4, int a5)
 {
-	int t3;
+	int dir;
 
 	if (a2 != -1)
 		ai_ent[id].type0 = a2 >> 3;
 	if (a4 == -1)
-		t3 = ai_ent[id].type0;
+		dir = ai_ent[id].type0;
 	else
-		t3 = a4 >> 3;
-	ai_ent[id].type3 = t3;
+		dir = a4 >> 3;
+	ai_ent[id].direction = dir;
 	if (a3 != -1)
 		ai_ent[id].type = a3;
 	if (a5 == -1)
-		ai_ent[id].type2 = ai_ent[id].type;
+		ai_ent[id].type_next = ai_ent[id].type;
 	else
-		ai_ent[id].type2 = a5;
-	sub_4042C0(id);
+		ai_ent[id].type_next = a5;
+	ResetAI(id);
 }
 
 void rectSwapX(CRect* r)
@@ -1120,37 +816,39 @@ void rectSwapX(CRect* r)
 
 void SprSetDest(int id, int cur_x, int dst_x, int running)
 {
-	if (!id && vm_data.vm_index5[25] == 1)
+	if (id == 0 && vm_data.vm_index5[25] == 1)
 		running = 1;
+	// moving to the right
 	if (dst_x >= cur_x || sprt_ent[id].lmx >= cur_x)
 	{
 		if (dst_x >= cur_x && (sprt_ent[id].lmy < 0 || sprt_ent[id].lmy > cur_x))
 		{
-			ai_ent[id].type3 = 0;
+			ai_ent[id].direction = 0;
 			if (running)
 			{
-				ai_ent[id].type2 = 2;
-				ai_ent[id].field_1C = 0;
+				ai_ent[id].type_next = 2;
+				ai_ent[id].timer2 = 0;
 			}
 			else
 			{
-				ai_ent[id].type2 = 1;
-				ai_ent[id].field_1C = 8;
+				ai_ent[id].type_next = 1;
+				ai_ent[id].timer2 = 8;
 			}
 		}
 	}
+	// moving to the left
 	else
 	{
-		ai_ent[id].type3 = 1;
+		ai_ent[id].direction = 1;
 		if (running)
 		{
-			ai_ent[id].type2 = 2;
-			ai_ent[id].field_1C = 0;
+			ai_ent[id].type_next = 2;
+			ai_ent[id].timer2 = 0;
 		}
 		else
 		{
-			ai_ent[id].type2 = 1;
-			ai_ent[id].field_1C = 8;
+			ai_ent[id].type_next = 1;
+			ai_ent[id].timer2 = 8;
 		}
 	}
 }
@@ -1192,17 +890,17 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 
 	if (center + r.X0() <= cur_x)
 	{
-		ai_ent[id].field_1A = 1;
+		ai_ent[id].type3_bk = 1;
 		vm_data.vm_index5[29] = 1;
 	}
 	else
 	{
-		ai_ent[id].field_1A = 0;
+		ai_ent[id].type3_bk = 0;
 		vm_data.vm_index5[29] = 0;
 	}
 
 	if (a4 != -1)
-		ai_ent[id].field_1A = a4 >> 3;
+		ai_ent[id].type3_bk = a4 >> 3;
 
 	if (left - mleft <= cur_x)
 	{
@@ -1242,159 +940,66 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 		dst_x = left;
 	}
 
-	ai_ent[id].field_18 = dst_x;
+	ai_ent[id].dest_x = dst_x;
 
 	switch (mmode)
 	{
 	case 0:
 		SprSetDest(id, cur_x, dst_x, running);
-		ai_ent[id].type4 = 1;
-		ai_ent[id].field_1C = 0;
+		ai_ent[id].state = 1;
+		ai_ent[id].timer2 = 0;
 		break;
 	case 1:
 	case 2:
-		ai_ent[id].type4 = 2;
+		ai_ent[id].state = 2;
 		break;
 	}
 }
 
-int sub_401F05()
+
+
+void UpdateAI(int id)
 {
-	static WORD word_41FF54[4][4] =
+	CRect pt;
+
+	switch (ai_ent[id].state)
 	{
-		{ 349u, 350u, 33117u, 33118u },
-		{ 349u, 350u, 33117u, 33118u },
-		{ 73u, 74u, 32841u, 32842u },
-		{ 36864u, 0u, 36865u, 0u }
-	};
-
-	switch (ai_ent[0].type)
-	{
-	case 3u:
-		vm_data.vm_index5[2] += 2;
-		if (vm_data.vm_index5[2] > 800)
-			vm_data.vm_index5[2] = 800;
-		if (ai_ent[0].type2 != 3)
-		{
-			ai_ent[0].type = 5;
-			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0 + 1], 0, 0);
-		}
-		return 1;
-	case 4u:
-		if (sprt_ent[0].is_busy)
-		{
-			ai_ent[0].type = 3;
-			ai_ent[0].type2 = 3;
-		}
-		return 1;
-	case 5u:
-		if (sprt_ent[0].is_busy)
-		{
-			ai_ent[0].type = 0;
-			return 0;
-		}
-		return 1;
-	default:
-		if (!ai_ent[0].field_20)
-			return 0;
-
-		if (--ai_ent[0].field_20
-			|| sprt_ent[0].x0 - 80 < sprt_ent[0].lmx
-			|| sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 80 > sprt_ent[0].lmy)
-			return 0;
-		else
-		{
-			ai_ent[0].type = 4;
-			ai_ent[0].type2 = 4;
-			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0], 0, 0);
-			ai_ent[0].anim = 0;
-			return 1;
-		}
-	}
-}
-
-void __cdecl sub_402DE5(int id)
-{
-	CRect pt; // [esp+0h] [ebp-10h] BYREF
-
-	switch (ai_ent[id].type4)
-	{
-	case 1u:
+	case 1:
 		pt.Set(sprt_ent[id].x0, sprt_ent[id].x1, 0, 0);
 		rectSwapX(&pt);
-		if (ai_ent[id].field_18 >= pt.X0() && ai_ent[id].field_18 <= pt.X1())
-			ai_ent[id].type4 = 2;
+		if (ai_ent[id].dest_x >= pt.X0() && ai_ent[id].dest_x <= pt.X1())
+			ai_ent[id].state = 2;
 		break;
-	case 2u:
-		sprt_ent[id].SetXY(ai_ent[id].field_18, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
+	case 2:
+		sprt_ent[id].SetXY(ai_ent[id].dest_x, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
 		if (ai_ent[id].type == 1 || ai_ent[id].type == 2)
 		{
 			ai_ent[id].enabled = 1;
-			ai_ent[id].type2 = 0;
+			ai_ent[id].type_next = 0;
 		}
-		ai_ent[id].type4 = 3;
+		ai_ent[id].state = 3;
 		break;
-	case 3u:
-		if (ai_ent[id].field_1A == LOWORD(ai_ent[id].type0))
-		{
-			ai_ent[id].type4 = 0;
-		}
+	case 3:
+		if (ai_ent[id].type3_bk == (WORD)ai_ent[id].type0)
+			ai_ent[id].state = 0;
 		else
 		{
-			ai_ent[id].type3 = (__int16)ai_ent[id].field_1A;
-			ai_ent[id].type4 = 4;
+			ai_ent[id].direction = ai_ent[id].type3_bk;
+			ai_ent[id].state = 4;
 		}
 		break;
-	case 4u:
+	case 4:
 		if (sprt_ent[id].is_busy)
-			ai_ent[id].type4 = 0;
+			ai_ent[id].state = 0;
 		break;
 	}
 }
 
-void sub_4020BA()
-{
-	WORD a2[2];
 
-	if (ai_ent[0].field_1C)
-	{
-		--ai_ent[0].field_1C;
-	}
-	else if (ai_ent[0].type0 != ai_ent[0].type3 || ai_ent[0].type != ai_ent[0].type2)
-	{
-		sub_4033A4(a2, 0);
-		if (prog.field_128 && ai_ent[0].type == 2)
-			ai_ent[0].enabled = 1;
-		if (ai_ent[0].enabled)
-		{
-			if (a2[1])
-				a2[0] = a2[1];
-		}
-		SprAnim(0, a2[0], 0, 0);
-		ai_ent[0].anim = a2[1];
-		ai_ent[0].enabled = 0;
-		ai_ent[0].type0 = ai_ent[0].type3;
-		ai_ent[0].type = ai_ent[0].type2;
-	}
-}
 
-void sub_401D32()
-{
-	sub_401DB5();
-	sub_401EB7(0);
-	if (!sub_401F05())
-	{
-		if (ai_ent[0].type == 2)
-		{
-			if (vm_data.vm_index5[2])
-				--vm_data.vm_index5[2];
-		}
-		sub_4020BA();
-		sub_402DE5(0);
-	}
-}
 
-void sub_40266A()
+
+void TriggerUpdate()
 {
 	CRect r0; // [esp+10h] [ebp-14h] BYREF
 	int v2; // [esp+20h] [ebp-4h]
@@ -1413,133 +1018,84 @@ void sub_40266A()
 	}
 }
 
-void __cdecl sub_401E61()
-{
-	if (sprt_ent[1].lmx >= 0 && sprt_ent[1].x0 <= sprt_ent[1].lmx && ai_ent[1].type0 == 1)
-		ai_ent[1].type3 = 0;
-	if (sprt_ent[1].lmy >= 0 && sprt_ent[1].x0 >= sprt_ent[1].lmy && !ai_ent[1].type0)
-		ai_ent[1].type3 = 1;
-}
 
-void __cdecl sub_402053()
+
+
+
+
+
+int SprIsInReach()
 {
-	if (vm_data.vm_index5[25] == 1 && vm_data.vm_index5[39] && sprt_ent[1].is_busy && ++ai_ent[1].field_24 >= 2u)
+	static WORD dist_tbl[][2] =
 	{
-		ai_ent[1].field_24 = 0;
-		ai_ent[1].type2 = 1;
-		ai_ent[1].type3 = sprt_ent[1].x0 - sprt_ent[0].x0 >= 0;
-	}
-}
-
-void __cdecl sub_402178()
-{
-	WORD a2[2]; // [esp+0h] [ebp-4h] BYREF
-
-	if (ai_ent[1].type0 != ai_ent[1].type3 || ai_ent[1].type != ai_ent[1].type2)
-	{
-		sub_4033A4(a2, 1);
-		SprAnim(1u, a2[0], 0, 0);
-		ai_ent[1].anim = a2[1];
-		ai_ent[1].type0 = ai_ent[1].type3;
-		ai_ent[1].type = ai_ent[1].type2;
-	}
-}
-
-void sub_401D74()
-{
-	if (vm_data.vm_index5[25] && !vm_data.vm_index5[27])
-	{
-		if (sprt_ent[1].enabled)
-		{
-			sub_401E61();
-			sub_402053();
-			sub_401EB7(1u);
-			sub_402178();
-			sub_402DE5(1);
-		}
-	}
-}
-
-__int16 sub_4022ED()
-{
-	static WORD word_420374[][2] =
-	{
-		0x64, 0x50,
-		0x3C, 0x32,
-		0x32, 0x28
+		{ 100, 80 },
+		{ 60, 50 },
+		{ 50, 40 },
+		{ 90, 80 }
 	};
 
-	unsigned __int16 v1; // [esp+6h] [ebp-Ah]
-	__int16 v2; // [esp+8h] [ebp-8h]
-	__int16 v3; // [esp+Ah] [ebp-6h]
-	int v4; // [esp+Ch] [ebp-4h]
+	int xdist, xdiff, dir;
 
-	v3 = 0;
-	v2 = LOWORD(sprt_ent[1].x0) - LOWORD(sprt_ent[0].x0);
-	v1 = abs(LOWORD(sprt_ent[1].x0) - LOWORD(sprt_ent[0].x0));
-	if (vm_data.vm_index5[25] == 1)
+	xdiff = sprt_ent[1].x0 - sprt_ent[0].x0;
+	xdist = abs(xdiff);
+
+	switch (vm_data.vm_index5[25])
 	{
-		if (v2 <= 0)
+	case 1:
+		if (xdiff <= 0)
 		{
-			if (!ai_ent[1].type0 && word_420374[vm_data.vm_index5[4]][0] >= v1
-				|| ai_ent[1].type0 == 1 && word_420374[vm_data.vm_index5[4]][1] >= v1)
-			{
+			if (ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
+				ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
 				return 2;
-			}
 		}
-		else if (ai_ent[1].type0 == 1 && word_420374[vm_data.vm_index5[4]][0] >= v1
-			|| !ai_ent[1].type0 && word_420374[vm_data.vm_index5[4]][1] >= v1)
-		{
+		else if (ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
+			ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
 			return 1;
-		}
-	}
-	else if (vm_data.vm_index5[25] == 2)
-	{
-		static WORD word_420380[2] = { 0x5A, 0x50 };
-
-		v4 = 0;
+		break;
+	case 2:
+		dir = 0;
 		if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
-			v4 = 1;
-		if (word_420380[v4] >= v1)
+			dir = 1;
+		if (dist_tbl[3][dir] >= xdist)
 		{
-			if (v2 <= 0)
+			if (xdiff <= 0)
 				return 2;
 			else
 				return 1;
 		}
+		break;
 	}
-	return v3;
+
+	return 0;
 }
 
 void sub_4021DC()
 {
-	__int16 v0; // [esp+0h] [ebp-2h]
+	int reach;
 
-	if (vm_data.vm_index5[25])
+	if (vm_data.vm_index5[25] && vm_data.vm_index5[26])
 	{
-		if (vm_data.vm_index5[26])
+		if (vm_data.vm_index5[27] == 0 && vm_data.vm_index5[4] == vm_data.vm_index5[6] && vm_data.vm_index5[3] == vm_data.vm_index5[5])
 		{
-			if (!vm_data.vm_index5[27] && vm_data.vm_index5[4] == vm_data.vm_index5[6] && vm_data.vm_index5[3] == vm_data.vm_index5[5])
+			reach = SprIsInReach();
+			if (reach)
 			{
-				v0 = sub_4022ED();
-				if (v0)
+				if ((vm_data.vm_index3[14] & 1) != 0)
 				{
-					if ((vm_data.vm_index3[14] & 1) != 0)
-					{
-						if (!ai_ent[0].type4 && !prog.field_128)
-							return;
-						ai_ent[0].type4 = 0;
-						prog.field_128 = 0;
-						Vm_set_63();
-					}
-					vm_data.vm_index5[27] = v0;
-					ai_ent[0].field_20 = 0;
-					Vm_mark_event(0x191u, 0);
-					ai_ent[0].type4 = 0;
-					ai_ent[1].type4 = 0;
-					if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
-						vm_data.vm_index5[41] = 1;
+					if (!ai_ent[0].state && !prog.field_128)
+						return;
+					ai_ent[0].state = 0;
+					prog.field_128 = 0;
+					Vm_set_63();
 				}
+				vm_data.vm_index5[27] = reach;
+				ai_ent[0].timer = 0;
+				Vm_mark_event(0x191, 0);
+				ai_ent[0].state = 0;
+				ai_ent[1].state = 0;
+				// check jennifer's limits
+				if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
+					vm_data.vm_index5[41] = 1;
 			}
 		}
 	}
@@ -1591,15 +1147,15 @@ void RBtnClick(LONG x, LONG y)
 						++vm_data.vm_index5[44];
 				}
 			}
-			else if (intersectRect(&rcur, &prog.render_rect) && prog.field_12E && ai_ent[0].type <= 2)
+			else if (intersectRect(&rcur, &prog.render_rect) && prog.can_lclick && ai_ent[0].type <= 2)
 			{
-				ai_ent[0].type2 = 0;
-				ai_ent[0].field_1C = 0;
-				if (!ai_ent[0].field_20 && !vm_data.vm_index5[40])
-					ai_ent[0].field_20 = 100;
-				if (ai_ent[0].type4)
+				ai_ent[0].type_next = 0;
+				ai_ent[0].timer2 = 0;
+				if (!ai_ent[0].timer && !vm_data.vm_index5[40])
+					ai_ent[0].timer = 100;
+				if (ai_ent[0].state)
 				{
-					ai_ent[0].type4 = 0;
+					ai_ent[0].state = 0;
 					Vm_set_63();
 					vm_data.vm_index5[45] = 1;
 				}
@@ -1608,38 +1164,37 @@ void RBtnClick(LONG x, LONG y)
 	}
 }
 
-void LBtnClick(int is_double, LONG x, LONG y)
+void LBtnClick(int is_double, LONG cursor_x, LONG cursor_y)
 {
 	CRect rcur;
-	int item_hit; // [esp+24h] [ebp-14h]
-	int trg; // [esp+2Ch] [ebp-Ch]
+	int item_hit;
 
 	prog.click_bits |= 1;
-	rcur.SetXYWH(x, y, 1, 1);
-	if (prog.vm_func == 1)
+	rcur.SetXYWH(cursor_x, cursor_y, 1, 1);
+	if (prog.vm_func == 1)	// ensure it's game mode
 	{
 		// check if it's inside the game area
 		if (intersectRect(&rcur, &prog.render_rect))
 		{
-			vm_data.vm_index3[22] = prog.screen_x + x - prog.render_rect.X0() <= sprt_ent[0].x0;
-			if ((prog.field_12E || prog.field_130) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
+			vm_data.vm_index3[22] = (prog.screen_x + cursor_x - prog.render_rect.X0()) <= sprt_ent[0].x0;
+			if ((prog.can_lclick || prog.can_rclick) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
 			{
-				ai_ent[0].field_20 = 0;
-				trg = intersect_triggers(x, y);
+				ai_ent[0].timer = 0;
+				int trg = intersect_triggers(cursor_x, cursor_y);
 				if (trg == -1)
 				{
 					// free click, move around
-					if (prog.field_12E && !ai_ent[0].type4)
+					if (prog.can_lclick && !ai_ent[0].state)
 					{
 						if (vm_data.vm_index5[40])
 							is_double = 0;
-						SprSetDest(0, sprt_ent[0].x0, prog.screen_x + x - prog.render_rect.X0(), is_double);
+						SprSetDest(0, sprt_ent[0].x0, prog.screen_x + cursor_x - prog.render_rect.X0(), is_double);
 					}
 				}
 				else if (Vm_mark_event(trg + 10, 0))
 				{
-					ai_ent[0].type2 = 0;
-					ai_ent[0].field_1C = 0;
+					ai_ent[0].type_next = 0;
+					ai_ent[0].timer2 = 0;
 					prog.field_128 = 1;
 				}
 			}

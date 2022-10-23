@@ -49,8 +49,8 @@ struct PROGRAM
 	int vm_func;
 	__int16 field_128;
 	DWORD screen_on;
-	__int16 field_12E;
-	__int16 field_130;
+	__int16 can_lclick;
+	__int16 can_rclick;
 	WORD map_attr;
 	int trigger_debug;
 	int field_138;

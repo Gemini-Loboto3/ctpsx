@@ -204,7 +204,7 @@ void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYT
 {
 	if (tim == nullptr)
 	{
-		RenderTile(x, y, w, h, r, g, b);
+		RenderTile(x, y, 32, 32, r, g, b);
 		return;
 	}
 

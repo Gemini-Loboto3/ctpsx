@@ -136,7 +136,7 @@ void vm_func3()
 void vm_func5()
 {
 	if (vm_data.render_x <= 1)
-		ai_ent[vm_data.render_x].type4 = 0;
+		ai_ent[vm_data.render_x].state = 0;
 }
 
 void vm_func6()
@@ -649,15 +649,25 @@ int Vm_wait_fade()
 
 int Vm_ent_wait(int id)
 {
+#if 0
 	if (sprt_ent[id].enabled)
 		return sprt_ent[id].is_busy;
-	else return 1;
+	else return 1;	// inactive
+#else
+	return 1;
+#endif
 }
 
-int Vm_wait_ck(int index)
+int Vm_wait_ai_ck(int index)
 {
-	return index >= 2 || ai_ent[index].type4 == 0;
-	//return 1;
+#if 0
+	if (index >= 2)
+		return 1;	// out of range, assume free
+
+	return ai_ent[index].state ? 0 : 1;
+#else
+	return 1;
+#endif
 }
 
 void Vm_map_attr(WORD attr)
@@ -667,8 +677,8 @@ void Vm_map_attr(WORD attr)
 
 void __cdecl Vm_user_ctr(__int16 a1)
 {
-	prog.field_12E = a1 & 1;
-	prog.field_130 = a1 & 2;
+	prog.can_lclick = a1 & 1;
+	prog.can_rclick = a1 & 2;
 	vm_data.vm_index5[45] = a1 & 1;
 	Vm_spr_dir(0, -1, 0, -1, -1);
 }
@@ -693,22 +703,17 @@ void Vm_work_clr()
 
 void __cdecl Vm_mes_print(VM* game)
 {
-	bool v1; // [esp+0h] [ebp-14h]
-	CHAR glyph[3]; // [esp+7h] [ebp-Dh] BYREF
-	int v3; // [esp+Ah] [ebp-Ah]
-	unsigned __int16 i; // [esp+Ch] [ebp-8h]
+	bool loop;
+	CHAR glyph[3];
 	unsigned __int8 chr; // [esp+Fh] [ebp-5h]
-	LONG w; // [esp+10h] [ebp-4h]
 
 	if (game->field_2948[0] == 1)
 	{
-		v1 = game->field_2944 == 0;
+		loop = game->msg_enabled == 0;
 		do
 		{
 			if (game->wait_timer[0])
-			{
 				--game->wait_timer[0];
-			}
 			else if (game->msg_buf[0][game->msg_pos[0]])
 			{
 				chr = game->msg_buf[0][game->msg_pos[0]];
@@ -723,11 +728,10 @@ void __cdecl Vm_mes_print(VM* game)
 				{
 					glyph[0] = chr;
 					glyph[1] = 0;
-					if (chr > 0x7F)
+					if (chr & 0x80)
 					{
 						glyph[1] = game->msg_buf[0][game->msg_pos[0] + 1];
 						glyph[2] = 0;
-						v3 = 0;
 						++game->msg_pos[0];
 					}
 					if (++game->msg_pos[0] > 512)
@@ -736,8 +740,7 @@ void __cdecl Vm_mes_print(VM* game)
 					wchar_t wide[2];
 					MultiByteToWideChar(932, 0, glyph, 3, wide, 2);
 
-					w = GamePrintChar(game->msg_x, game->msg_y, wide[0]);
-					v3 = w;
+					int w = GamePrintChar(game->msg_x, game->msg_y, wide[0]);
 					game->msg_x += (WORD)w;
 					// auto line carry
 					if (game->msg_w + game->msg_basex - game->msg_v <= game->msg_x - TEXT_XDIFF * 2)
@@ -750,15 +753,15 @@ void __cdecl Vm_mes_print(VM* game)
 			}
 			else
 			{
-				for (i = 0; i < game->msg_pos[0] + 8; ++i)
+				for (int i = 0; i < game->msg_pos[0] + 8; ++i)
 					game->msg_buf[0][i] = 0;
 				game->field_2948[0] = 0;
-				v1 = 1;
-				game->field_2944 = 0;
+				loop = 1;
+				game->msg_enabled = 0;
 				game->msg_pos[0] = 0;
 				game->field_3370[0] = 0;
 			}
-		} while (!v1);
+		} while (!loop);
 	}
 }
 
@@ -959,7 +962,7 @@ void Vm_reset(VM* vm)
 		vm->msg_pos[i] = 0;
 		vm->wait_timer[i] = 0;
 		vm->field_2948[i] = 0;
-		vm->field_2944 = 0;
+		vm->msg_enabled = 0;
 		vm->field_3370[i] = 0;
 		vm->field_28B8[i] = 0;
 		for (int j = 0; j < 512; ++j)
@@ -1545,12 +1548,12 @@ void VM::op_evdef()
 
 void Game_40C792(VM* g)
 {
-	int v2;
+	int bk;
 
-	v2 = g->field_2944;
-	g->field_2944 = 1;
+	bk = g->msg_enabled;
+	g->msg_enabled = 1;
 	Vm_mes_print(g);//GamePrintSjis(g);
-	g->field_2944 = v2;
+	g->msg_enabled = bk;
 	do
 	{
 		Game_RedrawAll(g);
@@ -2033,11 +2036,11 @@ void VM::op_msg_out()
 	char buf[128]; // [esp+0h] [ebp-8Ch] BYREF
 	WORD mes_len; // [esp+80h] [ebp-Ch]
 	WORD v3; // [esp+82h] [ebp-Ah]
-	int v4; // [esp+84h] [ebp-8h]
+	int bk; // [esp+84h] [ebp-8h]
 	int end_loop; // [esp+88h] [ebp-4h]
 
 	vm_data.vm_index3[0] = 0;
-	field_2944 = 0;
+	msg_enabled = 0;
 	updateIndex();
 	v3 = read16();
 	mes_len = read16();
@@ -2094,10 +2097,10 @@ void VM::op_msg_out()
 	field_2948[0] = 1;
 	if (!wait_timer[0])
 	{
-		v4 = field_2944;
-		field_2944 = 1;
+		bk = msg_enabled;
+		msg_enabled = 1;
 		Vm_mes_print(this);
-		field_2944 = v4;
+		msg_enabled = bk;
 	}
 }
 
@@ -2248,10 +2251,10 @@ void VM::op_sce_reset()
 		reset_pos();
 		field_28A2 = 0;
 		field_28B8[vm_data.vm_evt_pos] = 0;
-		auto v4 = field_2944;
-		field_2944 = 1;
+		auto bk = msg_enabled;
+		msg_enabled = 1;
 		Vm_mes_print(this);
-		field_2944 = v4;
+		msg_enabled = bk;
 		Game_BgDispTrn_1(this);
 		Game_RedrawAll(this);
 		Vm_event(this);
@@ -2323,8 +2326,9 @@ void VM::op_bg_buf_clr()
 		{
 			if (bank_no[i])
 			{
-				delete bank_no[i];
-				bank_no[i] = 0;
+				if(bank_no[i]->is_ref == 0)
+					delete bank_no[i];
+				bank_no[i] = nullptr;
 			}
 			for (int j = 0; j < 0x15u; ++j)
 			{
@@ -2457,8 +2461,8 @@ void VM::op_spr_wait()
 	updateIndex();
 	WORD id = read16();
 	int ck0 = Vm_ent_wait(id);
-	int ck1 = Vm_wait_ck(id);
-	if (!ck0 || !ck1)
+	int ck1 = Vm_wait_ai_ck(id);
+	if (ck0 == 0 || ck1 == 0)
 	{
 		rewindIndex();
 		rewindIndex();
@@ -2653,7 +2657,7 @@ LPCSTR op_names[] =
 	"SCEEND",	// 60
 	"MAPSCROLL",// 61
 	"SPRLMT",	// 62
-	"SPRWALKX",// 63
+	"SPRWALKX",	// 63
 	"ALLSPRDISP",// 64
 	"MAPWRT",	// 65
 	"SPRWAIT",	// 66
@@ -2702,7 +2706,7 @@ int Vm_execute(VM* vm)
 	WORD size = 0;
 
 	if ((vm_data.vm_index3[0] & 1) != 0)
-		vm->field_2944 = 1;
+		vm->msg_enabled = 1;
 
 	do
 	{

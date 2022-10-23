@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ai.h" />
     <ClInclude Include="api.h" />
     <ClInclude Include="bg.h" />
     <ClInclude Include="dib.h" />
@@ -122,6 +123,9 @@
     <ClInclude Include="win\xaudio\sndfmt.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ai_player.cpp" />
+    <ClCompile Include="ai_stalker.cpp" />
+    <ClCompile Include="ai_util.cpp" />
     <ClCompile Include="api.cpp" />
     <ClCompile Include="bg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

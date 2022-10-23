@@ -65,6 +65,7 @@
     <ClInclude Include="win\lodepng.h">
       <Filter>win</Filter>
     </ClInclude>
+    <ClInclude Include="ai.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
@@ -124,6 +125,9 @@
       <Filter>win</Filter>
     </ClCompile>
     <ClCompile Include="bg_spr.cpp" />
+    <ClCompile Include="ai_player.cpp" />
+    <ClCompile Include="ai_stalker.cpp" />
+    <ClCompile Include="ai_util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="clock tower.rc">

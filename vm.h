@@ -376,7 +376,7 @@ struct VM
 	WORD ent_index[1];
 	int field_293C;
 	int field_2940;
-	int field_2944;
+	int msg_enabled;
 	DWORD field_2948[5];
 	WORD msg_pos[5];
 	WORD wait_timer[5];

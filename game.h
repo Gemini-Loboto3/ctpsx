@@ -20,6 +20,7 @@
 #include "font.h"
 #include "text.h"
 #include "sprt_man.h"
+#include "ai.h"
 
 DWORD getTime();
 
