@@ -404,8 +404,8 @@ int sub_4035DC()
 
 	if (!vm_data.vm_index5[28])
 		return 3 - sub_403619();
-	v3 = prog.field_194;
-	--prog.field_194;
+	v3 = prog.fade_timer;
+	--prog.fade_timer;
 	return v3 & 3;
 }
 
@@ -695,7 +695,7 @@ void SprUpdater()
 		s->SetX0();
 		s->DoSound();
 	}
-	MoveJenniferY();
+	MoveJenniferSlope();
 }
 
 void EventWait()

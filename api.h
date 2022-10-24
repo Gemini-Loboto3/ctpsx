@@ -7,6 +7,11 @@ typedef int                 BOOL;
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
 
+typedef struct tagPOINT
+{
+	int x, y;
+} POINT;
+
 #endif
 
 class CRect

@@ -123,11 +123,11 @@ void JenniferDir()
 	}
 }
 
-void MoveJenniferY()
+void MoveJenniferSlope()
 {
-	if (prog.field_198 && sprt_ent[0].field_41 && prog.field_19C <= sprt_ent[0].x0 && prog.field_1A0 + prog.field_19C >= sprt_ent[0].x0)
+	if (prog.slant_on && sprt_ent[0].field_41 && prog.slant_x0 <= sprt_ent[0].x0 && prog.slant_x1 + prog.slant_x0 >= sprt_ent[0].x0)
 	{
-		int y = prog.field_19E + prog.field_1A2 * (sprt_ent[0].x0 - prog.field_19C) / prog.field_1A0 - sprt_ent[0].y0;
+		int y = prog.slant_y0 + prog.slant_y1 * (sprt_ent[0].x0 - prog.slant_x0) / prog.slant_x1 - sprt_ent[0].y0;
 		if (y)
 		{
 			sprt_ent[0].y0 += y;

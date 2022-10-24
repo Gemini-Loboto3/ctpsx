@@ -105,8 +105,5 @@ CTim* LoadDIB(const char* path)
 
 CTim* MakeBankFromDIB(const char* path)
 {
-	char fullpath[MAX_PATH];
-
-	sprintf_s(fullpath, MAX_PATH, "%s%s", prog.path, path);
-	return LoadDIB(fullpath);
+	return LoadDIB(path);
 }

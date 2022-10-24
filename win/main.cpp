@@ -179,7 +179,7 @@ DWORD getTime()
 
 int Game()
 {
-	if (prog.field_120 == 0)
+	if (prog.game_stopped == 0)
 	{
 		auto tick = (DWORD)getTime();
 

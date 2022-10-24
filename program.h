@@ -5,7 +5,7 @@ struct PROGRAM
 		memset(this, 0, sizeof(*this));
 
 		_srand(_statcvt_i64());
-		field_120 = 0;
+		game_stopped = 0;
 		vm_func = 0;
 		no_exec = 0;
 		field_190 = 0;
@@ -37,7 +37,6 @@ struct PROGRAM
 		//++*game_alloc_cnt;
 	}
 
-	int field_0;
 #ifdef _WINDOWS
 	LPSTR CmdLine;
 	HINSTANCE hInst;
@@ -47,7 +46,7 @@ struct PROGRAM
 	char path[260];
 	int no_reg;
 #endif
-	int field_120;
+	int game_stopped;
 	int vm_func;
 	__int16 no_exec;
 	DWORD screen_on;
@@ -72,13 +71,13 @@ struct PROGRAM
 	int tick_delta;
 	DWORD tick_now;
 	int field_190;
-	WORD field_194;
-	WORD field_196;
-	int field_198;
-	short field_19C;
-	__int16 field_19E;
-	short field_1A0;
-	short field_1A2;
+	WORD fade_timer;
+	WORD scroll_timer;
+	int slant_on;
+	short slant_x0,
+		slant_y0,
+		slant_x1,
+		slant_y1;
 	int cur_enabled;
 	int triggerX;
 	int triggerY;

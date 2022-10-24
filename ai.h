@@ -29,7 +29,7 @@ void MoveJennifer();
 int AnimateJennifer();
 void AnimateJennifer2();
 void JenniferDir();
-void MoveJenniferY();
+void MoveJenniferSlope();
 
 void MoveStalker();
 void AnimateStalker();

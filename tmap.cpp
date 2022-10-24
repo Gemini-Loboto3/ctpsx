@@ -248,7 +248,7 @@ int TMapOpenAll(TMAP* tmap, LPCSTR filename_dib, LPCSTR filename_map)
 	{
 		if (!TMapOpenDIB(tmap, filename_dib))
 			return 0;
-		//if (filename_map && !TMapOpen(tmap, filename_map))	// there'tmap no .map on psx
+		//if (filename_map && !TMapOpen(tmap, filename_map))	// there's no .map on psx
 		//	return 0;
 	}
 	else
@@ -262,24 +262,11 @@ int TMapOpenAll(TMAP* tmap, LPCSTR filename_dib, LPCSTR filename_map)
 
 void TMapCache(LPCSTR dib_name, LPCSTR map_name)
 {
-	CHAR path_map[MAX_PATH];
-	CHAR path_dib[MAX_PATH];
 	LPCSTR map;
 	LPCSTR dib;
 
-	if (dib_name)
-	{
-		sprintf_s(path_dib, MAX_PATH, "%s%s", prog.path, dib_name);
-		dib = path_dib;
-	}
-	else dib = nullptr;
-
-	if (map_name)
-	{
-		sprintf_s(path_map, MAX_PATH, "%s%s", prog.path, map_name);
-		map = path_map;
-	}
-	else map = nullptr;
+	dib = dib_name ? dib_name : nullptr;
+	map = map_name ? map_name : nullptr;
 
 	TMapOpenAll(&tmap, map, map);
 }
@@ -428,7 +415,7 @@ void SetWorldPos(int x, int y)
 	{
 		if (prog.vm_func == 1)
 		{
-			TMapSetClipArea(&tmap, WINDOW_X * 2, WINDOW_Y * 2 /*0*/, WINDOW_W * 2, WINDOW_H * 2);
+			TMapSetClipArea(&tmap, WINDOW_X * 2, WINDOW_Y * 2, WINDOW_W * 2, WINDOW_H * 2);
 			TMapGetDstRect(&tmap, &dest);
 			SetScrollBlock(x, y);
 		}
@@ -464,8 +451,8 @@ void TMap_scroller2()
 	if (vm_data.vm_index5[46])
 	{
 		int xspd, spd;
-		++prog.field_196;
-		if ((prog.field_196 & 2) != 0)
+		++prog.scroll_timer;
+		if ((prog.scroll_timer & 2) != 0)
 			xspd = -2;
 		else
 			xspd = 2;

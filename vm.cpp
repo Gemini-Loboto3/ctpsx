@@ -270,16 +270,16 @@ void Vm_screen_off()
 
 void Vm_slant_clr()
 {
-	prog.field_198 = 0;
+	prog.slant_on = 0;
 }
 
 void Vm_slant_set(__int16 a1, __int16 a2, __int16 a3, __int16 a4)
 {
-	prog.field_198 = 1;
-	prog.field_19C = a1;
-	prog.field_19E = a2;
-	prog.field_1A0 = a3 - a1;
-	prog.field_1A2 = a4 - a2;
+	prog.slant_on = 1;
+	prog.slant_x0 = a1;
+	prog.slant_y0 = a2;
+	prog.slant_x1 = a3 - a1;
+	prog.slant_y1 = a4 - a2;
 }
 
 void Vm_map_set_clip(int left, int top, int right, int bottom)

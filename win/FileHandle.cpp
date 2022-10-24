@@ -1,11 +1,17 @@
 #include <stdafx.h>
 #include "FileHandle.h"
-#include <psapi.h>
-#include <strsafe.h>
+#include "game.h"
 
 int CFile::Open(LPCSTR filename)
 {
-	handle = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	char path[MAX_PATH];
+#ifdef _DEBUG
+	sprintf_s(path, MAX_PATH, "%s", filename);
+#else
+	sprintf_s(path, MAX_PATH, "%s%s", prog.path, filename);
+#endif
+
+	handle = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	// successful
 	if (handle == INVALID_HANDLE_VALUE)
 		return 0;
@@ -15,7 +21,14 @@ int CFile::Open(LPCSTR filename)
 
 int CFile::Create(LPCSTR filename)
 {
-	handle = CreateFileA(filename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	char path[MAX_PATH];
+#ifdef _DEBUG
+	sprintf_s(path, MAX_PATH, "%s", filename);
+#else
+	sprintf_s(path, MAX_PATH, "%s%s", prog.path, filename);
+#endif
+
+	handle = CreateFileA(path, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	// successful
 	if (handle == INVALID_HANDLE_VALUE)
 		return 0;
