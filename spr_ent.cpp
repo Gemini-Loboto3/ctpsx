@@ -122,7 +122,7 @@ void SPRT_ENT::SetX0()
 		x0 = lmx1;
 }
 
-extern __int16* off_41F094[];
+extern signed char* off_41F094[];
 BYTE vol_tbl[127] =
 {
 	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
