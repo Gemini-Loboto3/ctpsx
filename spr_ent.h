@@ -18,7 +18,7 @@ struct SPRT_ENT
 	void Update();
 	void SetXY(int x, int y, DWORD a4, int flip);
 	void SetX0();
-	void CalcPan();
+	void DoSound();
 
 	DWORD flip;
 	DWORD linked;
@@ -64,7 +64,7 @@ struct SPRT_ENT
 	DWORD field_89;
 	DWORD is_busy;
 	DWORD field_91;
-	DWORD field_95;
+	DWORD sub_frame;
 	WORD field_99;
 	WORD field_9B;
 	WORD field_9D;

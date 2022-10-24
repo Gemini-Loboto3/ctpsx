@@ -44,22 +44,25 @@ void XAudio2Unlock()
 }
 
 HMODULE xdll = nullptr;
-HRESULT (__stdcall *XAudio2CreateEx)(_Outptr_ IXAudio2** ppXAudio2, UINT32 Flags, XAUDIO2_PROCESSOR XAudio2Processor);
+HRESULT (__stdcall *XAudio2CreateEx)(_Outptr_ IXAudio2** ppXAudio2, UINT32 Flags, XAUDIO2_PROCESSOR XAudio2Processor) = nullptr;
+
+#if _DEBUG
+#define XAUDIO2_NAME	L"xaudio2_9d.dll"
+#else
+#define XAUDIO2_NAME	L"xaudio2_9d.dll"
+#endif
 
 bool XAudio2_IsPresent()
 {
 	// -----------------------------------------------
 	// new XAudio2 2.9 loader which doesn't rely on libs
-#if _DEBUG
-	xdll = LoadLibraryA("xaudio2_9d.dll");
-#else
-	xdll = LoadLibraryA("xaudio2_9.dll");
-#endif
+	xdll = LoadLibraryW(XAUDIO2_NAME);
+
 	if (!xdll)
 	{
-		wchar_t sys_path[MAX_PATH], dll_path[MAX_PATH];
+		wchar_t sys_path[MAX_PATH], dll_path[MAX_PATH] = {0};
 		GetSystemDirectoryW(sys_path, MAX_PATH);
-		wprintf_s(dll_path, MAX_PATH, "%s\\xaudio2_9.dll");
+		wprintf_s(dll_path, MAX_PATH, "%s\\" XAUDIO2_NAME, sys_path);
 		xdll = LoadLibraryW(dll_path);
 		if(!xdll)
 			return false;

@@ -288,7 +288,6 @@ void UpdateAITriggerInteraction(int id)
 int GetAnimData(WORD* dst, int a2)
 {
 	DWORD v3;
-	DWORD v4;
 
 	if (a2)
 	{
@@ -298,11 +297,11 @@ int GetAnimData(WORD* dst, int a2)
 		{
 			if (vm_data.vm_index5[25] == 1)
 			{
-				v4 = ai_ent[1].type_next + 6 * ai_ent[1].type + 18 * ai_ent[1].direction;
+				v3 = ai_ent[1].type_next + 6 * ai_ent[1].type + 18 * ai_ent[1].direction;
 				if (ai_ent[1].type0 != ai_ent[1].direction)
-					v4 += 3;
-				dst[0] = word_41FF6C[vm_data.vm_index5[6]][v4][0];
-				dst[1] = word_41FF6C[vm_data.vm_index5[6]][v4][1];
+					v3 += 3;
+				dst[0] = word_41FF6C[vm_data.vm_index5[6]][v3][0];
+				dst[1] = word_41FF6C[vm_data.vm_index5[6]][v3][1];
 			}
 			else if (vm_data.vm_index5[25] == 2)
 			{

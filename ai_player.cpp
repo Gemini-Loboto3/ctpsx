@@ -19,12 +19,12 @@ void MoveJennifer()
 
 int AnimateJennifer()
 {
-	static WORD word_41FF54[4][4] =
+	static WORD word_41FF54[4][2][2] =
 	{
-		{ 349u, 350u, 33117u, 33118u },
-		{ 349u, 350u, 33117u, 33118u },
-		{ 73u, 74u, 32841u, 32842u },
-		{ 36864u, 0u, 36865u, 0u }
+		{ { 349u, 350u }, { 33117u, 33118u } },
+		{ { 349u, 350u }, { 33117u, 33118u } },
+		{ { 73u, 74u },   { 32841u, 32842u } },
+		{ { 36864u, 0u }, { 36865u, 0u } }
 	};
 
 	switch (ai_ent[0].type)
@@ -36,7 +36,7 @@ int AnimateJennifer()
 		if (ai_ent[0].type_next != 3)
 		{
 			ai_ent[0].type = 5;
-			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0 + 1], 0, 0);
+			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][ai_ent[0].type0][1], 0, 0);
 		}
 		return 1;
 	case 4:
@@ -64,7 +64,7 @@ int AnimateJennifer()
 		{
 			ai_ent[0].type = 4;
 			ai_ent[0].type_next = 4;
-			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0], 0, 0);
+			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][ai_ent[0].type0][0], 0, 0);
 			ai_ent[0].anim = 0;
 			return 1;
 		}

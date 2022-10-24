@@ -38,6 +38,7 @@ struct PROGRAM
 	}
 
 	int field_0;
+#ifdef _WINDOWS
 	LPSTR CmdLine;
 	HINSTANCE hInst;
 	HWND hWnd;
@@ -45,6 +46,7 @@ struct PROGRAM
 	LPWSTR tCaption;
 	char path[260];
 	int no_reg;
+#endif
 	int field_120;
 	int vm_func;
 	__int16 no_exec;

@@ -28,11 +28,6 @@ void Midi_load(const char* filename);
 void Midi_unload();
 
 #include <pshpack1.h>
-struct RENDER_PIC
-{
-	BYTE b[480][640];
-};
-
 struct BITMAP_DATA
 {
 	BITMAPINFOHEADER info;
@@ -41,14 +36,10 @@ struct BITMAP_DATA
 
 struct RENDER_BMP
 {
-	int used;
-	HGDIOBJ old_obj;
 	int w;
 	int h;
 	CRect rect;
 	int screen_on;
-	BITMAP_DATA* bmp_info;
-	int flipped_h;
 };
 
 #include "palette.h"

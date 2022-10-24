@@ -122,36 +122,46 @@ void SPRT_ENT::SetX0()
 		x0 = lmx1;
 }
 
-void SPRT_ENT::CalcPan()
+extern __int16* off_41F094[];
+BYTE vol_tbl[127] =
 {
-	int vol; // [esp+0h] [ebp-8h]
-	int pan; // [esp+2h] [ebp-6h]
-	int v3; // [esp+4h] [ebp-4h]
-	unsigned __int16 v4; // [esp+6h] [ebp-2h]
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,110,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,
+	127,127,127,127,127,127,127,127,127,127,127,127,127,127,127
+};
 
+extern const char* soundname_tbl[];
+
+void SPRT_ENT::DoSound()
+{
 	if (!is_bg_spr && field_41 == 1)
 	{
-		v4 = (frame_id & 0x3FFF) >> 8;
-		if (v4 <= 0x12u)
+		int frame = (frame_id & 0x3FFF) >> 8;
+		if (frame < 19)
 		{
-			v3 = -1;//off_41F094[v4][field_95];
-			if (v3 != -1)
+			int sample = off_41F094[frame][sub_frame];
+			if (sample != -1)
 			{
 				if (vm_data.vm_index5[47])
 				{
-					switch (v3)
+					switch (sample)
 					{
-					case 0: v3 = 2; break;
-					case 1: v3 = 3; break;
+					case 0: sample = 2; break;
+					case 1: sample = 3; break;
 					}
 				}
-				pan = Sound_get_pan(x0 - prog.screen_x);
-				vol = 127;//vol_tbl[v3];
+				int pan = Sound_get_pan(x0 - prog.screen_x);
+				int vol = vol_tbl[sample];
 				if (pan == 16 || pan == -16)
 					vol -= 24;
 				if (vol < 0)
 					vol = 0;
-				//Sound_play(soundname_tbl[v3], 0, pan, vol);
+				Sound_play(soundname_tbl[sample], 0, pan, vol);
 			}
 		}
 	}
@@ -601,7 +611,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	//spr->field_95 = pattern_data[lo_id]->field_2[v13];
 
 	// movement
-	if (spr->field_95 == 0xFFFF)
+	if (spr->sub_frame == 0xFFFF)
 	{
 		spr->x3 = 768;
 		spr->y3 = 768;
@@ -683,7 +693,7 @@ void SprUpdater()
 		if (flag1 != s->flag1)
 			SprSetList(s);
 		s->SetX0();
-		s->CalcPan();
+		s->DoSound();
 	}
 	MoveJenniferY();
 }

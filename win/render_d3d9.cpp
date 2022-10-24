@@ -48,18 +48,6 @@ int CreateOffScreenBitmap(RENDER_BMP* bmp, int w, int h)
 	bmp->w = w;
 	bmp->h = h;
 
-	bmp->bmp_info = new BITMAP_DATA;
-	memset(bmp->bmp_info, 0, sizeof(BITMAP_DATA));
-	bmp->bmp_info->info.biSize = sizeof(bmp->bmp_info->info);
-	bmp->bmp_info->info.biPlanes = 1;
-	bmp->bmp_info->info.biBitCount = 8;
-	bmp->bmp_info->info.biHeight = 1;
-	bmp->bmp_info->info.biHeight *= h;
-	bmp->bmp_info->info.biWidth = w;
-
-	bmp->flipped_h = 1;	// makes sure stuff is renderer in the correct vertical order
-	bmp->used = 1;
-
 	// resize window
 	BOOL menu = (GetMenu(prog.hWnd) != nullptr);
 	auto dwStyle = GetWindowLongA(prog.hWnd, GWL_STYLE);
