@@ -1,6 +1,8 @@
 #include <stdafx.h>
 #include "game.h"
 
+AI_ENT ai_ent[2];
+
 WORD word_41FDA4[][36][2] =
 {
   {
@@ -246,6 +248,43 @@ WORD word_42011C[][2][2] =
   { { 3072u, 3085u }, { 35840u, 35853u } }
 };
 
+void UpdateAITriggerInteraction(int id)
+{
+	CRect pt;
+
+	switch (ai_ent[id].state)
+	{
+	case 1:
+		pt.Set(sprt_ent[id].x0, sprt_ent[id].x1, 0, 0);
+		rectSwapX(&pt);
+		if (ai_ent[id].dest_x >= pt.X0() && ai_ent[id].dest_x <= pt.X1())
+			ai_ent[id].state = 2;
+		break;
+	case 2:
+		sprt_ent[id].SetXY(ai_ent[id].dest_x, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
+		if (ai_ent[id].type == 1 || ai_ent[id].type == 2)
+		{
+			ai_ent[id].enabled = 1;
+			ai_ent[id].type_next = 0;
+		}
+		ai_ent[id].state = 3;
+		break;
+	case 3:
+		if (ai_ent[id].type3_bk == (WORD)ai_ent[id].type0)
+			ai_ent[id].state = 0;
+		else
+		{
+			ai_ent[id].direction = ai_ent[id].type3_bk;
+			ai_ent[id].state = 4;
+		}
+		break;
+	case 4:
+		if (sprt_ent[id].is_busy)
+			ai_ent[id].state = 0;
+		break;
+	}
+}
+
 int GetAnimData(WORD* dst, int a2)
 {
 	DWORD v3;
@@ -283,4 +322,71 @@ int GetAnimData(WORD* dst, int a2)
 		dst[1] = word_41FDA4[vm_data.vm_index5[4]][v3][1];
 	}
 	return 1;
+}
+
+void AnimateAI(int id)
+{
+	if (sprt_ent[id].is_busy)
+	{
+		if (ai_ent[id].anim)
+		{
+			SprAnim(id, ai_ent[id].anim, 0, 0);
+			ai_ent[id].anim = 0;
+		}
+	}
+}
+
+void ResetAI(int id)
+{
+	ai_ent[id].anim = 0;
+	ai_ent[id].state = 0;
+	ai_ent[id].enabled = 0;
+	ai_ent[id].timer2 = 0;
+	ai_ent[id].timer = 0;
+	ai_ent[id].field_24 = 0;
+}
+
+int SprIsInReach()
+{
+	static WORD dist_tbl[][2] =
+	{
+		{ 100, 80 },
+		{ 60, 50 },
+		{ 50, 40 },
+		{ 90, 80 }
+	};
+
+	int xdist, xdiff, dir;
+
+	xdiff = sprt_ent[1].x0 - sprt_ent[0].x0;
+	xdist = abs(xdiff);
+
+	switch (vm_data.vm_index5[25])
+	{
+	case 1:
+		if (xdiff <= 0)
+		{
+			if (ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
+				ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
+				return 2;
+		}
+		else if (ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
+			ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
+			return 1;
+		break;
+	case 2:
+		dir = 0;
+		if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx0 || sprt_ent[0].lmx1 >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmx1)
+			dir = 1;
+		if (dist_tbl[3][dir] >= xdist)
+		{
+			if (xdiff <= 0)
+				return 2;
+			else
+				return 1;
+		}
+		break;
+	}
+
+	return 0;
 }

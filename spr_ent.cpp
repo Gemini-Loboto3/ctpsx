@@ -2,7 +2,6 @@
 #include "game.h"
 
 SPRT_ENT sprt_ent[21];
-AI_ENT ai_ent[2];
 
 void SPRT_ENT::Link()
 {
@@ -95,7 +94,7 @@ void SPRT_ENT::Update()
 	UpdateXY();
 }
 
-void SPRT_ENT::SetXY(int _x, int _y, DWORD a4, int _flip)
+void SPRT_ENT::SetXY(int _x, int _y, DWORD _flags, int _flip)
 {
 	if (_flip)
 	{
@@ -103,24 +102,24 @@ void SPRT_ENT::SetXY(int _x, int _y, DWORD a4, int _flip)
 		x0 = _x;
 		y0 = _y;
 		x1 = _x;
-		flag0 = a4;
-		flag1 = a4;
+		flag0 = _flags;
+		flag1 = _flags;
 	}
 	else
 	{
 		flip = 1;
 		x2 = _x;
 		y2 = _y;
-		flag2 = (WORD)a4;
+		flag2 = (WORD)_flags;
 	}
 }
 
 void SPRT_ENT::SetX0()
 {
-	if (lmx >= 0 && x0 < lmx)
-		x0 = lmx;
-	if (lmy > 0 && x0 > lmy)
-		x0 = lmy;
+	if (lmx0 >= 0 && x0 < lmx0)
+		x0 = lmx0;
+	if (lmx1 > 0 && x0 > lmx1)
+		x0 = lmx1;
 }
 
 void SPRT_ENT::CalcPan()
@@ -158,68 +157,22 @@ void SPRT_ENT::CalcPan()
 	}
 }
 
-void Vm_spr_lmt(int id, int lmx, int lmy)
+void Vm_spr_lmt(int id, int lmx0, int lmx1)
 {
-	sprt_ent[id].lmx = lmx;
-	sprt_ent[id].lmy = lmy;
+	sprt_ent[id].lmx0 = lmx0;
+	sprt_ent[id].lmx1 = lmx1;
 }
 
-void SetBgIsSpr(int id, int is_bg)
+void SetSprIsBg(int id, int is_bg)
 {
 	sprt_ent[id].is_bg_spr = is_bg;
 }
 
-void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr)
-{
-	if (sprt_ent[id].enabled)
-	{
-		sprt_ent[id].width = w;
-		sprt_ent[id].height = h;
-		sprt_ent[id].tim = ptr;
-		//sprt_ent[id].bmp = ptr[(h - 1) * w];
-		sprt_ent[id].field_37 = 0;
-		sprt_ent[id].frame_id = -1;
-		SetBgIsSpr(id, 1);
-		sprt_ent[id].field_41 = 0;
-		sprt_ent[id].is_busy = 0;
-	}
-}
-
-void BgSprPos(int id, __int16 x, __int16 y, __int16 flag)
-{
-	if (sprt_ent[id].enabled)
-	{
-		sprt_ent[id].x3 = x;
-		sprt_ent[id].y3 = y;
-		sprt_ent[id].x0 = x;
-		sprt_ent[id].y0 = y;
-		sprt_ent[id].flag1 = flag;
-	}
-}
-
-void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs)
-{
-	if (id <= 20)
-	{
-		sprt_ent[id].id2 = id;
-		sprt_ent[id].enabled = 1;
-		sprt_ent[id].field_32 = a8;
-		sprt_ent[id].is_abs = is_abs;
-		BgSprPos(id, x, y, flag);
-		BgSprAnim(id, w, h, ptr);
-		Vm_spr_lmt(id, -1, -1);
-		sprt_ent[id].SetList();
-	}
-}
-
 void SprtTblDeinit()
 {
-	SPRT_ENT* next;
-	SPRT_ENT* sprt;
-
 	if (prog.sprt)
 	{
-		sprt = prog.sprt;
+		SPRT_ENT *sprt = prog.sprt, *next;
 		do
 		{
 			next = sprt->next;
@@ -237,20 +190,17 @@ void SprPos(int id, int x, int y, DWORD flags)
 		sprt_ent[id].SetXY(x, y, flags, 0);
 }
 
-
-
 void SprAnim(int id, WORD anim, WORD a3, WORD a4)
 {
-	WORD v5[2];
-
 	if (sprt_ent[id].enabled)
 	{
 		if (anim == 0xFFFF)
 		{
-			if (GetAnimData(v5, id))
+			WORD dat[2];
+			if (GetAnimData(dat, id))
 			{
-				sprt_ent[id].frame_id = v5[0];
-				ai_ent[id].anim = v5[1];
+				sprt_ent[id].frame_id = dat[0];
+				ai_ent[id].anim = dat[1];
 				ai_ent[id].enabled = 0;
 				ai_ent[id].type0 = ai_ent[id].direction;
 				ai_ent[id].type = ai_ent[id].type_next;
@@ -264,8 +214,8 @@ void SprAnim(int id, WORD anim, WORD a3, WORD a4)
 		sprt_ent[id].field_9B = a4 & 0xff;
 		sprt_ent[id].field_9D = a4 >> 8;
 		sprt_ent[id].Update();
-		sprt_ent[id].UpdateXY();
-		SetBgIsSpr(id, 0);
+		//sprt_ent[id].UpdateXY();	// useless, Update() does this step already
+		SetSprIsBg(id, 0);
 		sprt_ent[id].field_41 = 0;
 		sprt_ent[id].is_busy = 0;
 		if (id <= 1)
@@ -276,12 +226,12 @@ void SprAnim(int id, WORD anim, WORD a3, WORD a4)
 void SprCursorAnimate()
 {
 	CRect rtrg, rcur;
-	int i;
+	int i = 0;
 
 	rcur.SetXYWH(prog.mousePT.x + 1, prog.mousePT.y + 1, 1, 1);
 	if (prog.cur_enabled)
 	{
-		i = 0;
+		// find any trigger intersecting with the cursor
 		while (1)
 		{
 			if ((vm_data.vm_index6[i + 10] & 0x10) == 0 && sub_403304(i))
@@ -294,54 +244,56 @@ void SprCursorAnimate()
 					break;
 			}
 			if (++i >= 30)
-				goto LABEL_15;
+				goto not_found;
 		}
+
 		prog.triggerX = vm_data.vm_rects[i].X0() - (32 - vm_data.vm_rects[i].W()) / 2;
 		prog.triggerY = vm_data.vm_rects[i].Y0() - (32 - vm_data.vm_rects[i].H()) / 2;
-		if (prog.field_14C)
+		switch (prog.curs_mode)
 		{
-			if (prog.field_14C == 1)
-			{
-				if (sprt_ent[11].is_busy)
-				{
-					sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
-					prog.field_14C = 2;
-				}
-			}
-			else if (prog.field_14C == 3)
-			{
-				prog.field_14C = 1;
-				sprt_ent[11].field_99 = 0;
-				sprt_ent[11].Update();
-				sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
-			}
-		}
-		else
-		{
+		case 0:	// hide winapi cursor and play the animation
 			prog.cur_type1 = showCursor(0);
-			prog.field_14C = 1;
+			prog.curs_mode = 1;
 			sprt_ent[11].field_99 = 0;
 			sprt_ent[11].Update();
 			sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
+			break;
+		case 1:	// animating
+			if (sprt_ent[11].is_busy)
+			{
+				sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
+				prog.curs_mode = 2;
+			}
+			break;
+		case 2:	// idle
+			break;
+		case 3:	// are we done?
+			prog.curs_mode = 1;
+			sprt_ent[11].field_99 = 0;
+			sprt_ent[11].Update();
+			sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
+			break;
 		}
 	}
 	else
 	{
-	LABEL_15:
-		if ((unsigned int)(prog.field_14C - 1) < 2)
+not_found:
+		switch (prog.curs_mode)
 		{
+		case 0:	// play selection animation backwards
+		case 1:
 			sprt_ent[11].field_99 = 1;
 			sprt_ent[11].Update();
-			prog.field_14C = 3;
-		}
-		else if (prog.field_14C == 3)
-		{
+			prog.curs_mode = 3;
+			break;
+		case 3:	// done, revert to winapi cursor
 			if (sprt_ent[11].is_busy)
 			{
-				prog.field_14C = 0;
+				prog.curs_mode = 0;
 				if (prog.cur_type1 < 0)
 					prog.cur_type1 = showCursor(1);
 			}
+			break;
 		}
 	}
 }
@@ -395,7 +347,7 @@ void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
 }
 
-void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
+void SprEnt(int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
 {
 	if (id <= 11)
 	{
@@ -411,10 +363,10 @@ void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int
 
 void CursorDispCk()
 {
-	CRect rcSrc1;
+	CRect rcur;
 
-	rcSrc1.SetXYWH(prog.mousePT.x + 1, 1, prog.mousePT.y + 1, 1);
-	if (prog.vm_func != 1 || !intersectRect(&rcSrc1, &prog.render_rect) || prog.cur_enabled && !prog.field_14C)
+	rcur.SetXYWH(prog.mousePT.x + 1, 1, prog.mousePT.y + 1, 1);
+	if (prog.vm_func != 1 || !intersectRect(&rcur, &prog.render_rect) || prog.cur_enabled && prog.curs_mode == 0)
 	{
 		if (prog.cur_type1 < 0)
 			prog.cur_type1 = showCursor(1);
@@ -425,7 +377,7 @@ void CursorDispCk()
 	}
 }
 
-__int16 sub_403619()
+int sub_403619()
 {
 	if (vm_data.vm_index5[2] <= 200)
 		return 0;
@@ -436,7 +388,7 @@ __int16 sub_403619()
 	return 2;
 }
 
-__int16 sub_4035DC()
+int sub_4035DC()
 {
 	WORD v3; // al
 
@@ -456,6 +408,7 @@ void SprUpdate(SPRT_ENT* s)
 		if ((s->field_99 & 0x10) != 0)
 			goto update;
 		id = s->frame_id & 0x3FFF;
+
 		if (id > 3081)
 		{
 			if (id == 3085 || (unsigned int)id - 4097 < 2 || (unsigned int)id - 4609 < 2 || (unsigned int)id - 4865 < 2)
@@ -482,21 +435,6 @@ update:
 void SprSetList(SPRT_ENT* s)
 {
 	s->SetList();
-}
-
-void sub_403536()
-{
-	int v1;
-
-	if (prog.field_198 && sprt_ent[0].field_41 && prog.field_19C <= sprt_ent[0].x0 && prog.field_1A0 + prog.field_19C >= sprt_ent[0].x0)
-	{
-		v1 = prog.field_19E + prog.field_1A2 * (sprt_ent[0].x0 - prog.field_19C) / prog.field_1A0 - sprt_ent[0].y0;
-		if (v1)
-		{
-			sprt_ent[0].y0 += v1;
-			sprt_ent[0].y3 += v1;
-		}
-	}
 }
 
 PATTERN_DATA *pattern_data[200];
@@ -747,45 +685,21 @@ void SprUpdater()
 		s->SetX0();
 		s->CalcPan();
 	}
-	sub_403536();
+	MoveJenniferY();
 }
 
 void EventWait()
 {
-	if (prog.field_128)
+	if (prog.no_exec)
 	{
 		if (Vm_ent_wait(0))
-			prog.field_128 = 0;
-	}
-}
-
-
-
-void __cdecl AnimateAI(unsigned int id)
-{
-	if (sprt_ent[id].is_busy)
-	{
-		if (ai_ent[id].anim)
-		{
-			SprAnim(id, ai_ent[id].anim, 0, 0);
-			ai_ent[id].anim = 0;
-		}
+			prog.no_exec = 0;
 	}
 }
 
 int EntGetPan(int a1)
 {
 	return Sound_get_pan(sprt_ent[a1].x0 - prog.screen_x);
-}
-
-void ResetAI(int id)
-{
-	ai_ent[id].anim = 0;
-	ai_ent[id].state = 0;
-	ai_ent[id].enabled = 0;
-	ai_ent[id].timer2 = 0;
-	ai_ent[id].timer = 0;
-	ai_ent[id].field_24 = 0;
 }
 
 void Vm_spr_dir(int id, int a2, int a3, int a4, int a5)
@@ -808,20 +722,14 @@ void Vm_spr_dir(int id, int a2, int a3, int a4, int a5)
 	ResetAI(id);
 }
 
-void rectSwapX(CRect* r)
-{
-	if (r->X0() > r->X1())
-		r->SwapX();
-}
-
 void SprSetDest(int id, int cur_x, int dst_x, int running)
 {
 	if (id == 0 && vm_data.vm_index5[25] == 1)
 		running = 1;
 	// moving to the right
-	if (dst_x >= cur_x || sprt_ent[id].lmx >= cur_x)
+	if (dst_x >= cur_x || sprt_ent[id].lmx0 >= cur_x)
 	{
-		if (dst_x >= cur_x && (sprt_ent[id].lmy < 0 || sprt_ent[id].lmy > cur_x))
+		if (dst_x >= cur_x && (sprt_ent[id].lmx1 < 0 || sprt_ent[id].lmx1 > cur_x))
 		{
 			ai_ent[id].direction = 0;
 			if (running)
@@ -956,49 +864,6 @@ void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running)
 	}
 }
 
-
-
-void UpdateAI(int id)
-{
-	CRect pt;
-
-	switch (ai_ent[id].state)
-	{
-	case 1:
-		pt.Set(sprt_ent[id].x0, sprt_ent[id].x1, 0, 0);
-		rectSwapX(&pt);
-		if (ai_ent[id].dest_x >= pt.X0() && ai_ent[id].dest_x <= pt.X1())
-			ai_ent[id].state = 2;
-		break;
-	case 2:
-		sprt_ent[id].SetXY(ai_ent[id].dest_x, sprt_ent[id].y0, sprt_ent[id].flag0, 0);
-		if (ai_ent[id].type == 1 || ai_ent[id].type == 2)
-		{
-			ai_ent[id].enabled = 1;
-			ai_ent[id].type_next = 0;
-		}
-		ai_ent[id].state = 3;
-		break;
-	case 3:
-		if (ai_ent[id].type3_bk == (WORD)ai_ent[id].type0)
-			ai_ent[id].state = 0;
-		else
-		{
-			ai_ent[id].direction = ai_ent[id].type3_bk;
-			ai_ent[id].state = 4;
-		}
-		break;
-	case 4:
-		if (sprt_ent[id].is_busy)
-			ai_ent[id].state = 0;
-		break;
-	}
-}
-
-
-
-
-
 void TriggerUpdate()
 {
 	CRect r0; // [esp+10h] [ebp-14h] BYREF
@@ -1018,58 +883,7 @@ void TriggerUpdate()
 	}
 }
 
-
-
-
-
-
-
-int SprIsInReach()
-{
-	static WORD dist_tbl[][2] =
-	{
-		{ 100, 80 },
-		{ 60, 50 },
-		{ 50, 40 },
-		{ 90, 80 }
-	};
-
-	int xdist, xdiff, dir;
-
-	xdiff = sprt_ent[1].x0 - sprt_ent[0].x0;
-	xdist = abs(xdiff);
-
-	switch (vm_data.vm_index5[25])
-	{
-	case 1:
-		if (xdiff <= 0)
-		{
-			if (ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
-				ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
-				return 2;
-		}
-		else if (ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
-			ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
-			return 1;
-		break;
-	case 2:
-		dir = 0;
-		if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
-			dir = 1;
-		if (dist_tbl[3][dir] >= xdist)
-		{
-			if (xdiff <= 0)
-				return 2;
-			else
-				return 1;
-		}
-		break;
-	}
-
-	return 0;
-}
-
-void sub_4021DC()
+void CkAIAttack()
 {
 	int reach;
 
@@ -1082,10 +896,10 @@ void sub_4021DC()
 			{
 				if ((vm_data.vm_index3[14] & 1) != 0)
 				{
-					if (!ai_ent[0].state && !prog.field_128)
+					if (!ai_ent[0].state && !prog.no_exec)
 						return;
 					ai_ent[0].state = 0;
-					prog.field_128 = 0;
+					prog.no_exec = 0;
 					Vm_set_63();
 				}
 				vm_data.vm_index5[27] = reach;
@@ -1094,7 +908,7 @@ void sub_4021DC()
 				ai_ent[0].state = 0;
 				ai_ent[1].state = 0;
 				// check jennifer's limits
-				if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmy)
+				if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx0 || sprt_ent[0].lmx1 >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmx1)
 					vm_data.vm_index5[41] = 1;
 			}
 		}
@@ -1127,7 +941,7 @@ int intersect_triggers(int x, int y)
 	return -1;
 }
 
-void RBtnClick(LONG x, LONG y)
+void RBtnClick(int x, int y)
 {
 	CRect rcur;
 
@@ -1164,62 +978,67 @@ void RBtnClick(LONG x, LONG y)
 	}
 }
 
-void LBtnClick(int is_double, LONG cursor_x, LONG cursor_y)
+void LBtnClick(int is_double, int cursor_x, int cursor_y)
 {
-	CRect rcur;
-	int item_hit;
-
 	prog.click_bits |= 1;
+
+	if (prog.vm_func != 1)	// ensure it's game mode
+		return;
+
+	CRect rcur;
 	rcur.SetXYWH(cursor_x, cursor_y, 1, 1);
-	if (prog.vm_func == 1)	// ensure it's game mode
+
+	// check if click is inside the map window
+	if (intersectRect(&rcur, &prog.render_rect))
 	{
-		// check if it's inside the game area
-		if (intersectRect(&rcur, &prog.render_rect))
+		vm_data.vm_index3[22] = (prog.screen_x + cursor_x - prog.render_rect.X0()) <= sprt_ent[0].x0;
+		if ((prog.can_lclick || prog.can_rclick) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
 		{
-			vm_data.vm_index3[22] = (prog.screen_x + cursor_x - prog.render_rect.X0()) <= sprt_ent[0].x0;
-			if ((prog.can_lclick || prog.can_rclick) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
+			ai_ent[0].timer = 0;
+			int trg = intersect_triggers(cursor_x, cursor_y);
+			// no trigger found
+			if (trg == -1)
 			{
-				ai_ent[0].timer = 0;
-				int trg = intersect_triggers(cursor_x, cursor_y);
-				if (trg == -1)
+				// free click, move around
+				if (prog.can_lclick && !ai_ent[0].state)
 				{
-					// free click, move around
-					if (prog.can_lclick && !ai_ent[0].state)
-					{
-						if (vm_data.vm_index5[40])
-							is_double = 0;
-						SprSetDest(0, sprt_ent[0].x0, prog.screen_x + cursor_x - prog.render_rect.X0(), is_double);
-					}
+					if (vm_data.vm_index5[40])
+						is_double = 0;
+					// set jennifer's destination
+					SprSetDest(0, sprt_ent[0].x0, prog.screen_x + cursor_x - prog.render_rect.X0(), is_double);
 				}
-				else if (Vm_mark_event(trg + 10, 0))
-				{
-					ai_ent[0].type_next = 0;
-					ai_ent[0].timer2 = 0;
-					prog.field_128 = 1;
-				}
+			}
+			// trigger found, check if it's active
+			else if (Vm_mark_event(trg + 10, 0))
+			{
+				// proceed to the trigger
+				ai_ent[0].type_next = 0;
+				ai_ent[0].timer2 = 0;
+				prog.no_exec = 1;
 			}
 		}
-		// check if it's inside the inventory space
-		else if (vm_data.vm_index5[45] && intersectRect(&rcur, &prog.menu_rect))
-		{
-			item_hit = -1;
-			int i;
-			for (i = 0; i < 15; i++)
-			{
-				CRect r;
-				setRect(&r, item_xy_tbl[i][0] * 2, item_xy_tbl[i][1] * 2, item_xy_tbl[i][0] * 2 + 32, item_xy_tbl[i][1] * 2 + 32);
-				if (intersectRect(&rcur, &r))
-				{
-					item_hit = i;
-					break;
-				}
-			}
+	}
+	// check if it's inside the inventory space
+	else if (vm_data.vm_index5[45] && intersectRect(&rcur, &prog.menu_rect))
+	{
+		int item_hit = -1;
 
-			if (item_hit != -1 && inventory[item_hit] != 0xffff)
+		// search for an intersecting item in the menu
+		for (int i = 0; i < 15; i++)
+		{
+			CRect r;
+			setRect(&r, item_xy_tbl[i][0] * 2, item_xy_tbl[i][1] * 2, item_xy_tbl[i][0] * 2 + 32, item_xy_tbl[i][1] * 2 + 32);
+			if (intersectRect(&rcur, &r))
 			{
-				itemptr2_index = item_hit;
-				prog.click_on_item = 1;
+				item_hit = i;
+				break;
 			}
+		}
+
+		if (item_hit != -1 && inventory[item_hit] != 0xffff)
+		{
+			itemptr2_index = item_hit;
+			prog.click_on_item = 1;
 		}
 	}
 }

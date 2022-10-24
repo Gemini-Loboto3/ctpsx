@@ -439,8 +439,6 @@ struct VM
 	int field_34B8;
 	char field_34BC;
 	char field_34BD;
-	//HFONT hFont;
-	//HGDIOBJ old_obj;
 	WORD size_tbl[105];
 	int field_3598;
 	int field_359C;

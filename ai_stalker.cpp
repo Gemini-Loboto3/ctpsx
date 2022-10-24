@@ -11,7 +11,7 @@ void MoveStalker()
 			StalkerSetDir();
 			AnimateAI(1);
 			AnimateStalker();
-			UpdateAI(1);
+			UpdateAITriggerInteraction(1);
 		}
 	}
 }
@@ -32,9 +32,9 @@ void AnimateStalker()
 
 void StalkerSetDir2()
 {
-	if (sprt_ent[1].lmx >= 0 && sprt_ent[1].x0 <= sprt_ent[1].lmx && ai_ent[1].type0 == 1)
+	if (sprt_ent[1].lmx0 >= 0 && sprt_ent[1].x0 <= sprt_ent[1].lmx0 && ai_ent[1].type0 == 1)
 		ai_ent[1].direction = 0;
-	if (sprt_ent[1].lmy >= 0 && sprt_ent[1].x0 >= sprt_ent[1].lmy && !ai_ent[1].type0)
+	if (sprt_ent[1].lmx1 >= 0 && sprt_ent[1].x0 >= sprt_ent[1].lmx1 && !ai_ent[1].type0)
 		ai_ent[1].direction = 1;
 }
 

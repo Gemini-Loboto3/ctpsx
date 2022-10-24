@@ -24,6 +24,12 @@ void offsetRect(CRect* r, int x, int y)
 	r->Offset(x, y);
 }
 
+void rectSwapX(CRect* r)
+{
+	if (r->X0() > r->X1())
+		r->SwapX();
+}
+
 static int cursor_visible = 0;
 
 bool showCursor(bool show)

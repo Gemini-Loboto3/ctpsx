@@ -176,16 +176,18 @@ void TMapRender(TMAP* tmap)
 			}
 			else
 			{
-				x = tmap->clip.X0() + (tmap->x1 - rdst.X0());
-				y = tmap->clip.Y0()  + (tmap->y1 - rdst.Y0());
+				x = (tmap->clip.X0() + tmap->x1 - rdst.X0());
+				y = (tmap->clip.Y0()  + tmap->y1 - rdst.Y0());
 			}
 
+			x /= 2;
+			y /= 2;
 			int u = rdst.X0() / 2;
 			int v = rdst.Y0() / 2;
-			int w = rdst.W() / 2;
-			int h = rdst.H() / 2;
+			int w = rdst.W() / 2 + 1;
+			int h = rdst.H() / 2 + 1;
 
-			RenderRect(tmap->tim, GETX(x), GETY(y), w, h, u, v, 0xff, 0xff, 0xff);
+			RenderRect(tmap->tim, x, y, w, h, u, v, 0xff, 0xff, 0xff);
 		}
 	}
 	//else
@@ -407,7 +409,7 @@ void TMapSetScrolling(TMAP* tmap, int x, int y)
 
 void TMapSetClipArea(TMAP* tmap, int x, int y, int w, int h)
 {
-	setRect(&tmap->clip, x, y, w + x - 1, h + y - 1);
+	setRect(&tmap->clip, x, y, w + x - 1, y + h - 1);
 }
 
 void TMapGetDstRect(TMAP* tmap, CRect* dst)
@@ -426,7 +428,7 @@ void SetWorldPos(int x, int y)
 	{
 		if (prog.vm_func == 1)
 		{
-			TMapSetClipArea(&tmap, 40 * 2, 8 * 2 /*0*/, 240 * 2, (152) * 2);
+			TMapSetClipArea(&tmap, WINDOW_X * 2, WINDOW_Y * 2 /*0*/, WINDOW_W * 2, WINDOW_H * 2);
 			TMapGetDstRect(&tmap, &dest);
 			SetScrollBlock(x, y);
 		}

@@ -7,7 +7,7 @@ struct PROGRAM
 		_srand(_statcvt_i64());
 		field_120 = 0;
 		vm_func = 0;
-		field_128 = 0;
+		no_exec = 0;
 		field_190 = 0;
 		tick_now = 0;
 		tick_delta = 30;
@@ -17,7 +17,7 @@ struct PROGRAM
 		screen_on = 0;
 		map_attr = 0;
 		trigger_debug = 1; //0;
-		field_14C = 0;
+		curs_mode = 0;
 		showCursor(0);
 		cur_type0 = showCursor(1);
 		cur_type1 = 0;
@@ -47,7 +47,7 @@ struct PROGRAM
 	int no_reg;
 	int field_120;
 	int vm_func;
-	__int16 field_128;
+	__int16 no_exec;
 	DWORD screen_on;
 	__int16 can_lclick;
 	__int16 can_rclick;
@@ -58,7 +58,7 @@ struct PROGRAM
 	int field_140;
 	int field_144;
 	int field_148;
-	int field_14C;
+	int curs_mode;
 	VM* vm;
 	SPRT_ENT* sprt;
 	int field_158;

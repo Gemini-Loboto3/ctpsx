@@ -1,8 +1,8 @@
 #include <stdafx.h>
 #include "game.h"
 
-#define RENDER_W		1280
-#define RENDER_H		960
+#define RENDER_W		960
+#define RENDER_H		720
 
 LPDIRECT3D9 d3d9 = nullptr;
 LPDIRECT3DDEVICE9 d3d9dev = nullptr;
@@ -283,4 +283,51 @@ int GetX(int x, int double_w)
 {
 	int base_x = (x * 4 - double_w) / 10;
 	return (base_x < 0) ? 0 : base_x;
+}
+
+#define align(x,y)		((x) + ((y) - 1)) & ~(y - 1)
+
+void RenderGlyph(int x, int y, FONT_GLYPH *g, DWORD *gfx)
+{
+	static D3DCOLOR pal[16] =
+	{
+		D3DCOLOR_ARGB(0,   0,   0,   0),
+		D3DCOLOR_ARGB(255, 248, 248, 248),
+		D3DCOLOR_ARGB(255, 160, 160, 160),
+		D3DCOLOR_ARGB(255,  96,  96,  96)
+	};
+
+	D3DLOCKED_RECT r;
+	d3d9text->LockRect(0, &r, nullptr, 0);
+
+	DWORD* dst = (DWORD*)r.pBits;
+	size_t pitch = r.Pitch / 4;
+	BYTE* src = (BYTE*)gfx;
+	int w = align(g->w, 8);
+	int h = g->h;
+
+	memset(dst, 0, r.Pitch * 12);
+
+	for (int yi = 0; yi < h; yi++)
+	{
+		DWORD* d = dst;
+		for (int xi = 0; xi < w; xi += 2, src++)
+		{
+			BYTE b = *src & 0xf;
+			if (b) d[0] = pal[b];
+			b = *src >> 4;
+			if (b) d[1] = pal[b];
+			d += 2;
+		}
+		dst += pitch;
+	}
+	d3d9text->UnlockRect(0);
+
+	// border
+	RenderRect(d3d9text, x - 1, y + g->y,     12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
+	RenderRect(d3d9text, x,     y + g->y - 1, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
+	RenderRect(d3d9text, x + 1, y + g->y,     12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
+	RenderRect(d3d9text, x,     y + g->y + 1, 12, 12, g->w, g->h, 0, 0, 0x40, 0x40, 0x40);
+	// glyph
+	RenderRect(d3d9text, x,     y + g->y, 12, 12, g->w, g->h, 0, 0, (BYTE)prog.vm->texcol_r, (BYTE)prog.vm->texcol_g, (BYTE)prog.vm->texcol_b);
 }

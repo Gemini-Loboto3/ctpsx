@@ -32,8 +32,8 @@ int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
 		else
 		{
 			src = supr;
-			//if (!supr.Load(sprt, id))
-			//	return 0;
+			if (supr->Load(sprt, id) == 0)
+				return 0;
 		}
 		TSprSlotManager::LinkInto(this, src);
 		TSprSlotManager::LinkNormal(&super, src);

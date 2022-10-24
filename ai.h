@@ -1,13 +1,35 @@
 #pragma once
 
-void AnimateAI(unsigned int id);
-void UpdateAI(int id);
+struct AI_ENT
+{
+	DWORD type0;
+	DWORD type;
+	DWORD direction;		// 0 = right, 1 = left
+	DWORD type_next;
+	DWORD enabled;
+	WORD anim;
+	WORD state;
+	WORD dest_x;
+	WORD type3_bk;
+	DWORD timer2;			// ticks until the entity moves
+	DWORD timer;
+	WORD field_24;
+};
+
+extern AI_ENT ai_ent[2];
+
+void AnimateAI(int id);
+void UpdateAITriggerInteraction(int id);
 int GetAnimData(WORD* dst, int a2);
+void ResetAI(int id);
+
+int SprIsInReach();
 
 void MoveJennifer();
 int AnimateJennifer();
 void AnimateJennifer2();
 void JenniferDir();
+void MoveJenniferY();
 
 void MoveStalker();
 void AnimateStalker();

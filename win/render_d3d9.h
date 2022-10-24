@@ -1,4 +1,5 @@
 #pragma once
+#include "..\font.h"
 
 #define GAME_W		256
 #define GAME_H		240
@@ -13,6 +14,12 @@
 
 #define GETY(y)		((y) / 2 - GAME_Y)
 #define GETXR(x)	((x) / 2 - 8)	// push the right
+
+// map/sprite rendering region
+#define WINDOW_W	240
+#define WINDOW_H	152
+#define WINDOW_X	((GAME_W - WINDOW_W) / 2)
+#define WINDOW_Y	8
 
 enum
 {
@@ -32,5 +39,6 @@ void SwapBuffer();
 void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
 void RenderRect(LPDIRECT3DTEXTURE9 tex, int x, int y, int real_w, int real_h, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
 void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b, BYTE a = 255);
+void RenderGlyph(int x, int y, FONT_GLYPH* g, DWORD* gfx);
 
 int GetX(int x, int double_w);

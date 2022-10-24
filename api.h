@@ -63,4 +63,6 @@ void setRect(CRect* r, int x0, int y0, int x1, int y1);
 void copyRect(CRect* dst, CRect* src);
 void offsetRect(CRect* r, int x, int y);
 
+void rectSwapX(CRect* r);
+
 bool showCursor(bool show);

@@ -7,21 +7,7 @@ struct PATTERN_DATA
 };
 
 
-struct AI_ENT
-{
-	DWORD type0;
-	DWORD type;
-	DWORD direction;		// 0 = right, 1 = left
-	DWORD type_next;
-	DWORD enabled;
-	WORD anim;
-	WORD state;
-	WORD dest_x;
-	WORD type3_bk;
-	DWORD timer2;
-	DWORD timer;
-	WORD field_24;
-};
+
 
 struct SPRT_ENT
 {
@@ -57,8 +43,8 @@ struct SPRT_ENT
 	DWORD flag0;
 	DWORD field_41;
 	DWORD is_bg_spr;
-	int lmx;
-	int lmy;
+	int lmx0;
+	int lmx1;
 	DWORD x1;
 	short x2;
 	short y2;
@@ -85,38 +71,38 @@ struct SPRT_ENT
 };
 
 extern SPRT_ENT sprt_ent[21];
-extern AI_ENT ai_ent[2];
 
-void Vm_spr_lmt(int a1, int lmx, int lmy);
-void SetBgIsSpr(int id, int is_bg);
+
+void Vm_spr_lmt(int id, int lmx0, int lmx1);
+void SetSprIsBg(int id, int is_bg);
 void SprCursorAnimate();
 void CursorDispCk();
-void BgSprAnim(int id, __int16 w, __int16 h, CTim* ptr);
-void BgSprPos(int a1, __int16 x, __int16 y, __int16 flag);
+void BgSprAnim(int id, int w, int h, CTim* ptr);
+void BgSprPos(int id, int x, int y, int flag);
 void SprtTblDeinit();
 void SprPos(int id, int x, int y, DWORD flags);
-void SprAnim(int id, WORD a2, WORD a3, WORD a4);
+void SprAnim(int id, WORD anim, WORD a3, WORD a4);
 int SetSpriteData(SPRT_ENT* spr, unsigned int id);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs);
 
 void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc);
 
-void SprEnt(signed int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
+void SprEnt(int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 
-__int16 sub_4035DC();
+int sub_4035DC();
 void SprUpdater();
 void EventWait();
 
 int EntGetPan(int a1);
 
-void Vm_spr_ent(int a1, DWORD a2, DWORD a3, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD a9);
+void Vm_spr_ent(int id, DWORD x, DWORD y, DWORD flags, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 void Vm_spr_dir(int id, int a2, int a3, int a4, int a5);
 void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running);
 
 void TriggerUpdate();
-void sub_4021DC();
+void CkAIAttack();
 void SprSetDest(int id, int cur_x, int dst_y, int running);
 int intersect_triggers(int x, int y);
 
-void LBtnClick(int is_double, LONG x, LONG y);
-void RBtnClick(LONG x, LONG y);
+void LBtnClick(int is_double, int cursor_x, int cursor_y);
+void RBtnClick(int x, int y);

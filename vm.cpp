@@ -215,9 +215,9 @@ void Vm_all_spr_disp()
 	if (prog.vm_func == 1)
 	{
 		SprCursorAnimate();
-		if (prog.field_14C)
+		if (prog.curs_mode)
 		{
-			if (prog.field_14C == 3)
+			if (prog.curs_mode == 3)
 			{
 				TMapGetRect(&tmap, &rcDst);
 				sprt_ent[11].SetXY(prog.screen_x + prog.mousePT.x - rcDst.X0() - 16,
@@ -294,7 +294,7 @@ void Vm_pal_set(int type, int index, int count, int delta, WORD id)
 
 void Vm_sce_init()
 {
-	prog.field_14C = 0;
+	prog.curs_mode = 0;
 	prog.field_140 = 0;
 	prog.field_144 = 0;
 	prog.field_148 = 0;
@@ -2436,13 +2436,13 @@ void VM::op_spr_lmt()
 	WORD x = read16();
 	WORD y = read16();
 
-	int lmx, lmy;
-	if (x < 0x8000) lmx = x & 0x7FFF;
-	else lmx = (unsigned __int16)(x + 0x8000) - 0x8000;
-	if (y < 0x8000) lmy = y & 0x7FFF;
-	else lmy = (unsigned __int16)(y + 0x8000) - 0x8000;
+	int lmx0, lmx1;
+	if (x < 0x8000) lmx0 = x & 0x7FFF;
+	else lmx0 = (unsigned __int16)(x + 0x8000) - 0x8000;
+	if (y < 0x8000) lmx1 = y & 0x7FFF;
+	else lmx1 = (unsigned __int16)(y + 0x8000) - 0x8000;
 
-	Vm_spr_lmt(id, lmx, lmy);
+	Vm_spr_lmt(id, lmx0, lmx1);
 }
 
 void VM::op_spr_walkx()

@@ -138,7 +138,7 @@ void draw_func1()
 	TMap_scroller2();
 	MoveJennifer();
 	MoveStalker();
-	sub_4021DC();
+	CkAIAttack();
 	EventWait();
 	SprUpdater();
 	int pal = sub_4035DC();
@@ -189,9 +189,9 @@ int Game()
 		{
 			prog.tick_now = tick + prog.tick_delta;
 			if (prog.vm_func != 1)
-				prog.field_128 = 0;
+				prog.no_exec = 0;
 			InputRead();
-			Vm_update(prog.vm, prog.field_128);
+			Vm_update(prog.vm, prog.no_exec);
 			sub_4017BB();
 			draw_func[prog.vm_func]();
 			prog.pal_obj.call_fade();

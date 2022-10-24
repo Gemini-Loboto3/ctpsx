@@ -13,7 +13,7 @@ void MoveJennifer()
 				--vm_data.vm_index5[2];
 		}
 		AnimateJennifer2();
-		UpdateAI(0);
+		UpdateAITriggerInteraction(0);
 	}
 }
 
@@ -29,7 +29,7 @@ int AnimateJennifer()
 
 	switch (ai_ent[0].type)
 	{
-	case 3u:
+	case 3:
 		vm_data.vm_index5[2] += 2;
 		if (vm_data.vm_index5[2] > 800)
 			vm_data.vm_index5[2] = 800;
@@ -39,14 +39,14 @@ int AnimateJennifer()
 			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][2 * ai_ent[0].type0 + 1], 0, 0);
 		}
 		return 1;
-	case 4u:
+	case 4:
 		if (sprt_ent[0].is_busy)
 		{
 			ai_ent[0].type = 3;
 			ai_ent[0].type_next = 3;
 		}
 		return 1;
-	case 5u:
+	case 5:
 		if (sprt_ent[0].is_busy)
 		{
 			ai_ent[0].type = 0;
@@ -58,7 +58,7 @@ int AnimateJennifer()
 		if (!ai_ent[0].timer)
 			return 0;
 		// timer is active, check limits
-		if (--ai_ent[0].timer || sprt_ent[0].x0 - 80 < sprt_ent[0].lmx || sprt_ent[0].lmy >= 0 && sprt_ent[0].x0 + 80 > sprt_ent[0].lmy)
+		if (--ai_ent[0].timer || sprt_ent[0].x0 - 80 < sprt_ent[0].lmx0 || sprt_ent[0].lmx1 >= 0 && sprt_ent[0].x0 + 80 > sprt_ent[0].lmx1)
 			return 0;
 		else
 		{
@@ -73,25 +73,26 @@ int AnimateJennifer()
 
 void AnimateJennifer2()
 {
-	WORD a2[2];
-
+	// wait until the initial animation timer runs out
 	if (ai_ent[0].timer2)
 		--ai_ent[0].timer2;
+	// check if the same animation is already in place
 	else if (ai_ent[0].type0 != ai_ent[0].direction || ai_ent[0].type != ai_ent[0].type_next)
 	{
-		GetAnimData(a2, 0);
-		if (prog.field_128 && ai_ent[0].type == 2)
+		WORD dat[2];
+		GetAnimData(dat, 0);
+		if (prog.no_exec && ai_ent[0].type == 2)
 			ai_ent[0].enabled = 1;
 		if (ai_ent[0].enabled)
 		{
-			if (a2[1])
+			if (dat[1])
 			{
-				a2[0] = a2[1];
-				a2[1] = 0;
+				dat[0] = dat[1];
+				dat[1] = 0;
 			}
 		}
-		SprAnim(0, a2[0], 0, 0);
-		ai_ent[0].anim = a2[1];
+		SprAnim(0, dat[0], 0, 0);
+		ai_ent[0].anim = dat[1];
 		ai_ent[0].enabled = 0;
 		ai_ent[0].type0 = ai_ent[0].direction;
 		ai_ent[0].type = ai_ent[0].type_next;
@@ -100,9 +101,9 @@ void AnimateJennifer2()
 
 void JenniferDir()
 {
-	if (sprt_ent[0].lmx >= 0
+	if (sprt_ent[0].lmx0 >= 0
 		&& (ai_ent[0].type == 1 || ai_ent[0].type == 2)
-		&& sprt_ent[0].x0 <= sprt_ent[0].lmx
+		&& sprt_ent[0].x0 <= sprt_ent[0].lmx0
 		&& ai_ent[0].type0 == 1)
 	{
 		ai_ent[0].enabled = 1;
@@ -110,14 +111,27 @@ void JenniferDir()
 		ai_ent[0].timer2 = 0;
 		ai_ent[0].direction = 1;
 	}
-	if (sprt_ent[0].lmy >= 0
+	if (sprt_ent[0].lmx1 >= 0
 		&& (ai_ent[0].type == 1 || ai_ent[0].type == 2)
-		&& sprt_ent[0].x0 >= sprt_ent[0].lmy
+		&& sprt_ent[0].x0 >= sprt_ent[0].lmx1
 		&& !ai_ent[0].type0)
 	{
 		ai_ent[0].enabled = 1;
 		ai_ent[0].type_next = 0;
 		ai_ent[0].timer2 = 0;
 		ai_ent[0].direction = 0;
+	}
+}
+
+void MoveJenniferY()
+{
+	if (prog.field_198 && sprt_ent[0].field_41 && prog.field_19C <= sprt_ent[0].x0 && prog.field_1A0 + prog.field_19C >= sprt_ent[0].x0)
+	{
+		int y = prog.field_19E + prog.field_1A2 * (sprt_ent[0].x0 - prog.field_19C) / prog.field_1A0 - sprt_ent[0].y0;
+		if (y)
+		{
+			sprt_ent[0].y0 += y;
+			sprt_ent[0].y3 += y;
+		}
 	}
 }
