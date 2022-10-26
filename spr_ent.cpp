@@ -29,7 +29,7 @@ void SPRT_ENT::SetList()
 	sprt = prog.sprt;
 	for (i = prog.sprt; i; i = i->next)
 	{
-		if ((signed int)i->flag1 > (signed int)flag1)
+		if (i->priority > priority)
 			break;
 		sprt = i;
 	}
@@ -83,7 +83,7 @@ void SPRT_ENT::UpdateXY()
 		y0 = y2;
 		x1 = x2;
 		flag0 = (__int16)flag2;
-		flag1 = (__int16)flag2;
+		priority = (__int16)flag2;
 	}
 	flip = 0;
 }
@@ -94,7 +94,7 @@ void SPRT_ENT::Update()
 	UpdateXY();
 }
 
-void SPRT_ENT::SetXY(int _x, int _y, DWORD _flags, int _flip)
+void SPRT_ENT::SetXY(int _x, int _y, DWORD _pri, int _flip)
 {
 	if (_flip)
 	{
@@ -102,15 +102,15 @@ void SPRT_ENT::SetXY(int _x, int _y, DWORD _flags, int _flip)
 		x0 = _x;
 		y0 = _y;
 		x1 = _x;
-		flag0 = _flags;
-		flag1 = _flags;
+		flag0 = _pri;
+		priority = _pri;
 	}
 	else
 	{
 		flip = 1;
 		x2 = _x;
 		y2 = _y;
-		flag2 = (WORD)_flags;
+		flag2 = (WORD)_pri;
 	}
 }
 
@@ -139,7 +139,7 @@ extern const char* soundname_tbl[];
 
 void SPRT_ENT::DoSound()
 {
-	if (!is_bg_spr && field_41 == 1)
+	if (!is_bg_spr && is_animating == 1)
 	{
 		int frame = (frame_id & 0x3FFF) >> 8;
 		if (frame < 19)
@@ -216,17 +216,15 @@ void SprAnim(int id, WORD anim, WORD a3, WORD a4)
 				ai_ent[id].type = ai_ent[id].type_next;
 			}
 		}
-		else
-		{
-			sprt_ent[id].frame_id = anim;
-		}
+		else sprt_ent[id].frame_id = anim;
+
 		sprt_ent[id].field_99 = a3;
 		sprt_ent[id].field_9B = a4 & 0xff;
 		sprt_ent[id].field_9D = a4 >> 8;
 		sprt_ent[id].Update();
 		//sprt_ent[id].UpdateXY();	// useless, Update() does this step already
 		SetSprIsBg(id, 0);
-		sprt_ent[id].field_41 = 0;
+		sprt_ent[id].is_animating = 0;
 		sprt_ent[id].is_busy = 0;
 		if (id <= 1)
 			ai_ent[id].anim = 0;
@@ -264,14 +262,14 @@ void SprCursorAnimate()
 		case 0:	// hide winapi cursor and play the animation
 			prog.cur_type1 = showCursor(0);
 			prog.curs_mode = 1;
-			sprt_ent[11].field_99 = 0;
-			sprt_ent[11].Update();
-			sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
+			sprt_cursor.field_99 = 0;
+			sprt_cursor.Update();
+			sprt_cursor.SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
 			break;
 		case 1:	// animating
-			if (sprt_ent[11].is_busy)
+			if (sprt_cursor.is_busy)
 			{
-				sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
+				sprt_cursor.SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
 				prog.curs_mode = 2;
 			}
 			break;
@@ -279,9 +277,9 @@ void SprCursorAnimate()
 			break;
 		case 3:	// are we done?
 			prog.curs_mode = 1;
-			sprt_ent[11].field_99 = 0;
-			sprt_ent[11].Update();
-			sprt_ent[11].SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
+			sprt_cursor.field_99 = 0;
+			sprt_cursor.Update();
+			sprt_cursor.SetXY(prog.triggerX, prog.triggerY, 0x64u, 1);
 			break;
 		}
 	}
@@ -292,12 +290,12 @@ not_found:
 		{
 		case 0:	// play selection animation backwards
 		case 1:
-			sprt_ent[11].field_99 = 1;
-			sprt_ent[11].Update();
+			sprt_cursor.field_99 = 1;
+			sprt_cursor.Update();
 			prog.curs_mode = 3;
 			break;
 		case 3:	// done, revert to winapi cursor
-			if (sprt_ent[11].is_busy)
+			if (sprt_cursor.is_busy)
 			{
 				prog.curs_mode = 0;
 				if (prog.cur_type1 < 0)
@@ -357,7 +355,7 @@ void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
 }
 
-void SprEnt(int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
+void SprEnt(int id, int x, int y, DWORD pri, __int16 anim, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
 {
 	if (id <= 11)
 	{
@@ -365,8 +363,8 @@ void SprEnt(int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, 
 		sprt_ent[id].enabled = 1;
 		sprt_ent[id].field_32 = a8;
 		sprt_ent[id].is_abs = is_abs;
-		sprt_ent[id].SetXY(x, y, a4, 1);
-		SprAnim(id, a5, a6, a7);
+		sprt_ent[id].SetXY(x, y, pri, 1);
+		SprAnim(id, anim, a6, a7);
 		Vm_spr_lmt(id, -1, -1);
 	}
 }
@@ -448,7 +446,7 @@ void SprSetList(SPRT_ENT* s)
 }
 
 PATTERN_DATA *pattern_data[200];
-WORD word_422AB8;
+WORD abm_index;
 
 int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 {
@@ -456,7 +454,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	//char v4[14]; // [esp+2E0h] [ebp-2Ch] BYREF
 	__int16 v5; // [esp+2F0h] [ebp-1Ch]
 	__int16 v6; // [esp+2F2h] [ebp-1Ah]
-	WORD v8; // [esp+2FAh] [ebp-12h]
+	WORD index; // [esp+2FAh] [ebp-12h]
 	int v9; // [esp+2FCh] [ebp-10h]
 	//void* Src; // [esp+300h] [ebp-Ch]
 	__int16 i; // [esp+304h] [ebp-8h]
@@ -471,10 +469,11 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		if (spr->is_busy)
 			return 1;
 	}
-	v8 = ((int)id >> 8) & 0x3F;
-	if (v8 != word_422AB8)
+	index = ((int)id >> 8) & 0x3F;
+	if (index != abm_index)
 	{
-		word_422AB8 = v8;
+		tmc_alloc[index].enabled = 1;
+		abm_index = index;
 		//if (!ReadPatternData_0())
 		//	return 0;
 		//if (!ReadPosiData_0())
@@ -519,7 +518,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
 		spr->is_busy = 0;
 		spr->field_91 = 0;
-		spr->field_41 = 1;
+		spr->is_animating = 1;
 		if (!v13)
 			spr->field_6B = 0xffff;
 		if ((__int16)v13 == (unsigned __int16)v3[6] - 1)
@@ -539,7 +538,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	}
 	while (!spr->field_85)
 	{
-		spr->field_41 = 1;
+		spr->is_animating = 1;
 		if ((spr->field_99 & 1) != 0)
 		{
 			if ((--spr->field_81 & 0x80000000) != 0)
@@ -599,7 +598,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	}
 	v13 = (WORD)spr->field_81;
 	//spr->flag1 = ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x1F;
-	spr->flag1 += spr->flag0;
+	spr->priority += spr->flag0;
 	//spr->width = (unsigned __int16)v3[6 * (__int16)v13 + 7];
 	//spr->height = (unsigned __int16)v3[6 * (__int16)v13 + 8];
 	//spr->bmp_data = (BYTE*)spr->ptr0 + trg + *(_DWORD*)&v3[6 * (__int16)v13 + 11];
@@ -674,14 +673,14 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 
 void SprUpdater()
 {
-	DWORD flag1; // [esp+0h] [ebp-8h]
+	DWORD priority; // [esp+0h] [ebp-8h]
 	SPRT_ENT* s; // [esp+4h] [ebp-4h]
 
 	for (s = prog.sprt; s; s = s->next)
 	{
-		s->field_41 = 0;
+		s->is_animating = 0;
 		s->x1 = s->x0;
-		flag1 = s->flag1;
+		priority = s->priority;
 		SprUpdate(s);
 		if (s->frame_id != 0xFFFF)
 		{
@@ -690,7 +689,7 @@ void SprUpdater()
 			else
 				SetSpriteData(s, s->frame_id);
 		}
-		if (flag1 != s->flag1)
+		if (priority != s->priority)
 			SprSetList(s);
 		s->SetX0();
 		s->DoSound();
@@ -881,7 +880,7 @@ void TriggerUpdate()
 
 	if (!vm_data.vm_index5[41])
 	{
-		r0.Set(sprt_ent[0].x0, sprt_ent[0].x1, sprt_ent[0].y0, sprt_ent[0].y0 + 1);
+		r0.Set(sprt_player.x0, sprt_player.x1, sprt_player.y0, sprt_player.y0 + 1);
 		rectSwapX(&r0);
 		v2 = 0;
 		while ((vm_data.vm_index6[v2 + 10] & 0x10) == 0 || !sub_403304(v2) || !intersectRect(&r0, &vm_data.vm_rects[v2]))
@@ -906,19 +905,20 @@ void CkAIAttack()
 			{
 				if ((vm_data.vm_index3[14] & 1) != 0)
 				{
-					if (!ai_ent[0].state && !prog.no_exec)
+					if (!ai_player.state && !prog.no_exec)
 						return;
-					ai_ent[0].state = 0;
+					ai_player.state = 0;
 					prog.no_exec = 0;
 					Vm_set_63();
 				}
 				vm_data.vm_index5[27] = reach;
-				ai_ent[0].timer = 0;
+				ai_player.timer = 0;
 				Vm_mark_event(0x191, 0);
-				ai_ent[0].state = 0;
-				ai_ent[1].state = 0;
+				ai_player.state = 0;
+				ai_stalker.state = 0;
 				// check jennifer's limits
-				if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx0 || sprt_ent[0].lmx1 >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmx1)
+				if (sprt_player.x0 - 200 < sprt_player.lmx0 ||
+					sprt_player.lmx1 >= 0 && sprt_player.x0 + 200 > sprt_player.lmx1)
 					vm_data.vm_index5[41] = 1;
 			}
 		}
@@ -971,15 +971,15 @@ void RBtnClick(int x, int y)
 						++vm_data.vm_index5[44];
 				}
 			}
-			else if (intersectRect(&rcur, &prog.render_rect) && prog.can_lclick && ai_ent[0].type <= 2)
+			else if (intersectRect(&rcur, &prog.render_rect) && prog.can_lclick && ai_player.type <= 2)
 			{
-				ai_ent[0].type_next = 0;
-				ai_ent[0].timer2 = 0;
-				if (!ai_ent[0].timer && !vm_data.vm_index5[40])
-					ai_ent[0].timer = 100;
-				if (ai_ent[0].state)
+				ai_player.type_next = 0;
+				ai_player.timer2 = 0;
+				if (!ai_player.timer && !vm_data.vm_index5[40])
+					ai_player.timer = 100;
+				if (ai_player.state)
 				{
-					ai_ent[0].state = 0;
+					ai_player.state = 0;
 					Vm_set_63();
 					vm_data.vm_index5[45] = 1;
 				}
@@ -1001,29 +1001,29 @@ void LBtnClick(int is_double, int cursor_x, int cursor_y)
 	// check if click is inside the map window
 	if (intersectRect(&rcur, &prog.render_rect))
 	{
-		vm_data.vm_index3[22] = (prog.screen_x + cursor_x - prog.render_rect.X0()) <= sprt_ent[0].x0;
-		if ((prog.can_lclick || prog.can_rclick) && ai_ent[0].type != 4 && ai_ent[0].type != 5)
+		vm_data.vm_index3[22] = (prog.screen_x + cursor_x - prog.render_rect.X0()) <= sprt_player.x0;
+		if ((prog.can_lclick || prog.can_rclick) && ai_player.type != 4 && ai_player.type != 5)
 		{
-			ai_ent[0].timer = 0;
+			ai_player.timer = 0;
 			int trg = intersect_triggers(cursor_x, cursor_y);
 			// no trigger found
 			if (trg == -1)
 			{
 				// free click, move around
-				if (prog.can_lclick && !ai_ent[0].state)
+				if (prog.can_lclick && !ai_player.state)
 				{
 					if (vm_data.vm_index5[40])
 						is_double = 0;
 					// set jennifer's destination
-					SprSetDest(0, sprt_ent[0].x0, prog.screen_x + cursor_x - prog.render_rect.X0(), is_double);
+					SprSetDest(SPID_PLAYER, sprt_player.x0, prog.screen_x + cursor_x - prog.render_rect.X0(), is_double);
 				}
 			}
 			// trigger found, check if it's active
 			else if (Vm_mark_event(trg + 10, 0))
 			{
 				// proceed to the trigger
-				ai_ent[0].type_next = 0;
-				ai_ent[0].timer2 = 0;
+				ai_player.type_next = 0;
+				ai_player.timer2 = 0;
 				prog.no_exec = 1;
 			}
 		}

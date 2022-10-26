@@ -12,10 +12,10 @@ int CFile::Open(LPCSTR filename)
 #endif
 
 	handle = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	// successful
+	// failure
 	if (handle == INVALID_HANDLE_VALUE)
 		return 0;
-	// failure
+	// success
 	return 1;
 }
 
@@ -29,10 +29,10 @@ int CFile::Create(LPCSTR filename)
 #endif
 
 	handle = CreateFileA(path, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	// successful
+	// failure
 	if (handle == INVALID_HANDLE_VALUE)
 		return 0;
-	// failure
+	// success
 	return 1;
 }
 

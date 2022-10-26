@@ -1,3 +1,5 @@
+#pragma once
+
 int Sound_get_pan(int x);
 
 void Sound_set_vol(const char* name, int vol);

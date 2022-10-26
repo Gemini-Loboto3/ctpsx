@@ -5,6 +5,7 @@
 #include "unk.h"
 #include "tim.h"
 #include "tmc.h"
+#include "texture.h"
 #include "dib.h"
 #include "spr_ent.h"
 #include "tmap.h"

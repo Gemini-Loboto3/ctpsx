@@ -75,8 +75,8 @@ void Init()
 	Vm_set_proc(0);
 	//BmpInitRect(&prog.render_bmp, 80, 0, 480, 304);
 	vm_data.vm_index5[0] = 0;
-	ai_ent[0].state = 0;
-	ai_ent[1].state = 0;
+	ai_player.state = 0;
+	ai_stalker.state = 0;
 
 #ifdef NDEBUG
 	char path[MAX_PATH];

@@ -1,10 +1,11 @@
+#pragma once
+
 typedef struct tagTmcEntry
 {
 	WORD w,
-		h,
-		unk4,
-		unk6;
-	int pos,
+		h;
+	short x, y;
+	DWORD pos,
 		size;
 } TMC_ENTRY;
 
@@ -20,6 +21,14 @@ typedef struct tagTmcHeader
 		unkptr_18,
 		unksize_1C;		// size in bytes
 } TMC_HEADER;
+
+typedef struct tagTmcAlloc
+{
+	WORD enabled;
+	short x, y, w, h;
+} TMC_ALLOC;
+
+extern TMC_ALLOC tmc_alloc[64];
 
 class Tmc
 {

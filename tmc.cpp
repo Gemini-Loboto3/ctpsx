@@ -4,6 +4,8 @@
 #include <vector>
 #include "game.h"
 
+TMC_ALLOC tmc_alloc[64];
+
 #ifdef _WINDOWS
 #include "win/bitmap.h"
 #endif

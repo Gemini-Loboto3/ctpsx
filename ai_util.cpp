@@ -297,25 +297,25 @@ int GetAnimData(WORD* dst, int a2)
 		{
 			if (vm_data.vm_index5[25] == 1)
 			{
-				v3 = ai_ent[1].type_next + 6 * ai_ent[1].type + 18 * ai_ent[1].direction;
-				if (ai_ent[1].type0 != ai_ent[1].direction)
+				v3 = ai_stalker.type_next + 6 * ai_stalker.type + 18 * ai_stalker.direction;
+				if (ai_stalker.type0 != ai_stalker.direction)
 					v3 += 3;
 				dst[0] = word_41FF6C[vm_data.vm_index5[6]][v3][0];
 				dst[1] = word_41FF6C[vm_data.vm_index5[6]][v3][1];
 			}
 			else if (vm_data.vm_index5[25] == 2)
 			{
-				if ((int)ai_ent[1].direction > 1)
-					ai_ent[1].direction = 1;
-				dst[0] = word_42011C[vm_data.vm_index5[43]][ai_ent[1].direction][ai_ent[1].type_next];
+				if ((int)ai_stalker.direction > 1)
+					ai_stalker.direction = 1;
+				dst[0] = word_42011C[vm_data.vm_index5[43]][ai_stalker.direction][ai_stalker.type_next];
 				dst[1] = 0;
 			}
 		}
 	}
 	else
 	{
-		v3 = ai_ent[0].type_next + 6 * ai_ent[0].type + 18 * ai_ent[0].direction;
-		if (ai_ent[0].type0 != ai_ent[0].direction)
+		v3 = ai_player.type_next + 6 * ai_player.type + 18 * ai_player.direction;
+		if (ai_player.type0 != ai_player.direction)
 			v3 += 3;
 		dst[0] = word_41FDA4[vm_data.vm_index5[4]][v3][0];
 		dst[1] = word_41FDA4[vm_data.vm_index5[4]][v3][1];
@@ -357,7 +357,7 @@ int SprIsInReach()
 
 	int xdist, xdiff, dir;
 
-	xdiff = sprt_ent[1].x0 - sprt_ent[0].x0;
+	xdiff = sprt_stalker.x0 - sprt_player.x0;
 	xdist = abs(xdiff);
 
 	switch (vm_data.vm_index5[25])
@@ -365,17 +365,18 @@ int SprIsInReach()
 	case 1:
 		if (xdiff <= 0)
 		{
-			if (ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
-				ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
+			if (ai_stalker.type0 == 0 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
+				ai_stalker.type0 == 1 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
 				return 2;
 		}
-		else if (ai_ent[1].type0 == 1 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
-			ai_ent[1].type0 == 0 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
+		else if (ai_stalker.type0 == 1 && dist_tbl[vm_data.vm_index5[4]][0] >= xdist ||
+			ai_stalker.type0 == 0 && dist_tbl[vm_data.vm_index5[4]][1] >= xdist)
 			return 1;
 		break;
 	case 2:
 		dir = 0;
-		if (sprt_ent[0].x0 - 200 < sprt_ent[0].lmx0 || sprt_ent[0].lmx1 >= 0 && sprt_ent[0].x0 + 200 > sprt_ent[0].lmx1)
+		if (sprt_player.x0 - 200 < sprt_player.lmx0 ||
+			sprt_player.lmx1 >= 0 && sprt_player.x0 + 200 > sprt_player.lmx1)
 			dir = 1;
 		if (dist_tbl[3][dir] >= xdist)
 		{

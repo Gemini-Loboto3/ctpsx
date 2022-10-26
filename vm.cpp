@@ -130,7 +130,7 @@ void vm_func3()
 	else if (vm_data.vm_index5[25] == 2)
 		v1 = v1 = word_420384[vm_data.vm_index5[41] + 3][v0];
 
-	vm_data.vm_index5[30] = v1 + sprt_ent[0].x0;
+	vm_data.vm_index5[30] = v1 + sprt_player.x0;
 }
 
 void vm_func5()
@@ -220,11 +220,11 @@ void Vm_all_spr_disp()
 			if (prog.curs_mode == 3)
 			{
 				TMapGetRect(&tmap, &rcDst);
-				sprt_ent[11].SetXY(prog.screen_x + prog.mousePT.x - rcDst.X0() - 16,
+				sprt_cursor.SetXY(prog.screen_x + prog.mousePT.x - rcDst.X0() - 16,
 					prog.screen_y + prog.mousePT.y - rcDst.Y0() - 16, 0x64u, 1);
 			}
-			SetSpriteData(&sprt_ent[11], sprt_ent[11].frame_id);
-			SprDraw(&sprt_ent[11], &rmap);
+			SetSpriteData(&sprt_ent[SPID_CURSOR], sprt_cursor.frame_id);
+			SprDraw(&sprt_ent[SPID_CURSOR], &rmap);
 		}
 	}
 }
@@ -239,9 +239,9 @@ void Vm_spr_clr(WORD index)
 	sprt_ent[index].Release();
 }
 
-void Vm_spr_ent(int id, DWORD x, DWORD y, DWORD flags, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
+void Vm_spr_ent(int id, int x, int y, DWORD pri, __int16 frame, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
 {
-	SprEnt(id, x, y, flags, a5, a6, a7, a8, is_abs);
+	SprEnt(id, x, y, pri, frame, a6, a7, a8, is_abs);
 	sprt_ent[id].SetList();
 }
 
@@ -276,10 +276,10 @@ void Vm_slant_clr()
 void Vm_slant_set(__int16 a1, __int16 a2, __int16 a3, __int16 a4)
 {
 	prog.slant_on = 1;
-	prog.slant_x0 = a1;
-	prog.slant_y0 = a2;
-	prog.slant_x1 = a3 - a1;
-	prog.slant_y1 = a4 - a2;
+	prog.slant_x = a1;
+	prog.slant_y = a2;
+	prog.slant_w = a3 - a1;
+	prog.slant_h = a4 - a2;
 }
 
 void Vm_map_set_clip(int left, int top, int right, int bottom)
@@ -2388,14 +2388,14 @@ void VM::op_spr_ent(int is_abs)
 	WORD id = read16();
 	int x = read16s();
 	int y = read16s();
-	WORD flags = read16();
-	WORD v8 = read16();
+	WORD pri = read16();
+	WORD frame = read16();
 	WORD v7 = read16();
 	WORD v6 = read16();
 	if (read16())
-		Vm_spr_ent(id, x, y, flags, v8, v7, v6, 1, is_abs);
+		Vm_spr_ent(id, x, y, pri, frame, v7, v6, 1, is_abs);
 	else
-		Vm_spr_ent(id, x, y, flags, v8, v7, v6, 0, is_abs);
+		Vm_spr_ent(id, x, y, pri, frame, v7, v6, 0, is_abs);
 }
 
 void VM::op_spr_pos()

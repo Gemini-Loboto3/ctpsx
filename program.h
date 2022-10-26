@@ -1,3 +1,5 @@
+#pragma once
+
 struct PROGRAM
 {
 	PROGRAM()
@@ -74,10 +76,10 @@ struct PROGRAM
 	WORD fade_timer;
 	WORD scroll_timer;
 	int slant_on;
-	short slant_x0,
-		slant_y0,
-		slant_x1,
-		slant_y1;
+	short slant_x,
+		slant_y,
+		slant_w,
+		slant_h;
 	int cur_enabled;
 	int triggerX;
 	int triggerY;

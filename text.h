@@ -1,3 +1,4 @@
+#pragma once
 #define TEXT_XDIFF	52
 
 void InitFont();

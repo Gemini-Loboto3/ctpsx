@@ -319,3 +319,79 @@ void RenderGlyph(int x, int y, FONT_GLYPH *g, DWORD *gfx)
 	// glyph
 	RenderRect(d3d9text, x,     y + g->y, 12, 12, g->w, g->h, 0, 0, (BYTE)prog.vm->texcol_r, (BYTE)prog.vm->texcol_g, (BYTE)prog.vm->texcol_b);
 }
+
+/////////////////////////////////////////
+static DWORD torgb888(WORD c)
+{
+	if (c == 0)
+		return D3DCOLOR_ARGB(0, 0, 0, 0);
+
+	BYTE r = c & 0x1f;
+	BYTE g = (c >> 5) & 0x1f;
+	BYTE b = (c >> 10) & 0x1f;
+	BYTE a = c & 0x8000 ? 0 : 255;
+
+	r = (r << 3) | (r >> 2);
+	g = (g << 3) | (g >> 2);
+	b = (b << 3) | (b >> 2);
+
+	return D3DCOLOR_ARGB(a, r, g, b);
+}
+
+int CTextureD3D9::Create(WORD *clut, BYTE* data, int bpp, int _w, int _h, int _u, int _v)
+{
+	if (d3d9dev == nullptr)
+		return 0;
+
+	d3d9dev->CreateTexture(_w, _h, 1, 0, d3dfmttex, D3DPOOL_MANAGED, &tex, nullptr);
+
+	D3DLOCKED_RECT r;
+	tex->LockRect(0, &r, nullptr, 0);
+
+	DWORD* dst = (DWORD*)r.pBits;
+	auto pitch = r.Pitch / 4;
+
+	BYTE* src8 = data;
+	WORD* src16 = (WORD*)data;
+
+	switch (bpp)
+	{
+	case 4:
+		for (int y = 0; y < _h; y++)
+		{
+			DWORD* d = dst;
+			for (int x = 0; x < _w; x += 2, src8++)
+			{
+				*d++ = torgb888(clut[*src8 & 0xf]);
+				*d++ = torgb888(clut[*src8 >> 4]);
+			}
+			dst += pitch;
+		}
+		break;
+	case 8:
+		for (int y = 0; y < _h; y++)
+		{
+			DWORD* d = dst;
+			for (int x = 0; x < _w; x++)
+				*d++ = torgb888(clut[*src8++]);
+			dst += pitch;
+		}
+		break;
+	}
+
+	tex->UnlockRect(0);
+
+	w = _w;
+	h = _h;
+
+	return 1;
+}
+
+void CTextureD3D9::Release()
+{
+	if (tex)
+	{
+		tex->Release();
+		tex = nullptr;
+	}
+}

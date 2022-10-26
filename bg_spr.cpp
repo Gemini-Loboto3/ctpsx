@@ -12,7 +12,7 @@ void BgSprAnim(int id, int w, int h, CTim* ptr)
 		sprt_ent[id].field_37 = 0;
 		sprt_ent[id].frame_id = 0xffff;
 		SetSprIsBg(id, 1);
-		sprt_ent[id].field_41 = 0;
+		sprt_ent[id].is_animating = 0;
 		sprt_ent[id].is_busy = 0;
 	}
 }
@@ -25,7 +25,7 @@ void BgSprPos(int id, int x, int y, int flag)
 		sprt_ent[id].y3 = y;
 		sprt_ent[id].x0 = x;
 		sprt_ent[id].y0 = y;
-		sprt_ent[id].flag1 = flag;
+		sprt_ent[id].priority = flag;
 	}
 }
 

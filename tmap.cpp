@@ -303,9 +303,9 @@ void TMapScrollX_cond(int x, int speed)
 	int scrl;
 
 	scrl = 0;
-	if (sprt_ent[0].x0 - prog.screen_x <= speed || tmap_xscroll_tbl[0] <= tmap_xscroll_index)
+	if (sprt_player.x0 - prog.screen_x <= speed || tmap_xscroll_tbl[0] <= tmap_xscroll_index)
 	{
-		if (sprt_ent[0].x0 - prog.screen_x < x && tmap_xscroll_index > 1)
+		if (sprt_player.x0 - prog.screen_x < x && tmap_xscroll_index > 1)
 		{
 			--tmap_xscroll_index;
 			scrl = 1;
@@ -326,9 +326,9 @@ void TMapScrollY_cond(int y, int speed)
 	int scrl;
 
 	scrl = 0;
-	if ((sprt_ent[0].y0 - prog.screen_y - 56) <= speed || tmap_yscroll_tbl[0] <= tmap_yscroll_index)
+	if ((sprt_player.y0 - prog.screen_y - 56) <= speed || tmap_yscroll_tbl[0] <= tmap_yscroll_index)
 	{
-		if ((sprt_ent[0].y0 - prog.screen_y - 56) < y && tmap_yscroll_index > 1)
+		if ((sprt_player.y0 - prog.screen_y - 56) < y && tmap_yscroll_index > 1)
 		{
 			--tmap_yscroll_index;
 			scrl = 1;

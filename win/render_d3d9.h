@@ -1,5 +1,6 @@
 #pragma once
 #include "..\font.h"
+#include "..\texture.h"
 
 #define GAME_W		256
 #define GAME_H		240
@@ -33,6 +34,18 @@ extern LPDIRECT3DDEVICE9 d3d9dev;
 extern LPDIRECT3DTEXTURE9 d3d9rend;
 extern LPDIRECT3DTEXTURE9 d3d9text;
 extern D3DFORMAT d3dfmttex;
+
+class CTextureD3D9 : public CTexture
+{
+public:
+	CTextureD3D9() : tex(nullptr)
+	{}
+
+	virtual int Create(WORD* clut, BYTE* data, int bpp, int w, int h, int u, int v);
+	virtual void Release();
+
+	LPDIRECT3DTEXTURE9 tex;
+};
 
 void InitRender();
 void SwapBuffer();

@@ -1,13 +1,17 @@
 #pragma once
 
+enum SPR_ID
+{
+	SPID_PLAYER = 0,
+	SPID_STALKER = 1,
+	SPID_CURSOR = 11
+};
+
 struct PATTERN_DATA
 {
 	__int16 field_0;
 	WORD field_2[120];
 };
-
-
-
 
 struct SPRT_ENT
 {
@@ -38,10 +42,10 @@ struct SPRT_ENT
 	DWORD id2;
 	DWORD field_32;
 	char bmp;
-	DWORD field_37;
+	DWORD field_37;	// this is set to 0 and never used
 	WORD frame_id;
-	DWORD flag0;
-	DWORD field_41;
+	int flag0;
+	DWORD is_animating;
 	DWORD is_bg_spr;
 	int lmx0;
 	int lmx1;
@@ -52,7 +56,7 @@ struct SPRT_ENT
 	CTim* tim;
 	int x0;
 	int y0;
-	DWORD flag1;
+	int priority;
 	WORD field_6B;
 	int x3;
 	int y3;
@@ -72,6 +76,9 @@ struct SPRT_ENT
 
 extern SPRT_ENT sprt_ent[21];
 
+#define sprt_player		sprt_ent[SPID_PLAYER]
+#define sprt_stalker	sprt_ent[SPID_STALKER]
+#define sprt_cursor		sprt_ent[SPID_CURSOR]
 
 void Vm_spr_lmt(int id, int lmx0, int lmx1);
 void SetSprIsBg(int id, int is_bg);
@@ -87,7 +94,7 @@ void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int
 
 void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc);
 
-void SprEnt(int id, int x, int y, DWORD a4, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
+void SprEnt(int id, int x, int y, DWORD pri, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 
 int sub_4035DC();
 void SprUpdater();
@@ -95,7 +102,7 @@ void EventWait();
 
 int EntGetPan(int a1);
 
-void Vm_spr_ent(int id, DWORD x, DWORD y, DWORD flags, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
+void Vm_spr_ent(int id, int x, int y, DWORD pri, __int16 a5, __int16 a6, __int16 a7, DWORD a8, WORD is_abs);
 void Vm_spr_dir(int id, int a2, int a3, int a4, int a5);
 void Vm_spr_walk_x(int id, int x0, int x1, int a4, int running);
 

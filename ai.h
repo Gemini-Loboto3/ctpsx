@@ -18,6 +18,9 @@ struct AI_ENT
 
 extern AI_ENT ai_ent[2];
 
+#define ai_player	ai_ent[SPID_PLAYER]
+#define ai_stalker	ai_ent[SPID_STALKER]
+
 void AnimateAI(int id);
 void UpdateAITriggerInteraction(int id);
 int GetAnimData(WORD* dst, int a2);

@@ -66,6 +66,7 @@
       <Filter>win</Filter>
     </ClInclude>
     <ClInclude Include="ai.h" />
+    <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util.cpp" />
