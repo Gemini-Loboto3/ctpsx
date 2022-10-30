@@ -40,7 +40,6 @@ struct RENDER_BMP
 	int w;
 	int h;
 	CRect rect;
-	int screen_on;
 };
 
 #include "palette.h"

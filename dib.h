@@ -1,4 +1,4 @@
 #pragma once
 
 void LoadFaces();
-CTim* MakeBankFromDIB(const char* path);
+CTexture* MakeBankFromDIB(const char* path);

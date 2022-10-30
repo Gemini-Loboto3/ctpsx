@@ -1,7 +1,7 @@
 #include <stdafx.h>
 #include "game.h"
 
-void BgSprAnim(int id, int w, int h, CTim* ptr)
+void BgSprAnim(int id, int w, int h, CTexture* ptr)
 {
 	if (sprt_ent[id].enabled)
 	{
@@ -29,7 +29,7 @@ void BgSprPos(int id, int x, int y, int flag)
 	}
 }
 
-void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTim* ptr, DWORD a8, WORD is_abs)
+void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTexture* ptr, DWORD a8, WORD is_abs)
 {
 	if (id <= 20)
 	{

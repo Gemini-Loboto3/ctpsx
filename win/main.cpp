@@ -98,7 +98,7 @@ void InitApp()
 
 	prog.vm = new VM();
 	Vm_load(prog.vm);
-	Vm_spr_ent(11, 0, 0, 0x64, 0x3501, 0, 0, 1, 0);
+	Vm_spr_ent(SPID_CURSOR, 0, 0, 100, 0x3501, 0, 0, 1, 0);
 
 	InitRender();
 	InputInit();

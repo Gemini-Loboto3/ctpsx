@@ -382,7 +382,7 @@ struct VM
 	WORD wait_timer[5];
 	char msg_buf[5][512];
 	WORD field_3370[5];
-	CTim* bank_no[21];
+	CTexture* bank_no[21];
 	WORD bank_spr_id[21];
 	LPCVOID field_33F8[9];
 	short scroll_x;

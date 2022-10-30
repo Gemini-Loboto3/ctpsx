@@ -188,7 +188,7 @@ void SwapBuffer()
 	d3d9dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
 
-void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b)
+void RenderRect(CTexture* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b)
 {
 	if (tim == nullptr)
 	{
@@ -200,8 +200,8 @@ void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYT
 	float x0 = (float)x + ofs, y0 = (float)y + ofs,
 		x1 = x0 + (float)w, y1 = y0 + (float)h;
 
-	float uw = 1.f / tim->real_w;
-	float vh = 1.f / tim->pix_h;
+	float uw = 1.f / tim->w;
+	float vh = 1.f / tim->h;
 
 	float u0 = (float)u * uw, v0 = (float)v * vh,
 		u1 = u0 + w * uw, v1 = v0 + h * vh;
@@ -214,7 +214,7 @@ void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYT
 	p[2].x = x0, p[2].y = y1, p[2].z = 0.5f, p[2].w = 1.f, p[2].tu = u0, p[2].tv = v1, p[2].diffuse = diffuse;
 	p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].tu = u1, p[3].tv = v1, p[3].diffuse = diffuse;
 
-	d3d9dev->SetTexture(0, tim->tex);
+	d3d9dev->SetTexture(0, ((CTextureD3D9*)tim)->tex);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 }
 
@@ -338,7 +338,7 @@ static DWORD torgb888(WORD c)
 	return D3DCOLOR_ARGB(a, r, g, b);
 }
 
-int CTextureD3D9::Create(WORD *clut, BYTE* data, int bpp, int _w, int _h, int _u, int _v)
+int CTextureD3D9::Create(WORD *clut, BYTE* data, int bpp, int _w, int _h)
 {
 	if (d3d9dev == nullptr)
 		return 0;
@@ -383,15 +383,38 @@ int CTextureD3D9::Create(WORD *clut, BYTE* data, int bpp, int _w, int _h, int _u
 
 	w = _w;
 	h = _h;
+	is_sub = 0;
+
+	return 1;
+}
+
+int CTextureD3D9::CreateUV(CTexture* src, int _u, int _v, int _w, int _h)
+{
+	u = _u;
+	v = _v;
+	uw = _w;
+	vh = _h;
+
+	is_sub = 1;
+	tex = ((CTextureD3D9*)src)->tex;
+	w = ((CTextureD3D9*)src)->w;
+	h = ((CTextureD3D9*)src)->h;
 
 	return 1;
 }
 
 void CTextureD3D9::Release()
 {
-	if (tex)
+	if (tex && is_sub == 0)
 	{
 		tex->Release();
 		tex = nullptr;
 	}
+
+	delete this;
+}
+
+CTexture* MakeTexture()
+{
+	return new CTextureD3D9();
 }

@@ -4,7 +4,7 @@ struct AI_ENT
 {
 	DWORD type0;
 	DWORD type;
-	DWORD direction;		// 0 = right, 1 = left
+	int direction;		// 0 = right, 1 = left
 	DWORD type_next;
 	DWORD enabled;
 	WORD anim;

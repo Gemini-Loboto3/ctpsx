@@ -3,28 +3,28 @@
 
 void MoveStalker()
 {
-	if (vm_data.vm_index5[25] && !vm_data.vm_index5[27])
+	if (vm_data.vm_index5[25] && vm_data.vm_index5[27] == 0)
 	{
 		if (sprt_stalker.enabled)
 		{
 			StalkerSetDir2();
 			StalkerSetDir();
-			AnimateAI(1);
+			AnimateAI(SPID_STALKER);
 			AnimateStalker();
-			UpdateAITriggerInteraction(1);
+			UpdateAITriggerInteraction(SPID_STALKER);
 		}
 	}
 }
 
 void AnimateStalker()
 {
-	WORD a2[2]; // [esp+0h] [ebp-4h] BYREF
+	WORD dat[2]; // [esp+0h] [ebp-4h] BYREF
 
 	if (ai_stalker.type0 != ai_stalker.direction || ai_stalker.type != ai_stalker.type_next)
 	{
-		GetAnimData(a2, 1);
-		SprAnim(1, a2[0], 0, 0);
-		ai_stalker.anim = a2[1];
+		GetAnimData(dat, 1);
+		SprAnim(SPID_STALKER, dat[0], 0, 0);
+		ai_stalker.anim = dat[1];
 		ai_stalker.type0 = ai_stalker.direction;
 		ai_stalker.type = ai_stalker.type_next;
 	}

@@ -81,14 +81,16 @@ void LoadFaces()
 	}
 }
 
-CTim* LoadDIB(const char* path)
+CTexture* LoadDIB(const char* path)
 {
-	CTim* tim = nullptr;
+	auto tex = MakeTexture();
+
+	CTim tim;
 
 	if (strncmp("FACE", path, 4) == 0)
 	{
 		int face = atoi(&path[10]);
-		tim = faces[face - 1];
+		tex->Create(faces[face - 1]->clut, faces[face - 1]->pixel, faces[face - 1]->bpp, faces[face - 1]->real_w, faces[face - 1]->pix_h);
 	}
 	else
 	{
@@ -96,14 +98,14 @@ CTim* LoadDIB(const char* path)
 		strncpy_s(temp, MAX_PATH, path, strrchr(path, '.') - path);
 		strcat_s(temp, MAX_PATH, ".TIM");
 
-		tim = new CTim();
-		tim->Open(temp);
+		tim.Open(temp);
+		tex->Create(tim.clut, tim.pixel, tim.bpp, tim.real_w, tim.pix_h);
 	}
 
-	return tim;
+	return tex;
 }
 
-CTim* MakeBankFromDIB(const char* path)
+CTexture* MakeBankFromDIB(const char* path)
 {
 	return LoadDIB(path);
 }

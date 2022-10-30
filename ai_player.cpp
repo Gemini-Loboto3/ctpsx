@@ -4,7 +4,7 @@
 void MoveJennifer()
 {
 	JenniferDir();
-	AnimateAI(0);
+	AnimateAI(SPID_PLAYER);
 	if (!AnimateJennifer())
 	{
 		if (ai_player.type == 2)
@@ -13,7 +13,7 @@ void MoveJennifer()
 				--vm_data.vm_index5[2];
 		}
 		AnimateJennifer2();
-		UpdateAITriggerInteraction(0);
+		UpdateAITriggerInteraction(SPID_PLAYER);
 	}
 }
 
@@ -36,7 +36,7 @@ int AnimateJennifer()
 		if (ai_player.type_next != 3)
 		{
 			ai_player.type = 5;
-			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][ai_player.type0][1], 0, 0);
+			SprAnim(SPID_PLAYER, word_41FF54[vm_data.vm_index5[4]][ai_player.type0][1], 0, 0);
 		}
 		return 1;
 	case 4:
@@ -65,7 +65,7 @@ int AnimateJennifer()
 		{
 			ai_player.type = 4;
 			ai_player.type_next = 4;
-			SprAnim(0, word_41FF54[vm_data.vm_index5[4]][ai_player.type0][0], 0, 0);
+			SprAnim(SPID_PLAYER, word_41FF54[vm_data.vm_index5[4]][ai_player.type0][0], 0, 0);
 			ai_player.anim = 0;
 			return 1;
 		}
@@ -93,7 +93,7 @@ void AnimateJennifer2()
 				dat[1] = 0;
 			}
 		}
-		SprAnim(0, dat[0], 0, 0);
+		SprAnim(SPID_PLAYER, dat[0], 0, 0);
 		ai_player.anim = dat[1];
 		ai_player.enabled = 0;
 		ai_player.type0 = ai_player.direction;

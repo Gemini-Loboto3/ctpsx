@@ -46,7 +46,7 @@ int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
 			return ReadOneSlotData(&entry1[sprt->id2 + 3], sprt, id);
 		if (v6 >= 9)
 		{
-			LoadTMC(id);
+			TmcLoad(id);
 			//sprt->ptr0 = (BITMAPINFOHEADER*)LoadAbmFile((BYTE*)sprt->ptr0, id, sprt);
 			//if (!sprt->ptr0)
 			//	return 0;
@@ -69,8 +69,6 @@ int TSprSlotManager::ReadOneSlotData(SprtEntManEntry* ent, SPRT_ENT* spr, __int1
 		return 0;
 
 	return 1;
-
-	return 0;
 }
 
 void TSprSlotManager::LinkInto(TSprSlotManager* dst, SprtEntManEntry* src)
@@ -110,7 +108,7 @@ int SprtEntManEntry::Load(SPRT_ENT* dst, WORD id)
 {
 	dst->field_2A = field_0;
 
-	LoadTMC(id);
+	TmcLoad(id);
 
 	this->id = id;
 	return 1;

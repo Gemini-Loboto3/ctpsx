@@ -10,7 +10,7 @@ size_t CTim::Open(BYTE* pTim)
 	if (*(DWORD*)pTim != 0x10)
 		return 0;
 
-	TIM_CHUNK* pix;
+	TIM_CHUNK* pix_data;
 	static int bpp_tbl[] = { 4, 8, 16, 24 };
 
 	// has clut
@@ -18,7 +18,7 @@ size_t CTim::Open(BYTE* pTim)
 	{
 		TIM_CHUNK* pal = (TIM_CHUNK*)&pTim[8];
 		WORD* _clut = (WORD*)&pal[1];
-		pix = (TIM_CHUNK*)&_clut[pal->w * pal->h];
+		pix_data = (TIM_CHUNK*)&_clut[pal->w * pal->h];
 		// copy over new palette
 		clut = new WORD[pal->w * pal->h];
 		memcpy(clut, _clut, pal->w * pal->h * 2);
@@ -30,15 +30,15 @@ size_t CTim::Open(BYTE* pTim)
 	else
 	{
 		clut = nullptr;
-		pix = (TIM_CHUNK*)&pTim[8];
+		pix_data = (TIM_CHUNK*)&pTim[8];
 	}
-	BYTE* data = (BYTE*)&pix[1];
+	BYTE* data = (BYTE*)&pix_data[1];
 
 	bpp = bpp_tbl[pTim[4] & 7];
-	pixel = new BYTE[pix->w * pix->h * 2];
-	memcpy(pixel, data, pix->w * pix->h * 2);
-	pix_w = pix->w;
-	pix_h = pix->h;
+	pixel = new BYTE[pix_data->w * pix_data->h * 2];
+	memcpy(pixel, data, pix_data->w * pix_data->h * 2);
+	pix_w = pix_data->w;
+	pix_h = pix_data->h;
 
 	switch (bpp)
 	{
@@ -54,7 +54,7 @@ size_t CTim::Open(BYTE* pTim)
 	SetTexture();
 #endif
 
-	return (size_t)&data[pix->w * pix->h * 2] - (size_t)pTim;
+	return (size_t)&data[pix_data->w * pix_data->h * 2] - (size_t)pTim;
 }
 
 CTim::~CTim()

@@ -221,10 +221,10 @@ void Vm_all_spr_disp()
 			{
 				TMapGetRect(&tmap, &rcDst);
 				sprt_cursor.SetXY(prog.screen_x + prog.mousePT.x - rcDst.X0() - 16,
-					prog.screen_y + prog.mousePT.y - rcDst.Y0() - 16, 0x64u, 1);
+					prog.screen_y + prog.mousePT.y - rcDst.Y0() - 16, 100, 1);
 			}
-			SetSpriteData(&sprt_ent[SPID_CURSOR], sprt_cursor.frame_id);
-			SprDraw(&sprt_ent[SPID_CURSOR], &rmap);
+			SetSpriteData(&sprt_cursor, sprt_cursor.frame_id);
+			SprDraw(&sprt_cursor, &rmap);
 		}
 	}
 }
@@ -258,13 +258,11 @@ void Vm_set_proc(WORD p)
 
 void Vm_screen_on()
 {
-	prog.render_bmp.screen_on = 1;
 	prog.screen_on = 1;
 }
 
 void Vm_screen_off()
 {
-	prog.render_bmp.screen_on = 0;
 	prog.screen_on = 0;
 }
 
@@ -273,13 +271,13 @@ void Vm_slant_clr()
 	prog.slant_on = 0;
 }
 
-void Vm_slant_set(__int16 a1, __int16 a2, __int16 a3, __int16 a4)
+void Vm_slant_set(int x0, int y0, int x1, int y1)
 {
 	prog.slant_on = 1;
-	prog.slant_x = a1;
-	prog.slant_y = a2;
-	prog.slant_w = a3 - a1;
-	prog.slant_h = a4 - a2;
+	prog.slant_x = x0;
+	prog.slant_y = y0;
+	prog.slant_w = x1 - x0;
+	prog.slant_h = y1 - y0;
 }
 
 void Vm_map_set_clip(int left, int top, int right, int bottom)
@@ -680,7 +678,7 @@ void __cdecl Vm_user_ctr(__int16 a1)
 	prog.can_lclick = a1 & 1;
 	prog.can_rclick = a1 & 2;
 	vm_data.vm_index5[45] = a1 & 1;
-	Vm_spr_dir(0, -1, 0, -1, -1);
+	Vm_spr_dir(SPID_PLAYER, -1, 0, -1, -1);
 }
 
 void Vm_work_clr()
@@ -1785,8 +1783,7 @@ void VM::op_bg_load()
 
 	if (bank_no[id])
 	{
-		if(bank_no[id]->is_ref == 0)
-			delete bank_no[id];
+		bank_no[id]->Release();
 		bank_no[id] = nullptr;
 	}
 
@@ -1796,8 +1793,8 @@ void VM::op_bg_load()
 	{
 		rects[id].x = 0;
 		rects[id].y = 0;
-		rects[id].w = bank_no[id]->real_w * 2;
-		rects[id].h = bank_no[id]->pix_h * 2;
+		rects[id].w = bank_no[id]->w * 2;
+		rects[id].h = bank_no[id]->h * 2;
 		rects[id].rw1 = 0;
 		rects[id].rw2 = 0;
 	}
@@ -1847,7 +1844,7 @@ void VM::op_bg_spr_ent(int is_abs)
 	if (y < 0)
 		y = 0;
 
-	byte unk = bank_id >> 8;
+	byte pyx_data = bank_id >> 8;
 	bank_id &= 0xff;
 	if (bank_no[bank_id])
 	{
@@ -1857,8 +1854,8 @@ void VM::op_bg_spr_ent(int is_abs)
 	//	else
 	//		frame = 1 << g->bank_no[bank_id]->bitframe;
 		EntryBmpSprite(id, x, y, flag,
-			bank_no[bank_id]->real_w,
-			bank_no[bank_id]->pix_h,
+			bank_no[bank_id]->w,
+			bank_no[bank_id]->h,
 			bank_no[bank_id],
 			v3,
 			is_abs);
@@ -2301,15 +2298,7 @@ void VM::op_bg_spr_set()
 	WORD attr = read16();
 	WORD id = read16() + 1;
 	if (bank_no[id])
-	{
-		int v1;
-		//if (bank_no[id]->frame)
-		//	v1 = bank_no[id]->frame;
-		//else
-		//	v1 = 1 << bank_no[id]->bitframe;
-		v1 = bank_no[id]->bpp;
-		BgSprAnim(attr, bank_no[id]->real_w, bank_no[id]->pix_h, bank_no[id]);
-	}
+		BgSprAnim(attr, bank_no[id]->w, bank_no[id]->h, bank_no[id]);
 }
 
 void VM::op_bg_buf_clr()
@@ -2326,8 +2315,7 @@ void VM::op_bg_buf_clr()
 		{
 			if (bank_no[i])
 			{
-				if(bank_no[i]->is_ref == 0)
-					delete bank_no[i];
+				bank_no[i]->Release();
 				bank_no[i] = nullptr;
 			}
 			for (int j = 0; j < 0x15u; ++j)

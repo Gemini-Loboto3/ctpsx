@@ -45,9 +45,12 @@ void sub_41259E()
 		vm_data.vm_index3[14] |= 1;
 }
 
-int sub_403304(int a1)
+int TriggerIsEnabled(int trg)
 {
-	return vm_data.vm_index6[a1 + 500] != 0xFFFF && vm_data.vm_index2[vm_data.vm_index6[a1 + 500]];
+	if (vm_data.vm_index6[trg + 500] == 0xFFFF)
+		return 0;
+
+	return vm_data.vm_index2[vm_data.vm_index6[trg + 500]];
 }
 
 void TriggerDebug()
@@ -56,7 +59,7 @@ void TriggerDebug()
 
 	for (int i = 0; i < 30; ++i)
 	{
-		if (sub_403304(i))
+		if (TriggerIsEnabled(i))
 		{
 			rtrg.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
 				prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
@@ -89,7 +92,6 @@ void DrawQSprites()
 // ========================================================
 // BORLAND randomizer
 // ========================================================
-
 static LARGE_INTEGER rand_seed;
 
 LONGLONG _statcvt_i64()

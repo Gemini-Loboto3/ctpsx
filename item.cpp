@@ -21,7 +21,7 @@ short item_xy_tbl[][2] =
 	112, 216,
 	128, 216
 };
-CTim* item_tim;
+CTexture* item_tim;
 
 short item_lut[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -1, -1, 11, -1, 11 };
 short item_lut2[] =
@@ -61,8 +61,11 @@ ITEM_DATA item_tbl[] =
 
 void InitItem()
 {
-	item_tim = new CTim();
-	item_tim->Open("ITEM\\ITEM.TIM");
+	CTim tim;
+	tim.Open("ITEM\\ITEM.TIM");
+
+	item_tim = MakeTexture();
+	item_tim->Create(tim.clut, tim.pixel, tim.bpp, tim.real_w, tim.pix_h);
 
 	itemptr2_index = 0;
 	inventory[0] = 16;

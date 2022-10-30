@@ -3,7 +3,7 @@
 
 AI_ENT ai_ent[2];
 
-WORD word_41FDA4[][36][2] =
+WORD anim_data_player[][36][2] =
 {
   {
 	{ 258u, 0u },
@@ -121,7 +121,7 @@ WORD word_41FDA4[][36][2] =
   }
 };
 
-WORD word_41FF6C[][36][2] =
+WORD anim_data_stalker1[][36][2] =
 {
   {
 	{ 36864u, 0u },
@@ -239,7 +239,7 @@ WORD word_41FF6C[][36][2] =
   }
 };
 
-WORD word_42011C[][2][2] =
+WORD anim_data_stalker2[][2][2] =
 {
   { { 3072u, 3073u }, { 35840u, 35841u } },
   { { 3109u, 3074u }, { 35877u, 35842u } },
@@ -285,53 +285,49 @@ void UpdateAITriggerInteraction(int id)
 	}
 }
 
-int GetAnimData(WORD* dst, int a2)
+int GetAnimData(WORD* dst, int id)
 {
-	DWORD v3;
+	DWORD dir;
 
-	if (a2)
+	switch (id)
 	{
-		if (a2 != 1)
-			return 0;
-		if (vm_data.vm_index5[25])
-		{
-			if (vm_data.vm_index5[25] == 1)
-			{
-				v3 = ai_stalker.type_next + 6 * ai_stalker.type + 18 * ai_stalker.direction;
-				if (ai_stalker.type0 != ai_stalker.direction)
-					v3 += 3;
-				dst[0] = word_41FF6C[vm_data.vm_index5[6]][v3][0];
-				dst[1] = word_41FF6C[vm_data.vm_index5[6]][v3][1];
-			}
-			else if (vm_data.vm_index5[25] == 2)
-			{
-				if ((int)ai_stalker.direction > 1)
-					ai_stalker.direction = 1;
-				dst[0] = word_42011C[vm_data.vm_index5[43]][ai_stalker.direction][ai_stalker.type_next];
-				dst[1] = 0;
-			}
-		}
-	}
-	else
-	{
-		v3 = ai_player.type_next + 6 * ai_player.type + 18 * ai_player.direction;
+	case SPID_PLAYER:
+		dir = ai_player.type_next + 6 * ai_player.type + 18 * ai_player.direction;
 		if (ai_player.type0 != ai_player.direction)
-			v3 += 3;
-		dst[0] = word_41FDA4[vm_data.vm_index5[4]][v3][0];
-		dst[1] = word_41FDA4[vm_data.vm_index5[4]][v3][1];
+			dir += 3;
+		dst[0] = anim_data_player[vm_data.vm_index5[4]][dir][0];
+		dst[1] = anim_data_player[vm_data.vm_index5[4]][dir][1];
+		break;
+	case SPID_STALKER:
+		switch (vm_data.vm_index5[25])
+		{
+		case 1:
+			dir = ai_stalker.type_next + 6 * ai_stalker.type + 18 * ai_stalker.direction;
+			if (ai_stalker.type0 != ai_stalker.direction)
+				dir += 3;
+			dst[0] = anim_data_stalker1[vm_data.vm_index5[6]][dir][0];
+			dst[1] = anim_data_stalker1[vm_data.vm_index5[6]][dir][1];
+			break;
+		case 2:
+			if (ai_stalker.direction > 1)
+				ai_stalker.direction = 1;
+			dst[0] = anim_data_stalker2[vm_data.vm_index5[43]][ai_stalker.direction][ai_stalker.type_next];
+			dst[1] = 0;
+		}
+		break;
+	default:
+		return 0;
 	}
+
 	return 1;
 }
 
 void AnimateAI(int id)
 {
-	if (sprt_ent[id].is_busy)
+	if (sprt_ent[id].is_busy && ai_ent[id].anim)
 	{
-		if (ai_ent[id].anim)
-		{
-			SprAnim(id, ai_ent[id].anim, 0, 0);
-			ai_ent[id].anim = 0;
-		}
+		SprAnim(id, ai_ent[id].anim, 0, 0);
+		ai_ent[id].anim = 0;
 	}
 }
 

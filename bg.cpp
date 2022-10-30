@@ -52,7 +52,7 @@ void Game_BgDispTrn_0(VM* a1)
 	{
 		a1->rects[a1->rect_index].rw2 -= a1->rx;
 		if (a1->rects[a1->rect_index].rw2 < 0)
-			a1->rects[a1->rect_index].rw2 = a1->bank_no[a1->rect_index]->pix_h - 1;
+			a1->rects[a1->rect_index].rw2 = a1->bank_no[a1->rect_index]->h - 1;
 	}
 	else
 	{
@@ -60,7 +60,7 @@ void Game_BgDispTrn_0(VM* a1)
 		if (!v4)
 		{
 			a1->rects[a1->rect_index].rw1 += a1->rx;
-			if (a1->rects[a1->rect_index].rw1 >= a1->bank_no[a1->rect_index]->real_w)
+			if (a1->rects[a1->rect_index].rw1 >= a1->bank_no[a1->rect_index]->w)
 				a1->rects[a1->rect_index].rw1 = 0;
 			Game_BgDispTrnRect(a1);
 		}
@@ -68,7 +68,7 @@ void Game_BgDispTrn_0(VM* a1)
 		if (!v5)
 		{
 			a1->rects[a1->rect_index].rw2 += a1->rx;
-			if (a1->rects[a1->rect_index].rw2 >= a1->bank_no[a1->rect_index]->pix_h)
+			if (a1->rects[a1->rect_index].rw2 >= a1->bank_no[a1->rect_index]->h)
 				a1->rects[a1->rect_index].rw2 = 0;
 			Game_BgDispTrnRect(a1);
 		}
@@ -76,7 +76,7 @@ void Game_BgDispTrn_0(VM* a1)
 		{
 			a1->rects[a1->rect_index].rw1 -= a1->rx;
 			if (a1->rects[a1->rect_index].rw1 > 0x8000u)
-				a1->rects[a1->rect_index].rw1 = a1->bank_no[a1->rect_index]->real_w - 1;
+				a1->rects[a1->rect_index].rw1 = a1->bank_no[a1->rect_index]->w - 1;
 			Game_BgDispTrnRect(a1);
 		}
 	}
@@ -112,9 +112,9 @@ void Game_BgDispTrn(VM* game, int x, int y, int w, int h, __int16 srcx, __int16 
 		if (type == 1)
 			Vm_pal_set(0, 0, 0, 0, 0);
 		if (w == 0)
-			w = game->bank_no[id]->real_w;
+			w = game->bank_no[id]->w;
 		if (h == 0)
-			h = game->bank_no[id]->pix_h;
+			h = game->bank_no[id]->h;
 		Render_bank(x, y, w, h, srcx, srcy, game->bank_no[id], mode);
 		game->_id = id;
 		game->_x = x;
@@ -151,8 +151,8 @@ void Game_RedrawScene(VM* a1)
 				a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].x,
 				a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].y,
 				*((WORD*)&a1->field_28F4 + vm_data.vm_evt_pos),
-				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]]->real_w,
-				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]]->pix_h,
+				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]]->w,
+				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]]->h,
 				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]],
 				a1->field_2912[vm_data.vm_evt_pos],
 				0);
@@ -174,13 +174,13 @@ void Game_RedrawScene(VM* a1)
 	}
 }
 
-void Render_bank(int x, int y, int w, int h, int srcx, int srcy, CTim* bank, int mode)
+void Render_bank(int x, int y, int w, int h, int srcx, int srcy, CTexture* bank, int mode)
 {
 	//BmpGetRect(&prog.render_bmp, &rcSrc2);
 	//result = intersectRect(&dst_rect, &rcSrc2);
 	//if (result)
 	{
 		int _x = GetX(x, w);
-		RenderRect(bank, _x, GETY(y), bank->real_w, bank->pix_h, 0, 0, 0xff, 0xff, 0xff);
+		RenderRect(bank, _x, GETY(y), bank->w, bank->h, 0, 0, 0xff, 0xff, 0xff);
 	}
 }

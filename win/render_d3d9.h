@@ -41,16 +41,18 @@ public:
 	CTextureD3D9() : tex(nullptr)
 	{}
 
-	virtual int Create(WORD* clut, BYTE* data, int bpp, int w, int h, int u, int v);
+	virtual int Create(WORD* clut, BYTE* data, int bpp, int w, int h);
+	virtual int CreateUV(CTexture* src, int u, int v, int w, int h);
 	virtual void Release();
 
 	LPDIRECT3DTEXTURE9 tex;
 };
 
+CTexture* MakeTexture();
+
 void InitRender();
 void SwapBuffer();
-void RenderRect(CTim* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
-void RenderRect(LPDIRECT3DTEXTURE9 tex, int x, int y, int real_w, int real_h, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
+void RenderRect(CTexture* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
 void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b, BYTE a = 255);
 void RenderGlyph(int x, int y, FONT_GLYPH* g, DWORD* gfx);
 

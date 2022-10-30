@@ -2,6 +2,7 @@
 
 #include <stdafx.h>
 #include <vector>
+#include <assert.h>
 #include "game.h"
 
 TMC_ALLOC tmc_alloc[64];
@@ -15,11 +16,11 @@ LPCSTR sprt_name0[] =
 	"",
 	"",
 	"",
-	"SPRT\\ESRTMC\\R1_ESR.TMC",
-	"SPRT\\ESRTMC\\T1_ESR.TMC",
-	"SPRT\\ESRTMC\\T2_ESR.TMC",
-	"SPRT\\ESRTMC\\T3_ESR.TMC",
-	"SPRT\\ESRTMC\\T4_ESR.TMC"
+	"ESRTMC\\R1_ESR",
+	"ESRTMC\\T1_ESR",
+	"ESRTMC\\T2_ESR",
+	"ESRTMC\\T3_ESR",
+	"ESRTMC\\T4_ESR"
 };
 
 LPCSTR sprt_name1[] =
@@ -28,9 +29,9 @@ LPCSTR sprt_name1[] =
 	"",
 	"",
 	"",
-	"SPRT\\CYPTMC\\T1_CYP.TMC",
-	"SPRT\\CYPTMC\\T2_CYP.TMC",
-	"SPRT\\CYPTMC\\T3_CYP.TMC",
+	"CYPTMC\\T1_CYP",
+	"CYPTMC\\T2_CYP",
+	"CYPTMC\\T3_CYP",
 	""
 };
 
@@ -40,17 +41,17 @@ LPCSTR sprt_name2[] =
 	"",
 	"",
 	"",
-	"SPRT\\BSRTMC\\T1_BSR.TMC",
-	"SPRT\\BSRTMC\\T2_BSR.TMC",
-	"SPRT\\BSRTMC\\T3_BSR.TMC",
-	"SPRT\\BSRTMC\\T4_BSR.TMC"
+	"BSRTMC\\T1_BSR",
+	"BSRTMC\\T2_BSR",
+	"BSRTMC\\T3_BSR",
+	"BSRTMC\\T4_BSR"
 };
 
 LPCSTR sprt_name3[] =
 {
 	"",
 	"",
-	"SPRT\\SR1TMC\\M1_SR1.TMC",
+	"SR1TMC\\M1_SR1",
 	"",
 	"",
 	"",
@@ -64,7 +65,7 @@ LPCSTR sprt_name4[] =
 	"",
 	"",
 	"",
-	"SPRT\\CHARTMC1\\T_ACT01W.TMC",
+	"CHARTMC1\\T_ACT01W",
 	"",
 	"",
 	""
@@ -76,10 +77,10 @@ LPCSTR sprt_name5[] =
 	"",
 	"",
 	"",
-	"SPRT\\LBRTMC\\T1_LBR.TMC",
-	"SPRT\\LBRTMC\\T2_LBR.TMC",
-	"SPRT\\LBRTMC\\T3_LBR.TMC",
-	"SPRT\\LBRTMC\\T4_LBR.TMC"
+	"LBRTMC\\T1_LBR",
+	"LBRTMC\\T2_LBR",
+	"LBRTMC\\T3_LBR",
+	"LBRTMC\\T4_LBR"
 };
 
 LPCSTR sprt_name6[] =
@@ -88,10 +89,10 @@ LPCSTR sprt_name6[] =
 	"",
 	"",
 	"",
-	"SPRT\\BBBTMC\\T1_BBB.TMC",
-	"SPRT\\BBBTMC\\T2_BBB.TMC",
-	"SPRT\\BBBTMC\\T3_BBB.TMC",
-	"SPRT\\BBBTMC\\T4_BBB.TMC"
+	"BBBTMC\\T1_BBB",
+	"BBBTMC\\T2_BBB",
+	"BBBTMC\\T3_BBB",
+	"BBBTMC\\T4_BBB"
 };
 
 LPCSTR sprt_name7[] =
@@ -286,22 +287,22 @@ int Tmc::open(const char* filename)
 		return 0;
 
 	// cache all the necessary data
-	entries = std::vector<TMC_ENTRY>(head.entry_cnt);
-	fp.Read(entries.data(), head.entry_cnt * sizeof(TMC_ENTRY));
+	entry = std::vector<TMC_ENTRY>(head.entry_cnt);
+	fp.Read(entry.data(), head.entry_cnt * sizeof(TMC_ENTRY));
 	// palettes
 	fp.Read(clut, sizeof(clut));
 	// compressed pics
-	fp.Seek(head.pos_pix, SEEK_SET);
-	pix = std::vector<BYTE>(head.pix_size);
-	fp.Read(pix.data(), head.pix_size);
+	fp.Seek(head.pix_pos, SEEK_SET);
+	pix_data = std::vector<BYTE>(head.pix_size);
+	fp.Read(pix_data.data(), head.pix_size);
 	// coordinates
-	fp.Seek(head.pos_coor, SEEK_SET);
-	coor = std::vector<BYTE>(head.coor_size);
-	fp.Read(coor.data(), head.coor_size);
+	fp.Seek(head.ptn_pos, SEEK_SET);
+	ptn_data = std::vector<TMC_PTN>(head.ptn_size / sizeof(TMC_PTN));
+	fp.Read(ptn_data.data(), head.ptn_size);
 	// whatever
-	fp.Seek(head.unkptr_18, SEEK_SET);
-	unk = std::vector<BYTE>(head.unksize_1C);
-	fp.Read(unk.data(), head.unksize_1C);
+	fp.Seek(head.pyx_pos, SEEK_SET);
+	pyx_data = std::vector<TMC_PYX>(head.pyx_size / sizeof(TMC_PYX));
+	fp.Read(pyx_data.data(), head.pyx_size);
 
 	fp.Close();
 
@@ -344,15 +345,15 @@ void Tmc::test(const char* filename)
 	CBitmap bmp;
 	for (int i = 0; i < count; i++)
 	{
-		if (entries[i].pos == -1)
+		if (entry[i].pos == -1)
 			continue;
 
-		bmp.Create(entries[i].w, entries[i].h);
-		dec(&pix[entries[i].pos], buffer, entries[i].size);
+		bmp.Create(entry[i].w, entry[i].h);
+		dec(&pix_data[entry[i].pos], buffer, entry[i].size);
 
 		BYTE* src = buffer;
-		for (int y = 0; y < entries[i].h; y++)
-			for (int x = 0; x < entries[i].w; x++)
+		for (int y = 0; y < entry[i].h; y++)
+			for (int x = 0; x < entry[i].w; x++)
 				bmp.setPixel(x, y, CTim::torgb888(clut[*src++]));
 
 		sprintf_s(path, MAX_PATH, "test\\%03i.png", i);
@@ -360,19 +361,26 @@ void Tmc::test(const char* filename)
 	}
 }
 
-void LoadTMC(int id)
+static signed char tmc_lut[] =
 {
-	static signed char tmc_lut[] =
-	{
-		2, 0, 0, 0, 0, 0, 2,-1,-1, 2, 0,-1, 0, 0,-1, 0,
-		0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1,-1, 1, 2,-1, 2, 2, 2, 2, 2, 2,
-		0,-1, 0,-1, 0, 0, 0, 0, 1, 1, 1,-1
-	};
+	2, 0, 0, 0, 0, 0, 2,-1,-1, 2, 0,-1, 0, 0,-1, 0,
+	0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1,-1, 1, 2,-1, 2, 2, 2, 2, 2, 2,
+	0,-1, 0,-1, 0, 0, 0, 0, 1, 1, 1,-1
+};
 
+void TmcLoad(int id)
+{
 	id &= 0x7fff;
 
-	int bits = -1;
+	int bits = id >> 8;
+	if (57 < bits || tmc_alloc[bits].enabled == 1)
+		return;
+
+	auto t = &tmc_alloc[bits];
+	t->enabled = 1;
+
+	bits = -1;
 	short num = id;
 	switch (vm_data.vm_index5[0])
 	{
@@ -429,7 +437,7 @@ void LoadTMC(int id)
 			goto other_case;
 		}
 
-		sprintf_s(path, MAX_PATH, "%s.TMC", fname);
+		sprintf_s(path, MAX_PATH, "SPRT\\%s.TMC", fname);
 		fname = path;
 	}
 	else
@@ -445,4 +453,56 @@ other_case:
 		sprintf_s(path, MAX_PATH, "SPRT\\CHARTMC%s.TMC", sprt_name7[fp]);
 		fname = path;
 	}
+
+	t->enabled = 1;
+	t->tmc.open(fname);
+
+	printf("Loading TMC %s\n", fname);
+}
+
+int tmc_cur_id = - 1;
+
+void TmcInit()
+{
+	if (tmc_cur_id != tmc_lut[vm_data.vm_index5[0]])
+	{
+		tmc_cur_id = tmc_lut[vm_data.vm_index5[0]];
+
+		// jennifer's base sprites
+		TmcLoad(0x0000);
+		TmcLoad(0x0100);
+		TmcLoad(0x0200);
+		TmcLoad(0x0300);
+		TmcLoad(0x0400);
+		// giant dan, no idea why he's cached
+		TmcLoad(0x0a00);
+		// cursor & icons
+		TmcLoad(0x3500);
+	}
+}
+
+void TmcLoadSprt(int id)
+{
+	if (tmc_alloc[id >> 8].enabled == 0 /*&& < 13*/)
+		TmcLoad(id);
+}
+
+void TmcUnload()
+{
+	for (int i = 0; i < _countof(tmc_alloc); i++)
+	{
+		if (tmc_alloc[i].enabled)
+		{
+			tmc_alloc[i].enabled = 0;
+		}
+	}
+}
+
+void TmcConvert(int id, int frame)
+{
+	auto gp = (id >> 8) & 0x3f;
+
+	if (tmc_alloc[gp].enabled == 0) return;
+
+	auto t = &tmc_alloc[gp];
 }

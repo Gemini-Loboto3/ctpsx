@@ -211,16 +211,18 @@ void TMapResetTiles(TMAP* tmap)
 	tmap->tile_no = 0;
 }
 
-int LoadDIB(CTim** t, const char* filename)
+int LoadDIB(CTexture** t, const char* filename)
 {
 	char path[MAX_PATH];
 	strncpy_s(path, MAX_PATH, filename, strrchr(filename, '.') - filename);
 	strcat_s(path, MAX_PATH, ".TIM");
 
-	CTim* tim = new CTim();
-	if(tim->Open(path))
+	CTim tim;
+	if(tim.Open(path))
 	{
-		*t = tim;
+		auto tp = MakeTexture();
+		tp->Create(tim.clut, tim.pixel, tim.bpp, tim.real_w, tim.pix_h);
+		*t = tp;
 
 		return 1;
 	}
@@ -232,8 +234,10 @@ int TMapOpenDIB(TMAP* tmap, LPCSTR lpFileName)
 {
 	if (LoadDIB(&tmap->tim, lpFileName))
 	{
-		tmap->w = tmap->tim->real_w * 2;
-		tmap->h = tmap->tim->pix_h * 2;
+		TmcInit();
+
+		tmap->w = tmap->tim->w * 2;
+		tmap->h = tmap->tim->h * 2;
 		tmap->scroll = 0;
 
 		return 1;
