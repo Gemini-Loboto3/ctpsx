@@ -96,10 +96,10 @@ int AudioStreamOgg::open(const char* filename)
 		return 0;
 	}
 
-	auto info = ov_info(&vorbis, -1);
-	freq = info->rate;
-	chans = info->channels;
-	ssize = info->channels * 16 / 8;
+	auto seq_ptr = ov_info(&vorbis, -1);
+	freq = seq_ptr->rate;
+	chans = seq_ptr->channels;
+	ssize = seq_ptr->channels * 16 / 8;
 	// default looping values
 	loops = 0;
 	loop_start = 0;

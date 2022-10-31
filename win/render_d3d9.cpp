@@ -411,6 +411,8 @@ void CTextureD3D9::Release()
 		tex = nullptr;
 	}
 
+	w = h = u = v = 0;
+
 	delete this;
 }
 

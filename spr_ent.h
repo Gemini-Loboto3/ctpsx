@@ -7,6 +7,11 @@ enum SPR_ID
 	SPID_CURSOR = 11
 };
 
+#define SPID_GETFRAME(x)		((x) & 0xff)
+#define SPID_GETENT(x)			(((x) >> 8) & 0x3F)
+#define SPID_GETHFLIP(x)		((x) & 0x8000)
+#define SPID_GETVFLIP(x)		((x) & 0x4000)
+
 struct PATTERN_DATA
 {
 	__int16 field_0;
@@ -34,12 +39,12 @@ struct SPRT_ENT
 	char field_17;
 	char field_18;
 	char field_19;
-	//BITMAPINFOHEADER* ptr0;
+	TMC_PTN* seq_ptr;
 	DWORD field_1E;
 	DWORD field_22;
 	DWORD field_26;
 	DWORD field_2A;
-	DWORD id2;
+	DWORD self_id;
 	DWORD field_32;
 	char bmp;
 	DWORD field_37;	// this is set to 0 and never used
@@ -57,21 +62,21 @@ struct SPRT_ENT
 	int x0;
 	int y0;
 	int priority;
-	short seq_no;
+	short seq_pos;
 	int x3;
 	int y3;
 	DWORD width;
 	DWORD height;
-	DWORD anim_main_id;
-	int seq_no_old;
+	DWORD anim_id;
+	short seq_frame;
 	DWORD anim_count;
-	DWORD anim_grp_id;
+	DWORD anim_flag_ex;
 	DWORD is_busy;
-	DWORD field_91;
+	DWORD updated;
 	DWORD sub_frame;
 	WORD anim_flg;
-	WORD field_9B;
-	WORD field_9D;
+	WORD seq_frame_new;
+	WORD seq_len;
 };
 
 extern SPRT_ENT sprt_ent[21];
@@ -88,7 +93,7 @@ void BgSprAnim(int id, int w, int h, CTexture* ptr);
 void BgSprPos(int id, int x, int y, int flag);
 void SprtTblDeinit();
 void SprPos(int id, int x, int y, DWORD flags);
-void SprAnim(int id, WORD anim, WORD a3, WORD a4);
+void SprAnim(int id, WORD anim, WORD anim_flg, WORD seq);
 int SetSpriteData(SPRT_ENT* spr, unsigned int id);
 void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int16 h, CTexture* ptr, DWORD a8, WORD is_abs);
 

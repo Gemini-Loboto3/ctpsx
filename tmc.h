@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 
 typedef struct tagTmcEntry
 {
@@ -17,7 +18,7 @@ typedef struct tagTmcPtn
 
 typedef struct tagTmcPYX
 {
-	short a, b, c,
+	short frame, len, c,
 		d,
 		e,
 		f;				// always -1
@@ -40,10 +41,26 @@ class Tmc
 {
 public:
 	std::vector<TMC_ENTRY> entry;
-	WORD clut[256], count = 0;
+	WORD clut[256];
 	std::vector<BYTE> pix_data;
 	std::vector<TMC_PTN> ptn_data;
 	std::vector<TMC_PYX> pyx_data;
+
+	TMC_PTN* GetSeq(int seq_pos)
+	{
+		seq_pos = std::clamp<int>(seq_pos, 0, ptn_data.size() - 1);
+		return &ptn_data[seq_pos];
+	}
+	TMC_PYX* GetFrame(int frame_no)
+	{
+		frame_no = std::clamp<int>(frame_no, 0, pyx_data.size() - 1);
+		return &pyx_data[frame_no];
+	}
+	TMC_ENTRY* GetEntry(int entry_no)
+	{
+		entry_no = std::clamp<int>(entry_no, 0, entry.size() - 1);
+		return &entry[entry_no];
+	}
 
 	int open(const char* filename);
 	int dec(BYTE* src, BYTE* dst, int cmp_size);

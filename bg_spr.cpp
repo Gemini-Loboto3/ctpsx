@@ -33,7 +33,7 @@ void EntryBmpSprite(int id, __int16 x, __int16 y, __int16 flag, __int16 w, __int
 {
 	if (id <= 20)
 	{
-		sprt_ent[id].id2 = id;
+		sprt_ent[id].self_id = id;
 		sprt_ent[id].enabled = 1;
 		sprt_ent[id].field_32 = a8;
 		sprt_ent[id].is_abs = is_abs;

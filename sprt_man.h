@@ -7,17 +7,17 @@ struct SprtEntManEntry
 	int Load(SPRT_ENT* dst, WORD id);
 
 	int field_0;
-	BITMAPINFOHEADER* info;
+	TMC_PTN* seq_ptr;
 	SprtEntManEntry* child;
 	SprtEntManEntry* next;
-	short id;
+	WORD id;
 };
 
 struct TSprSlotManager
 {
 	TSprSlotManager();
 
-	int  Read(SPRT_ENT* sprt, __int16 id);
+	int  Read(SPRT_ENT* sprt, WORD id);
 	int  ReadOneSlotData(SprtEntManEntry* ent, SPRT_ENT* spr, __int16 id);
 	void LinkInto(TSprSlotManager* dst, SprtEntManEntry* src);
 	void LinkNormal(SprtEntManEntry** super, SprtEntManEntry* ent);

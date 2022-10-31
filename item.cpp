@@ -89,7 +89,7 @@ void ItemUpdate()
 
 void DispCursor()
 {
-	RenderRect(item_tim, (mouseX - 80) / 2, mouseY / 2, 16, 16, 0, 0, 0xff, 0xff, 0xff);
+	RenderRect(item_tim, (mouseX) / 2, mouseY / 2, 16, 16, 0, 0, 0xff, 0xff, 0xff);
 }
 
 void ItemListDisp()

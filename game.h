@@ -31,7 +31,7 @@ void Midi_unload();
 #include <pshpack1.h>
 struct BITMAP_DATA
 {
-	BITMAPINFOHEADER info;
+	BITMAPINFOHEADER seq_ptr;
 	BYTE pal[256][4];
 };
 

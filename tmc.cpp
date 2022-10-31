@@ -306,8 +306,6 @@ int Tmc::open(const char* filename)
 
 	fp.Close();
 
-	count = head.entry_cnt;
-
 	return 1;
 }
 
@@ -343,7 +341,7 @@ void Tmc::test(const char* filename)
 	CreateDirectoryA("test", nullptr);
 
 	CBitmap bmp;
-	for (int i = 0; i < count; i++)
+	for (size_t i = 0; i < entry.size(); i++)
 	{
 		if (entry[i].pos == -1)
 			continue;
@@ -498,11 +496,15 @@ void TmcUnload()
 	}
 }
 
-void TmcConvert(int id, int frame)
+void TmcConvert(SPRT_ENT *s, int id, int frame)
 {
 	auto gp = (id >> 8) & 0x3f;
 
 	if (tmc_alloc[gp].enabled == 0) return;
 
 	auto t = &tmc_alloc[gp];
+	MakeTexture();
+
+	auto f = &t->tmc.entry[frame];
+	t->tmc.dec(&t->tmc.pix_data[f->pos], buffer, f->size);
 }

@@ -61,7 +61,7 @@ void SPRT_ENT::SetList()
 
 void SPRT_ENT::Release()
 {
-	sprt_ent[id2].enabled = 0;
+	sprt_ent[self_id].enabled = 0;
 	if (/*field_26 &&*/ tim)
 	{
 		tim->Release();
@@ -89,7 +89,7 @@ void SPRT_ENT::UpdateXY()
 
 void SPRT_ENT::Update()
 {
-	field_91 = 1;
+	updated = 1;
 	UpdateXY();
 }
 
@@ -193,13 +193,13 @@ void SprtTblDeinit()
 	prog.sprt = nullptr;
 }
 
-void SprPos(int id, int x, int y, DWORD flags)
+void SprPos(int id, int x, int y, DWORD pri)
 {
 	if (sprt_ent[id].enabled)
-		sprt_ent[id].SetXY(x, y, flags, 0);
+		sprt_ent[id].SetXY(x, y, pri, 0);
 }
 
-void SprAnim(int id, WORD anim, WORD anim_flg, WORD a4)
+void SprAnim(int id, WORD anim, WORD anim_flg, WORD seq)
 {
 	if (sprt_ent[id].enabled)
 	{
@@ -218,10 +218,10 @@ void SprAnim(int id, WORD anim, WORD anim_flg, WORD a4)
 		else sprt_ent[id].frame_id = anim;
 
 		sprt_ent[id].anim_flg = anim_flg;
-		sprt_ent[id].field_9B = a4 & 0xff;
-		sprt_ent[id].field_9D = a4 >> 8;
+		sprt_ent[id].seq_frame_new = seq & 0xff;
+		sprt_ent[id].seq_len = seq >> 8;
 		sprt_ent[id].Update();
-		//sprt_ent[id].UpdateXY();	// useless, Update() does this step already
+		sprt_ent[id].UpdateXY();
 		SetSprIsBg(id, 0);
 		sprt_ent[id].is_animating = 0;
 		sprt_ent[id].is_busy = 0;
@@ -243,10 +243,10 @@ void SprCursorAnimate()
 		{
 			if ((vm_data.vm_index6[i + 10] & 0x10) == 0 && TriggerIsEnabled(i))
 			{
-				rtrg.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
-					prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
+				rtrg.SetXYWH(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
 					prog.render_rect.Y0() + vm_data.vm_rects[i].Y0() - prog.screen_y,
-					prog.render_rect.Y0() + vm_data.vm_rects[i].Y1() - prog.screen_y);
+					vm_data.vm_rects[i].W(),
+					vm_data.vm_rects[i].H());
 				if (intersectRect(&rcur, &rtrg))
 					break;
 			}
@@ -351,19 +351,19 @@ void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 		srcy = 0;
 	}
 
-	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width / 2, sprt->height / 2, srcx, srcy, 0xff, 0xff, 0xff);
+	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
 }
 
-void SprEnt(int id, int x, int y, DWORD pri, __int16 anim, __int16 a6, __int16 a7, DWORD a8, WORD is_abs)
+void SprEnt(int id, int x, int y, DWORD pri, __int16 anim, __int16 anim_flg, __int16 seq, DWORD a8, WORD is_abs)
 {
 	if (id <= 11)
 	{
-		sprt_ent[id].id2 = id;
+		sprt_ent[id].self_id = id;
 		sprt_ent[id].enabled = 1;
 		sprt_ent[id].field_32 = a8;
 		sprt_ent[id].is_abs = is_abs;
 		sprt_ent[id].SetXY(x, y, pri, 1);
-		SprAnim(id, anim, a6, a7);
+		SprAnim(id, anim, anim_flg, seq);
 		Vm_spr_lmt(id, -1, -1);
 	}
 }
@@ -449,19 +449,12 @@ WORD abm_index;
 
 int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 {
-	__int16 v3[368]; // [esp+0h] [ebp-30Ch] BYREF
-	//char v4[14]; // [esp+2E0h] [ebp-2Ch] BYREF
-	__int16 v5; // [esp+2F0h] [ebp-1Ch]
-	__int16 v6; // [esp+2F2h] [ebp-1Ah]
+	__int16 xadd; // [esp+2F0h] [ebp-1Ch]
+	__int16 yadd; // [esp+2F2h] [ebp-1Ah]
 	WORD index; // [esp+2FAh] [ebp-12h]
-	int v9; // [esp+2FCh] [ebp-10h]
-	//void* Src; // [esp+300h] [ebp-Ch]
-	__int16 i; // [esp+304h] [ebp-8h]
-	__int16 v12; // [esp+306h] [ebp-6h]
-	WORD frame_no; // [esp+308h] [ebp-4h]
 	__int16 lo_id; // [esp+30Ah] [ebp-2h]
 
-	if (!spr->field_91)
+	if (!spr->updated)
 	{
 		if ((spr->anim_flg & 2) != 0)
 			spr->is_busy = 1;
@@ -470,100 +463,94 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	}
 	index = (id >> 8) & 0x3F;
 	if (index != abm_index)
-	{
-		tmc_alloc[index].enabled = 1;
 		abm_index = index;
-		//if (!ReadPatternData_0())
-		//	return 0;
-		//if (!ReadPosiData_0())
-		//	return 0;
-	}
-
-	// no sprite data, assign
-	if (spr->tim == nullptr || LOWORD(spr->anim_grp_id) + LOWORD(spr->anim_main_id) != id)
-	{
-		if (!sprt_slot_manager.Read(spr, id))
-		{
-			printf("SetSpriteData\n");
-			return 0;
-		}
-		spr->anim_main_id = id & 0x3FFF;
-		spr->seq_no_old = 0xFFFF;
-		spr->anim_count = 0;
-		spr->anim_grp_id = id & 0xC000;
-		spr->is_busy = 0;
-	}
 
 	lo_id = id & 0xff;
-	//Src = spr->ptr0;
-	//memcpy(v4, Src, sizeof(v4));
-	v9 = 14;
-	//memcpy(v3, (char*)Src + 14, 0xEu);
-	v9 = 28;
-	v12 = v3[6];
-	for (i = 0; i < v12; ++i)
+	auto t = &tmc_alloc[SPID_GETENT(id)];
+
+	// no sprite data, assign
+	if (spr->seq_ptr == nullptr || (spr->anim_flag_ex + spr->anim_id) != id)
 	{
-		//memcpy(&v3[6 * i + 7], (char*)Src + trg, 0xCu);
-		v9 += 12;
-	}
-	if (spr->field_91 == 1)
-	{
-		spr->seq_no_old = 0;
-		if ((spr->anim_flg & 1) != 0)
-			spr->seq_no_old = (unsigned __int16)v3[6] - 1;
-		if ((spr->anim_flg & 4) != 0)
-			spr->seq_no_old = spr->field_9B;
-		frame_no = (WORD)spr->seq_no_old;
-		//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
+		if (t->enabled == 0)
+			TmcLoad(id);
+
+		spr->seq_ptr = t->tmc.GetSeq(SPID_GETFRAME(id));
+		spr->anim_id = id & 0x3FFF;
+		spr->seq_frame = -1;
+		spr->anim_count = 0;
+		spr->anim_flag_ex = id & 0xC000;
 		spr->is_busy = 0;
-		spr->field_91 = 0;
+	}
+
+	auto tt = &t->tmc;
+	TMC_PYX* pyx = nullptr;
+
+	if (spr->updated == 1)
+	{
+		spr->seq_frame = 0;
+		if ((spr->anim_flg & 1) != 0)
+			spr->seq_frame = spr->seq_ptr->cnt - 1;
+		if ((spr->anim_flg & 4) != 0)
+			spr->seq_frame = spr->seq_frame_new;
+
+		pyx = tt->GetFrame(spr->seq_ptr->ptr + spr->seq_frame);
+
+		spr->anim_count = pyx->len;
+		spr->is_busy = 0;
+		spr->updated = 0;
 		spr->is_animating = 1;
-		if (!frame_no)
-			spr->seq_no = -1;
-		if ((__int16)frame_no == (unsigned __int16)v3[6] - 1)
-			spr->seq_no = v3[6] - 1;
+		if (!spr->seq_frame)
+			spr->seq_pos = -1;
+		if (spr->seq_frame == pyx->len - 1)
+			spr->seq_pos = pyx->len - 1;
 		if ((spr->anim_flg & 4) != 0)
 		{
-			spr->seq_no = frame_no - 1;
-			//while (!pattern_data[lo_id][30].field_2[spr->field_6B])
+			spr->seq_pos = spr->seq_frame - 1;
+			while (!spr->seq_ptr[spr->seq_pos].cnt)
 			{
-				//if ((--spr->field_6B & 0x8000u) != 0)
+				if ( --spr->seq_pos < 0 )
 				{
-					//spr->field_6B = 0xffff;
-					//break;
+					spr->seq_pos = -1;
+					break;
 				}
 			}
 		}
 	}
+
 	while (!spr->anim_count)
 	{
 		spr->is_animating = 1;
 		if ((spr->anim_flg & 1) != 0)
 		{
-			if (--spr->seq_no_old < 0)
+			if (--spr->seq_frame < 0)
 			{
-			LABEL_38:
 				spr->anim_count = 1;
 				break;
 			}
-			frame_no = (WORD)spr->seq_no_old;
-			//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
+
+			pyx = tt->GetFrame(spr->seq_ptr->ptr + spr->seq_frame);
+			spr->anim_count = pyx->len;
 		}
 		else
 		{
-			if ((unsigned __int16)v3[6] <= (int)++spr->seq_no_old)
-				goto LABEL_38;
-			frame_no = (WORD)spr->seq_no_old;
-			//spr->field_85 = (pattern_data[lo_id][30].field_2[v13] + 1) / 2;
+			pyx = tt->GetFrame(spr->seq_ptr->ptr + spr->seq_frame);
+			if (pyx->len <= ++spr->seq_frame)
+			{
+				spr->anim_count = 1;
+				break;
+			}
+
+			pyx = tt->GetFrame(spr->seq_ptr->ptr + spr->seq_frame);
+			spr->anim_count = pyx->len;
 		}
 	}
 	if (!--spr->anim_count)
 	{
 		if ((spr->anim_flg & 1) == 0)
 		{
-			if ((spr->seq_no_old + 1) < (unsigned __int16)v3[6])
+			if ((spr->seq_frame + 1) < spr->seq_ptr->cnt)
 			{
-				if ((spr->anim_flg & 8) != 0 && spr->field_9D <= spr->seq_no_old)
+				if ((spr->anim_flg & 8) != 0 && spr->seq_len <= spr->seq_frame)
 				{
 					spr->anim_count = 1;
 					spr->is_busy = 1;
@@ -573,40 +560,48 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 			{
 				spr->anim_count = 1;
 				spr->is_busy = 1;
-				spr->seq_no_old = (unsigned __int16)v3[6] - 1;
+				spr->seq_frame = spr->seq_ptr->cnt - 1;
 			}
 		}
-		if ((spr->anim_flg & 1) != 0)
+		else
 		{
-			if (spr->seq_no_old)
+			if (spr->seq_frame)
 			{
-				if ((spr->anim_flg & 8) != 0 && spr->field_9D == spr->seq_no_old)
+				if ((spr->anim_flg & 8) != 0 && spr->seq_len == spr->seq_frame)
 				{
 					spr->anim_count = 1;
 					spr->is_busy = 1;
-					spr->seq_no_old = (unsigned __int16)v3[6] - 1;
+					spr->seq_frame = spr->seq_ptr->cnt - 1;
 				}
 			}
 			else
 			{
 				spr->anim_count = 1;
 				spr->is_busy = 1;
-				spr->seq_no_old = 0;
+				spr->seq_frame = 0;
 			}
 		}
 	}
-	frame_no = (WORD)spr->seq_no_old;
-	//spr->flag1 = ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x1F;
+
+	pyx = tt->GetFrame(spr->seq_ptr->ptr + spr->seq_frame);
+
+	spr->priority = pyx->e & 0x1F;
 	spr->priority += spr->flag0;
-	//spr->width = (unsigned __int16)v3[6 * (__int16)v13 + 7];
-	//spr->height = (unsigned __int16)v3[6 * (__int16)v13 + 8];
-	//spr->bmp_data = (BYTE*)spr->ptr0 + trg + *(_DWORD*)&v3[6 * (__int16)v13 + 11];
-	//if ((ptr_abm_tbl[lo_id][60].field_2[(__int16)v13] & 0x8000u) != 0)
-	//	mmode = spr->height * (((unsigned __int16)spr->width + 3) & 0xFFFC) - 1;
-	//else
-	//	mmode = (spr->height - 1) * (((unsigned __int16)spr->width + 3) & 0xFFFC);
-	//spr->bmp = spr->bmp_data[mmode];
-	//spr->field_95 = pattern_data[lo_id]->field_2[v13];
+	spr->sub_frame = pyx->f;
+	auto e = tt->GetEntry(pyx->frame);
+	spr->width = e->w;
+	spr->height = e->h;
+
+	if (spr->tim)
+	{
+		spr->tim->Release();
+		spr->tim = nullptr;
+	}
+
+	BYTE *buf = new BYTE[e->w * e->h];
+	tt->dec(&tt->pix_data[e->pos], buf, e->size);
+	spr->tim = MakeTexture();
+	spr->tim->Create(tt->clut, buf, 8, e->w, e->h);
 
 	// movement
 	if (spr->sub_frame == 0xFFFF)
@@ -616,54 +611,48 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	}
 	else
 	{
-		if (spr->seq_no == -1)
+		if (spr->seq_pos == -1)
 		{
-			//v6 = 2 * ptr_abm_tbl[lo_id]->field_2[0];
-			//t3 = 2 * ptr_abm_tbl[lo_id][30].field_2[0];
-			spr->seq_no = 0;
+			xadd = pyx->e * 2;
+			yadd = pyx->d * 2;
+			spr->seq_pos = 0;
 		}
-		else if (frame_no == spr->seq_no)
+		else if (spr->seq_frame == spr->seq_pos)
 		{
-			v6 = 0;
-			v5 = 0;
+			yadd = 0;
+			xadd = 0;
 		}
 		else
 		{
-			//v6 = 2 * (ptr_abm_tbl[lo_id]->field_2[(__int16)v13] - ptr_abm_tbl[lo_id]->field_2[(__int16)spr->field_6B]);
-			//t3 = 2 * (ptr_abm_tbl[lo_id][30].field_2[(__int16)v13] - ptr_abm_tbl[lo_id][30].field_2[(__int16)spr->field_6B]);
-			spr->seq_no = frame_no;
+			xadd = pyx->e * 2;
+			yadd = pyx->d * 2;
+			spr->seq_pos = spr->seq_frame;
 		}
 
 		// horizontal
-		if ((spr->anim_grp_id & 0x8000) == 0)
+		if ((spr->anim_flag_ex & 0x8000) == 0)
 		{
-			spr->x0 += 8;
-			spr->x3 = spr->x0 - 4;
-			//spr->x0 += v6;
-			//spr->x3 = (__int16)(LOWORD(spr->x0) - v3[6 * (__int16)v13 + 9]);
+			spr->x0 += xadd;
+			spr->x3 = spr->x0 - e->x;
 		}
+		// mirrored
 		else
 		{
-			spr->x0 -= 8;
-			spr->x3 = spr->x0 + 4;
-			//spr->x0 -= v6;
-			//spr->x3 = (__int16)(LOWORD(spr->x0) + v3[6 * (__int16)v13 + 9] - v3[6 * (__int16)v13 + 7]);
+			spr->x0 -= xadd;
+			spr->x3 = spr->x0 + e->x - e->w;
 		}
 
 		// vertical
-		if ((spr->anim_grp_id & 0x4000) != 0)
+		if ((spr->anim_flag_ex & 0x4000) == 0)
 		{
-			spr->y0 -= 8;
-			spr->y3 = spr->y0 - 4;
-			//spr->y0 -= t3;
-			//spr->y3 = (__int16)(LOWORD(spr->y0) - v3[6 * (__int16)v13 + 10]);
+			spr->y0 += yadd;
+			spr->y3 = spr->y0 - e->h + e->y;
 		}
+		// flipped
 		else
 		{
-			spr->y0 += 8;
-			spr->y3 = spr->y0 - spr->height + 4;
-			//spr->y0 += t3;
-			//spr->y3 = (__int16)(v3[6 * (__int16)v13 + 10] + LOWORD(spr->y0) - LOWORD(spr->height));
+			spr->y0 -= yadd;
+			spr->y3 = spr->y0 - e->y;
 		}
 	}
 
@@ -672,14 +661,11 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 
 void SprUpdater()
 {
-	DWORD priority; // [esp+0h] [ebp-8h]
-	SPRT_ENT* s; // [esp+4h] [ebp-4h]
-
-	for (s = prog.sprt; s; s = s->next)
+	for (SPRT_ENT *s = prog.sprt; s; s = s->next)
 	{
 		s->is_animating = 0;
 		s->x1 = s->x0;
-		priority = s->priority;
+		int priority = s->priority;
 		SprUpdate(s);
 		if (s->frame_id != 0xFFFF)
 		{
@@ -938,10 +924,10 @@ int TriggerIntersectCk(int x, int y)
 		{
 			if (TriggerIsEnabled(i))
 			{
-				rmark.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
-					prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
+				rmark.SetXYWH(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
 					prog.render_rect.Y0() + vm_data.vm_rects[i].Y0() - prog.screen_y,
-					prog.render_rect.Y0() + vm_data.vm_rects[i].Y1() - prog.screen_y);
+					vm_data.vm_rects[i].W(),
+					vm_data.vm_rects[i].H());
 				if (intersectRect(&rcurs, &rmark))
 					return i;
 			}

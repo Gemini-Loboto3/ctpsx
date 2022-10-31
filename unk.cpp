@@ -13,10 +13,9 @@ void Vm_update_state()
 {
 	vm_data.vm_index3[0]  = ((4 * ~prog.click_old) | 3) & (5 * prog.click_bits);
 	prog.click_old = prog.click_bits;
-	//GetCursorPos(&prog.mousePT);
 	prog.mousePT.x = mouseX;
 	prog.mousePT.y = mouseY;
-	//ScreenToClient(prog.hWnd, &prog.mousePT);
+
 	vm_data.vm_index3[1]  = (WORD)prog.mousePT.x;
 	vm_data.vm_index3[2]  = (WORD)prog.mousePT.y;
 	vm_data.vm_index3[3]  = prog.key_is_down;
@@ -55,16 +54,16 @@ int TriggerIsEnabled(int trg)
 
 void TriggerDebug()
 {
-	CRect rtrg; // [esp+0h] [ebp-14h] BYREF
+	CRect rtrg;
 
 	for (int i = 0; i < 30; ++i)
 	{
 		if (TriggerIsEnabled(i))
 		{
-			rtrg.Set(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
-				prog.render_rect.X0() + vm_data.vm_rects[i].X1() - prog.screen_x,
+			rtrg.SetXYWH(prog.render_rect.X0() + vm_data.vm_rects[i].X0() - prog.screen_x,
 				prog.render_rect.Y0() + vm_data.vm_rects[i].Y0() - prog.screen_y,
-				prog.render_rect.Y0() + vm_data.vm_rects[i].Y1() - prog.screen_y);
+				vm_data.vm_rects[i].W(),
+				vm_data.vm_rects[i].H());
 			if (intersectRect(&prog.render_rect, &rtrg))
 				RenderTile(GETX(rtrg.X0()), GETY(rtrg.Y0()), rtrg.W() / 2, rtrg.H() / 2, 0, 0xff, 0xff, 0x80);
 		}

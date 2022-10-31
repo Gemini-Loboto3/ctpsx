@@ -2399,11 +2399,11 @@ void VM::op_spr_pos()
 void VM::op_spr_anim()
 {
 	updateIndex();
-	WORD v5 = read16();
-	WORD v4 = read16();
-	WORD v3 = read16();
-	WORD v2 = read16();
-	SprAnim(v5, v4, v3, v2);
+	WORD id = read16();
+	WORD anim = read16();
+	WORD flg = read16();
+	WORD seq = read16();
+	SprAnim(id, anim, flg, seq);
 }
 
 void VM::op_spr_dir()
@@ -2473,13 +2473,13 @@ void VM::op_abs_obj_anim()
 	WORD id = read16();
 	int x = read16s();
 	int y = read16s();
-	WORD flags = read16();
+	WORD pri = read16();
 	read16();
-	WORD a2 = read16();
-	WORD a3 = read16();
-	WORD a4 = read16();
-	SprAnim(id, a2, a3, a4);
-	SprPos(id, x, y, flags);
+	WORD anim = read16();
+	WORD flg = read16();
+	WORD seq = read16();
+	SprAnim(id, anim, flg, seq);
+	SprPos(id, x, y, pri);
 }
 
 void VM::op_obj_anim()
@@ -2488,13 +2488,13 @@ void VM::op_obj_anim()
 	WORD id = read16();
 	int x = read16s();
 	int y = read16s();
-	WORD flags = read16();
+	WORD pri = read16();
 	read16();
-	WORD a2 = read16();
-	WORD a3 = read16();
-	WORD a4 = read16();
-	SprAnim(id, a2, a3, a4);
-	SprPos(id, x, y, flags);
+	WORD anim = read16();
+	WORD flg = read16();
+	WORD seq = read16();
+	SprAnim(id, anim, flg, seq);
+	SprPos(id, x, y, pri);
 }
 
 void VM::op_slant_set()

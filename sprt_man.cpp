@@ -8,14 +8,13 @@ TSprSlotManager::TSprSlotManager()
 	super = nullptr;
 }
 
-int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
+int TSprSlotManager::Read(SPRT_ENT* sprt, WORD id)
 {
-	auto v3 = sprt->id2;
-	auto v4 = v3 == 0;
-	auto v5 = v3 - 1;
-	if (v4)
+	auto self_id = sprt->self_id;
+	auto sid = self_id - 1;
+	if (self_id == 0)
 	{
-		if (!super)
+		if (super == nullptr)
 			return 0;
 		auto supr = super;
 		SprtEntManEntry* src;
@@ -27,7 +26,7 @@ int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
 		}
 		if (src)
 		{
-			//sprt->ptr0 = src->info;
+			sprt->seq_ptr = src->seq_ptr;
 		}
 		else
 		{
@@ -40,16 +39,12 @@ int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
 	}
 	else
 	{
-		v4 = v5 < 11;
-		auto v6 = v5 - 11;
-		if (v4)
-			return ReadOneSlotData(&entry1[sprt->id2 + 3], sprt, id);
-		if (v6 >= 9)
+		if (sid < 11)
+			return ReadOneSlotData(&entry1[sprt->self_id + 3], sprt, id);
+		if (sid - 11 >= 9)
 		{
 			TmcLoad(id);
-			//sprt->ptr0 = (BITMAPINFOHEADER*)LoadAbmFile((BYTE*)sprt->ptr0, id, sprt);
-			//if (!sprt->ptr0)
-			//	return 0;
+			sprt->seq_ptr = tmc_alloc[SPID_GETENT(id)].tmc.GetSeq(SPID_GETFRAME(id));
 		}
 	}
 
@@ -58,13 +53,11 @@ int TSprSlotManager::Read(SPRT_ENT* sprt, __int16 id)
 
 int TSprSlotManager::ReadOneSlotData(SprtEntManEntry* ent, SPRT_ENT* spr, __int16 id)
 {
-	//if (!ent->info)
-		//return 0;
+	if (ent->seq_ptr == nullptr)
+		return 0;
 
 	if (ent->id == id)
-	{
-		//spr->ptr0 = (BITMAPINFOHEADER*)ent->linked;
-	}
+		spr->seq_ptr = ent->seq_ptr;
 	else if (!ent->Load(spr, id))
 		return 0;
 
@@ -97,7 +90,7 @@ void TSprSlotManager::LinkNormal(SprtEntManEntry **super, SprtEntManEntry * ent)
 SprtEntManEntry::SprtEntManEntry()
 {
 	field_0 = 0;
-	info = nullptr;
+	seq_ptr = nullptr;
 
 	next = nullptr;
 	child = nullptr;
@@ -109,6 +102,8 @@ int SprtEntManEntry::Load(SPRT_ENT* dst, WORD id)
 	dst->field_2A = field_0;
 
 	TmcLoad(id);
+	seq_ptr = tmc_alloc[SPID_GETENT(id)].tmc.GetSeq(SPID_GETFRAME(id));
+	dst->seq_ptr = seq_ptr;
 
 	this->id = id;
 	return 1;
