@@ -55,11 +55,22 @@ int InputInit()
 	return 1;
 }
 
+DWORD last_click = 0;
+
 void InputRead()
 {
 	DIMOUSESTATE2 state;
 	if (SUCCEEDED(di_mouse->Acquire()) && SUCCEEDED(di_mouse->GetDeviceState(sizeof(DIMOUSESTATE2), &state)))
 	{
+		int is_fast = 0;
+		if (state.rgbButtons[0])
+		{
+			DWORD now_click = getTime();
+			if (now_click - last_click < 40)
+				is_fast = 1;
+			last_click = now_click;
+		}
+
 		mouseX += state.lX;
 		mouseY += state.lY;
 
@@ -67,7 +78,7 @@ void InputRead()
 		mouseY = std::clamp(mouseY, 0, 480);
 
 		if (state.rgbButtons[0])
-			LBtnClick(0, mouseX, mouseY);
+			LBtnClick(is_fast, mouseX, mouseY);
 		else prog.click_bits &= ~1;
 
 		if (state.rgbButtons[1])
@@ -119,12 +130,12 @@ void InputRead()
 		mouseY = std::clamp(mouseY, 0, 480);
 
 		if (conf)
-			LBtnClick(fast ? 1 : 0, mouseX, mouseY);
+			LBtnClick(fast == 2 ? 1 : 0, mouseX, mouseY);
 		if (rest)
 			RBtnClick(mouseX, mouseY);
 		if (run_left)
-			LBtnClick(1, 0, 0);
+			LBtnClick(1, prog.render_rect.X0(), prog.render_rect.Y1());
 		if (run_right)
-			LBtnClick(1, 640, 0);
+			LBtnClick(1, prog.render_rect.X1(), prog.render_rect.Y1());
 	}
 }

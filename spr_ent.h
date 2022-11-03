@@ -8,20 +8,16 @@ enum SPR_ID
 };
 
 #define SPID_GETFRAME(x)		((x) & 0xff)
-#define SPID_GETENT(x)			(((x) >> 8) & 0x3F)
+#define SPID_GETENT(x)			(((x) >> 8) & 0x3f)
 #define SPID_GETHFLIP(x)		((x) & 0x8000)
 #define SPID_GETVFLIP(x)		((x) & 0x4000)
-
-struct PATTERN_DATA
-{
-	__int16 field_0;
-	WORD field_2[120];
-};
+#define SPID_GETANIM(x)			((x) & 0x3fff)
+#define SPID_GETFLIPS(x)		((x) & 0xc000)
 
 struct SPRT_ENT
 {
 	void SetList();
-	void Link();
+	void Unlink();
 	void Release();
 	void UpdateXY();
 	void Update();
@@ -47,7 +43,7 @@ struct SPRT_ENT
 	DWORD self_id;
 	DWORD field_32;
 	char bmp;
-	DWORD field_37;	// this is set to 0 and never used
+	DWORD is_reference;	// this is set to 0 and never used
 	WORD frame_id;
 	int flag0;
 	DWORD is_animating;
@@ -58,7 +54,7 @@ struct SPRT_ENT
 	short x2;
 	short y2;
 	WORD flag2;
-	CTexture* tim;
+	CTexture* texture;
 	int x0;
 	int y0;
 	int priority;
@@ -90,7 +86,7 @@ void SetSprIsBg(int id, int is_bg);
 void SprCursorAnimate();
 void CursorDispCk();
 void BgSprAnim(int id, int w, int h, CTexture* ptr);
-void BgSprPos(int id, int x, int y, int flag);
+void BgSprPos(int id, int x, int y, int pri);
 void SprtTblDeinit();
 void SprPos(int id, int x, int y, DWORD flags);
 void SprAnim(int id, WORD anim, WORD anim_flg, WORD seq);

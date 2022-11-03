@@ -40,7 +40,6 @@ struct PAL_OBJ
 	int field_4;
 	HPALETTE hPal;
 	LPCVOID buf;
-	BITMAP_DATA* bmp_info;
 	int type;
 	int nindex;
 	int ncount;

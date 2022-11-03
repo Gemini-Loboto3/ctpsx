@@ -1,43 +1,43 @@
 ﻿#include <stdafx.h>
 #include "game.h"
 
-void GameDrawRects(VM* game, unsigned __int16 rect_no)
+void GameDrawRects(VM* vm, int rect_no)
 {
-	RenderTile(GETX(game->rects[rect_no].x), GETY(game->rects[rect_no].y), game->rects[rect_no].w, game->rects[rect_no].h, (BYTE)game->r, (BYTE)game->g, (BYTE)game->b);
+	RenderTile(GETX(vm->rects[rect_no].x), GETY(vm->rects[rect_no].y), vm->rects[rect_no].w, vm->rects[rect_no].h, (BYTE)vm->r, (BYTE)vm->g, (BYTE)vm->b);
 }
 
-void Game_BgDispTrnRect(VM* a1)
+void Game_BgDispTrnRect(VM* vm)
 {
-	Game_BgDispTrn(a1,
-		a1->rects[a1->rect_index].x,
-		a1->rects[a1->rect_index].y,
-		a1->rects[a1->rect_index].w,
-		a1->rects[a1->rect_index].h,
-		a1->rects[a1->rect_index].rw1,
-		a1->rects[a1->rect_index].rw2,
-		a1->rect_index,
+	Game_BgDispTrn(vm,
+		vm->rects[vm->rect_index].x,
+		vm->rects[vm->rect_index].y,
+		vm->rects[vm->rect_index].w,
+		vm->rects[vm->rect_index].h,
+		vm->rects[vm->rect_index].rw1,
+		vm->rects[vm->rect_index].rw2,
+		vm->rect_index,
 		0,
 		0);
 }
 
-void Game_BgDispTrn_1(VM* game)
+void Game_BgDispTrn_1(VM* vm)
 {
-	if (game->field_28A2)
+	if (vm->field_28A2)
 	{
-		if (game->field_28A6)
+		if (vm->field_28A6)
 		{
-			--game->field_28A6;
+			--vm->field_28A6;
 		}
 		else
 		{
-			Game_BgDispTrn_0(game);
-			game->field_28A6 = game->field_28A4;
-			--game->field_28A2;
+			Game_BgDispTrn_0(vm);
+			vm->field_28A6 = vm->field_28A4;
+			--vm->field_28A2;
 		}
 	}
 }
 
-void Game_BgDispTrn_0(VM* a1)
+void Game_BgDispTrn_0(VM* vm)
 {
 	__int16 v1; // dx
 	int v2; // cf
@@ -45,130 +45,130 @@ void Game_BgDispTrn_0(VM* a1)
 	__int16 v4; // dx
 	__int16 v5; // dx
 
-	v1 = a1->field_28AA;
+	v1 = vm->field_28AA;
 	v2 = v1 == 0;
 	v3 = v1 - 1;
 	if (v2)
 	{
-		a1->rects[a1->rect_index].rw2 -= a1->rx;
-		if (a1->rects[a1->rect_index].rw2 < 0)
-			a1->rects[a1->rect_index].rw2 = a1->bank_no[a1->rect_index]->h - 1;
+		vm->rects[vm->rect_index].rw2 -= vm->rx;
+		if (vm->rects[vm->rect_index].rw2 < 0)
+			vm->rects[vm->rect_index].rw2 = vm->bank_no[vm->rect_index]->h - 1;
 	}
 	else
 	{
 		v4 = v3 - 3;
 		if (!v4)
 		{
-			a1->rects[a1->rect_index].rw1 += a1->rx;
-			if (a1->rects[a1->rect_index].rw1 >= a1->bank_no[a1->rect_index]->w)
-				a1->rects[a1->rect_index].rw1 = 0;
-			Game_BgDispTrnRect(a1);
+			vm->rects[vm->rect_index].rw1 += vm->rx;
+			if (vm->rects[vm->rect_index].rw1 >= vm->bank_no[vm->rect_index]->w)
+				vm->rects[vm->rect_index].rw1 = 0;
+			Game_BgDispTrnRect(vm);
 		}
 		v5 = v4 - 4;
 		if (!v5)
 		{
-			a1->rects[a1->rect_index].rw2 += a1->rx;
-			if (a1->rects[a1->rect_index].rw2 >= a1->bank_no[a1->rect_index]->h)
-				a1->rects[a1->rect_index].rw2 = 0;
-			Game_BgDispTrnRect(a1);
+			vm->rects[vm->rect_index].rw2 += vm->rx;
+			if (vm->rects[vm->rect_index].rw2 >= vm->bank_no[vm->rect_index]->h)
+				vm->rects[vm->rect_index].rw2 = 0;
+			Game_BgDispTrnRect(vm);
 		}
 		if (v5 == 4)
 		{
-			a1->rects[a1->rect_index].rw1 -= a1->rx;
-			if (a1->rects[a1->rect_index].rw1 > 0x8000u)
-				a1->rects[a1->rect_index].rw1 = a1->bank_no[a1->rect_index]->w - 1;
-			Game_BgDispTrnRect(a1);
+			vm->rects[vm->rect_index].rw1 -= vm->rx;
+			if (vm->rects[vm->rect_index].rw1 > 0x8000u)
+				vm->rects[vm->rect_index].rw1 = vm->bank_no[vm->rect_index]->w - 1;
+			Game_BgDispTrnRect(vm);
 		}
 	}
 }
 
-void Game_RedrawAll(VM* g)
+void Game_RedrawAll(VM* vm)
 {
-	if (g->field_28B8[vm_data.vm_evt_pos])
+	if (vm->field_28B8[vm_data.vm_evt_pos])
 	{
-		if (g->field_28CC[vm_data.vm_evt_pos])
+		if (vm->field_28CC[vm_data.vm_evt_pos])
 		{
-			--g->field_28CC[vm_data.vm_evt_pos];
+			--vm->field_28CC[vm_data.vm_evt_pos];
 		}
 		else
 		{
-			g->rects[g->rect_xy_index[vm_data.vm_evt_pos]].x = g->field_28E0[vm_data.vm_evt_pos];
-			g->rects[g->rect_xy_index[vm_data.vm_evt_pos]].y = g->field_28E8[vm_data.vm_evt_pos + 1];
-			Game_RedrawScene(g);
-			if (g->field_28FE[vm_data.vm_evt_pos] + g->field_28CC[vm_data.vm_evt_pos + 5] <= ++g->rect_xy_index[vm_data.vm_evt_pos])
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].x = vm->field_28E0[vm_data.vm_evt_pos];
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].y = vm->field_28E8[vm_data.vm_evt_pos + 1];
+			Game_RedrawScene(vm);
+			if (vm->field_28FE[vm_data.vm_evt_pos] + vm->field_28CC[vm_data.vm_evt_pos + 5] <= ++vm->rect_xy_index[vm_data.vm_evt_pos])
 			{
-				g->rect_xy_index[vm_data.vm_evt_pos] = g->field_28CC[vm_data.vm_evt_pos + 5];
-				--g->field_28B8[vm_data.vm_evt_pos];
+				vm->rect_xy_index[vm_data.vm_evt_pos] = vm->field_28CC[vm_data.vm_evt_pos + 5];
+				--vm->field_28B8[vm_data.vm_evt_pos];
 			}
-			g->field_28CC[vm_data.vm_evt_pos] = g->field_28B8[vm_data.vm_evt_pos + 5];
+			vm->field_28CC[vm_data.vm_evt_pos] = vm->field_28B8[vm_data.vm_evt_pos + 5];
 		}
 	}
 }
 
-void Game_BgDispTrn(VM* game, int x, int y, int w, int h, __int16 srcx, __int16 srcy, WORD id, int type, int mode)
+void Game_BgDispTrn(VM* vm, int x, int y, int w, int h, __int16 srcx, __int16 srcy, WORD id, int type, int mode)
 {
-	if (game->bank_no[id])
+	if (vm->bank_no[id])
 	{
 		if (type == 1)
 			Vm_pal_set(0, 0, 0, 0, 0);
 		if (w == 0)
-			w = game->bank_no[id]->w;
+			w = vm->bank_no[id]->w;
 		if (h == 0)
-			h = game->bank_no[id]->h;
-		Render_bank(x, y, w, h, srcx, srcy, game->bank_no[id], mode);
-		game->_id = id;
-		game->_x = x;
-		game->_y = y;
-		game->_w = w;
-		game->_h = h;
-		game->rects[id].x = x;
-		game->rects[id].y = y;
-		game->rects[id].w = w;
-		game->rects[id].h = h;
-		game->rects[id].rw1 = srcx;
-		game->rects[id].rw2 = srcy;
+			h = vm->bank_no[id]->h;
+		Render_bank(x, y, w, h, srcx, srcy, vm->bank_no[id], mode);
+		vm->_id = id;
+		vm->_x = x;
+		vm->_y = y;
+		vm->_w = w;
+		vm->_h = h;
+		vm->rects[id].x = x;
+		vm->rects[id].y = y;
+		vm->rects[id].w = w;
+		vm->rects[id].h = h;
+		vm->rects[id].rw1 = srcx;
+		vm->rects[id].rw2 = srcy;
 	}
 	else printf("Bank %d doesn't exist!\n", id);
 }
 
-void GameDrawFromRects(VM* game, unsigned __int16 rect_no)
+void GameDrawFromRects(VM* vm, int rect_no)
 {
-	RenderTile(GETX(game->rects[rect_no].x),
-		GETY(game->rects[rect_no].y),
-		game->rects[rect_no].w, game->rects[rect_no].h, (BYTE)game->r, (BYTE)game->g, (BYTE)game->b);
+	RenderTile(GETX(vm->rects[rect_no].x),
+		GETY(vm->rects[rect_no].y),
+		vm->rects[rect_no].w, vm->rects[rect_no].h, (BYTE)vm->r, (BYTE)vm->g, (BYTE)vm->b);
 }
 
-void Game_RedrawScene(VM* a1)
+void Game_RedrawScene(VM* vm)
 {
-	if (a1->field_2908[vm_data.vm_evt_pos])
-		GameDrawFromRects(a1, a1->rect_xy_index[vm_data.vm_evt_pos]);
-	if (a1->field_2926[vm_data.vm_evt_pos])
+	if (vm->field_2908[vm_data.vm_evt_pos])
+		GameDrawFromRects(vm, vm->rect_xy_index[vm_data.vm_evt_pos]);
+	if (vm->field_2926[vm_data.vm_evt_pos])
 	{
-		if (a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]])
+		if (vm->bank_no[vm->rect_xy_index[vm_data.vm_evt_pos]])
 		{
-			a1->bank_spr_id[a1->ent_index[vm_data.vm_evt_pos]] = a1->rect_xy_index[vm_data.vm_evt_pos];
-			EntryBmpSprite(a1->ent_index[vm_data.vm_evt_pos],
-				a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].x,
-				a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].y,
-				*((WORD*)&a1->field_28F4 + vm_data.vm_evt_pos),
-				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]]->w,
-				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]]->h,
-				a1->bank_no[a1->rect_xy_index[vm_data.vm_evt_pos]],
-				a1->field_2912[vm_data.vm_evt_pos],
+			vm->bank_spr_id[vm->ent_index[vm_data.vm_evt_pos]] = vm->rect_xy_index[vm_data.vm_evt_pos];
+			EntryBmpSprite(vm->ent_index[vm_data.vm_evt_pos],
+				vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].x,
+				vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].y,
+				*((WORD*)&vm->field_28F4 + vm_data.vm_evt_pos),
+				vm->bank_no[vm->rect_xy_index[vm_data.vm_evt_pos]]->w,
+				vm->bank_no[vm->rect_xy_index[vm_data.vm_evt_pos]]->h,
+				vm->bank_no[vm->rect_xy_index[vm_data.vm_evt_pos]],
+				vm->field_2912[vm_data.vm_evt_pos],
 				0);
 		}
 	}
 	else
 	{
 		Game_BgDispTrn(
-			a1,
-			a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].x,
-			a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].y,
-			a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].w,
-			a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].h,
-			a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].rw1,
-			a1->rects[a1->rect_xy_index[vm_data.vm_evt_pos]].rw2,
-			a1->rect_xy_index[vm_data.vm_evt_pos],
+			vm,
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].x,
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].y,
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].w,
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].h,
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].rw1,
+			vm->rects[vm->rect_xy_index[vm_data.vm_evt_pos]].rw2,
+			vm->rect_xy_index[vm_data.vm_evt_pos],
 			0,
 			0);
 	}

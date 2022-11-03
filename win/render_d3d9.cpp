@@ -188,9 +188,9 @@ void SwapBuffer()
 	d3d9dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
 
-void RenderRect(CTexture* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b)
+void RenderRect(CTexture* texture, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b)
 {
-	if (tim == nullptr)
+	if (texture == nullptr)
 	{
 		RenderTile(x, y, 32, 32, r, g, b);
 		return;
@@ -200,8 +200,8 @@ void RenderRect(CTexture* tim, int x, int y, int w, int h, int u, int v, BYTE r,
 	float x0 = (float)x + ofs, y0 = (float)y + ofs,
 		x1 = x0 + (float)w, y1 = y0 + (float)h;
 
-	float uw = 1.f / tim->w;
-	float vh = 1.f / tim->h;
+	float uw = 1.f / texture->w;
+	float vh = 1.f / texture->h;
 
 	float u0 = (float)u * uw, v0 = (float)v * vh,
 		u1 = u0 + w * uw, v1 = v0 + h * vh;
@@ -214,7 +214,7 @@ void RenderRect(CTexture* tim, int x, int y, int w, int h, int u, int v, BYTE r,
 	p[2].x = x0, p[2].y = y1, p[2].z = 0.5f, p[2].w = 1.f, p[2].tu = u0, p[2].tv = v1, p[2].diffuse = diffuse;
 	p[3].x = x1, p[3].y = y1, p[3].z = 0.5f, p[3].w = 1.f, p[3].tu = u1, p[3].tv = v1, p[3].diffuse = diffuse;
 
-	d3d9dev->SetTexture(0, ((CTextureD3D9*)tim)->tex);
+	d3d9dev->SetTexture(0, ((CTextureD3D9*)texture)->tex);
 	d3d9dev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, p, sizeof(fvf));
 }
 

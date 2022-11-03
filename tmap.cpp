@@ -7,7 +7,7 @@ TMAP::TMAP()
 {
 	TMapResetTiles(this);
 
-	tim = nullptr;
+	texture = nullptr;
 	map_data = 0;
 	w = 0;
 	h = 0;
@@ -19,10 +19,10 @@ TMAP::TMAP()
 
 TMAP::~TMAP()
 {
-	if (tim)
+	if (texture)
 	{
-		delete tim;
-		tim = nullptr;
+		delete texture;
+		texture = nullptr;
 	}
 
 	if (map_data)
@@ -157,7 +157,7 @@ void TMapRenderScroll2(TMAP* tmap, int x, int y, int w, int h)
 
 void TMapRender(TMAP* tmap)
 {
-	if (tmap->tim == nullptr)
+	if (tmap->texture == nullptr)
 		return;
 
 	CRect rsrc, rdst;
@@ -187,7 +187,7 @@ void TMapRender(TMAP* tmap)
 			int w = rdst.W() / 2 + 1;
 			int h = rdst.H() / 2 + 1;
 
-			RenderRect(tmap->tim, x, y, w, h, u, v, 0xff, 0xff, 0xff);
+			RenderRect(tmap->texture, x, y, w, h, u, v, 0xff, 0xff, 0xff);
 		}
 	}
 	//else
@@ -232,12 +232,12 @@ int LoadDIB(CTexture** t, const char* filename)
 
 int TMapOpenDIB(TMAP* tmap, LPCSTR lpFileName)
 {
-	if (LoadDIB(&tmap->tim, lpFileName))
+	if (LoadDIB(&tmap->texture, lpFileName))
 	{
 		TmcInit();
 
-		tmap->w = tmap->tim->w * 2;
-		tmap->h = tmap->tim->h * 2;
+		tmap->w = tmap->texture->w * 2;
+		tmap->h = tmap->texture->h * 2;
 		tmap->scroll = 0;
 
 		return 1;

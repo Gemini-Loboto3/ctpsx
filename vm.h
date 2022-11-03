@@ -456,8 +456,8 @@ struct VM
 
 struct VM_Data
 {
-	WORD vm_usage[5],
-		vm_evt_pos,
+	WORD vm_usage[5];
+	WORD vm_evt_pos,
 		vm_index0[500],
 		vm_var0,
 		vm_index1[30],

@@ -699,27 +699,27 @@ void Vm_work_clr()
 		vm_data.vm_index2[i] = 0;
 }
 
-void __cdecl Vm_mes_print(VM* game)
+void Vm_mes_print(VM* vm)
 {
 	bool loop;
 	CHAR glyph[3];
 	unsigned __int8 chr; // [esp+Fh] [ebp-5h]
 
-	if (game->field_2948[0] == 1)
+	if (vm->field_2948[0] == 1)
 	{
-		loop = game->msg_enabled == 0;
+		loop = vm->msg_enabled == 0;
 		do
 		{
-			if (game->wait_timer[0])
-				--game->wait_timer[0];
-			else if (game->msg_buf[0][game->msg_pos[0]])
+			if (vm->wait_timer[0])
+				--vm->wait_timer[0];
+			else if (vm->msg_buf[0][vm->msg_pos[0]])
 			{
-				chr = game->msg_buf[0][game->msg_pos[0]];
+				chr = vm->msg_buf[0][vm->msg_pos[0]];
 				if (chr == '\n')
 				{
-					game->msg_x = game->msg_basex;
-					game->msg_y += game->msg_basey + game->msg_v;
-					if (++game->msg_pos[0] > 512)
+					vm->msg_x = vm->msg_basex;
+					vm->msg_y += vm->msg_basey + vm->msg_v;
+					if (++vm->msg_pos[0] > 512)
 						printf("MSG pointer exceeded buffer capacity\n");
 				}
 				else
@@ -728,36 +728,36 @@ void __cdecl Vm_mes_print(VM* game)
 					glyph[1] = 0;
 					if (chr & 0x80)
 					{
-						glyph[1] = game->msg_buf[0][game->msg_pos[0] + 1];
+						glyph[1] = vm->msg_buf[0][vm->msg_pos[0] + 1];
 						glyph[2] = 0;
-						++game->msg_pos[0];
+						++vm->msg_pos[0];
 					}
-					if (++game->msg_pos[0] > 512)
+					if (++vm->msg_pos[0] > 512)
 						printf("MSG pointer exceeded buffer capacity\n");
 
 					wchar_t wide[2];
 					MultiByteToWideChar(932, 0, glyph, 3, wide, 2);
 
-					int w = GamePrintChar(game->msg_x, game->msg_y, wide[0]);
-					game->msg_x += (WORD)w;
+					int w = GamePrintChar(vm->msg_x, vm->msg_y, wide[0]);
+					vm->msg_x += (WORD)w;
 					// auto line carry
-					if (game->msg_w + game->msg_basex - game->msg_v <= game->msg_x - TEXT_XDIFF * 2)
+					if (vm->msg_w + vm->msg_basex - vm->msg_v <= vm->msg_x - TEXT_XDIFF * 2)
 					{
-						game->msg_x = game->msg_basex;
-						game->msg_y += game->msg_basey + game->msg_v;
+						vm->msg_x = vm->msg_basex;
+						vm->msg_y += vm->msg_basey + vm->msg_v;
 					}
-					game->wait_timer[0] = game->msg_base_wait;
+					vm->wait_timer[0] = vm->msg_base_wait;
 				}
 			}
 			else
 			{
-				for (int i = 0; i < game->msg_pos[0] + 8; ++i)
-					game->msg_buf[0][i] = 0;
-				game->field_2948[0] = 0;
+				for (int i = 0; i < vm->msg_pos[0] + 8; ++i)
+					vm->msg_buf[0][i] = 0;
+				vm->field_2948[0] = 0;
 				loop = 1;
-				game->msg_enabled = 0;
-				game->msg_pos[0] = 0;
-				game->field_3370[0] = 0;
+				vm->msg_enabled = 0;
+				vm->msg_pos[0] = 0;
+				vm->field_3370[0] = 0;
 			}
 		} while (!loop);
 	}
@@ -1544,23 +1544,23 @@ void VM::op_evdef()
 	vm_data.vm_index6[v1] = read16();
 }
 
-void Game_40C792(VM* g)
+void Game_40C792(VM* vm)
 {
 	int bk;
 
-	bk = g->msg_enabled;
-	g->msg_enabled = 1;
-	Vm_mes_print(g);//GamePrintSjis(g);
-	g->msg_enabled = bk;
+	bk = vm->msg_enabled;
+	vm->msg_enabled = 1;
+	Vm_mes_print(vm);//GamePrintSjis(g);
+	vm->msg_enabled = bk;
 	do
 	{
-		Game_RedrawAll(g);
-	} while (g->field_28B8[vm_data.vm_evt_pos]);
+		Game_RedrawAll(vm);
+	} while (vm->field_28B8[vm_data.vm_evt_pos]);
 
 	vm_data.vm_usage[vm_data.vm_evt_pos] = 0;
 }
 
-WORD Game_AdoMatch(VM* a1)
+WORD Game_AdoMatch(VM* vm)
 {
 	int v2; // [esp+0h] [ebp-10h]
 	DWORD v3; // [esp+4h] [ebp-Ch]
@@ -1570,8 +1570,8 @@ WORD Game_AdoMatch(VM* a1)
 	v4 = 0;
 	do
 	{
-		v3 = a1->adt[v4].dw;
-		if ((a1->ado_pos0[vm_data.vm_evt_pos] | (a1->ado_pos1[vm_data.vm_evt_pos] << 16)) == v3)
+		v3 = vm->adt[v4].dw;
+		if ((vm->ado_pos0[vm_data.vm_evt_pos] | (vm->ado_pos1[vm_data.vm_evt_pos] << 16)) == v3)
 			v2 = 1;
 		else if (v3)
 			++v4;

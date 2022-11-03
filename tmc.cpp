@@ -155,6 +155,7 @@ LPCSTR sprt_name7[] =
 	"2\\M_ACT02",
 	"2\\M_ACT02",
 	"2\\D_ACT03",
+
 	"1\\J_ACT01W",
 	"1\\J_ACT02W",
 	"1\\J_ACT03W",
@@ -213,6 +214,7 @@ LPCSTR sprt_name7[] =
 	"",
 	"",
 	"",
+
 	"1\\J_ACT01U",
 	"1\\J_ACT02U",
 	"1\\J_ACT03U",

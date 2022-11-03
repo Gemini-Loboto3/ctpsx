@@ -7,9 +7,9 @@ void BgSprAnim(int id, int w, int h, CTexture* ptr)
 	{
 		sprt_ent[id].width = w;
 		sprt_ent[id].height = h;
-		sprt_ent[id].tim = ptr;
+		sprt_ent[id].texture = ptr;
 		//sprt_ent[id].bmp = ptr[(h - 1) * w];
-		sprt_ent[id].field_37 = 0;
+		sprt_ent[id].is_reference = 1;
 		sprt_ent[id].frame_id = 0xffff;
 		SetSprIsBg(id, 1);
 		sprt_ent[id].is_animating = 0;
@@ -17,7 +17,7 @@ void BgSprAnim(int id, int w, int h, CTexture* ptr)
 	}
 }
 
-void BgSprPos(int id, int x, int y, int flag)
+void BgSprPos(int id, int x, int y, int pri)
 {
 	if (sprt_ent[id].enabled)
 	{
@@ -25,7 +25,7 @@ void BgSprPos(int id, int x, int y, int flag)
 		sprt_ent[id].y3 = y;
 		sprt_ent[id].x0 = x;
 		sprt_ent[id].y0 = y;
-		sprt_ent[id].priority = flag;
+		sprt_ent[id].priority = pri;
 	}
 }
 

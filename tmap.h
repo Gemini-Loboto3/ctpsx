@@ -18,7 +18,7 @@ struct TMAP
 	int scrly;
 	int speedX;
 	int speedY;
-	CTexture* tim;
+	CTexture* texture;
 	void* map_data;
 };
 

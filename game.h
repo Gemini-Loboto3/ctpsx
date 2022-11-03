@@ -29,12 +29,6 @@ void Midi_load(const char* filename);
 void Midi_unload();
 
 #include <pshpack1.h>
-struct BITMAP_DATA
-{
-	BITMAPINFOHEADER seq_ptr;
-	BYTE pal[256][4];
-};
-
 struct RENDER_BMP
 {
 	int w;

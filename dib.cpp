@@ -3,9 +3,9 @@
 
 CTim *faces[87];
 
-void LoadFace(const char* filename, CTim *tim)
+void LoadFace(const char* filename, CTim *texture)
 {
-	tim->Open(filename);
+	texture->Open(filename);
 }
 
 void LoadFaces()

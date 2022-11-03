@@ -52,7 +52,7 @@ CTexture* MakeTexture();
 
 void InitRender();
 void SwapBuffer();
-void RenderRect(CTexture* tim, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
+void RenderRect(CTexture* texture, int x, int y, int w, int h, int u, int v, BYTE r, BYTE g, BYTE b);
 void RenderTile(int x, int y, int w, int h, BYTE r, BYTE g, BYTE b, BYTE a = 255);
 void RenderGlyph(int x, int y, FONT_GLYPH* g, DWORD* gfx);
 

@@ -3,7 +3,7 @@
 
 SPRT_ENT sprt_ent[21];
 
-void SPRT_ENT::Link()
+void SPRT_ENT::Unlink()
 {
 	if (linked)
 	{
@@ -25,7 +25,7 @@ void SPRT_ENT::SetList()
 	SPRT_ENT* i;
 
 	if (linked)
-		Link();
+		Unlink();
 	sprt = prog.sprt;
 	for (i = prog.sprt; i; i = i->next)
 	{
@@ -62,16 +62,13 @@ void SPRT_ENT::SetList()
 void SPRT_ENT::Release()
 {
 	sprt_ent[self_id].enabled = 0;
-	if (/*field_26 &&*/ tim)
+	if (is_reference == 0 && texture)
 	{
-		tim->Release();
-		tim = nullptr;
-		//delete ptr0;
-		//ptr0 = nullptr;
-		field_26 = 0;
+		texture->Release();
+		texture = nullptr;
 	}
 
-	Link();
+	Unlink();
 }
 
 void SPRT_ENT::UpdateXY()
@@ -307,7 +304,7 @@ not_found:
 
 void SpriteGetRect(SPRT_ENT* s, CRect* r)
 {
-	r->SetXYWH(s->x3, s->y3, s->width, s->height);
+	r->SetXYWH(s->x3, s->y3, s->width *2, s->height * 2);
 }
 
 void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
@@ -319,14 +316,14 @@ void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 	if (lprcSrc)
 	{
 		copyRect(&rcopy, lprcSrc);
-		//if (!intersectRect(&rspr, &rcopy))
-		//	return;
+		if (!intersectRect(&rspr, &rcopy))
+			return;
 	}
 	else
 	{
 		TMapGetDstRect(&tmap, &rcopy);
-		//if (!intersectRect(&rspr, &rcopy))
-		//	return;
+		if (!intersectRect(&rspr, &rcopy))
+			return;
 	}
 
 	TMapGetRect(&tmap, &rxy);
@@ -351,13 +348,14 @@ void SprDraw(SPRT_ENT* sprt, CRect* lprcSrc)
 		srcy = 0;
 	}
 
-	RenderRect(sprt->tim, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
+	RenderRect(sprt->texture, GETX(dstx), GETY(dsty), sprt->width, sprt->height, srcx, srcy, 0xff, 0xff, 0xff);
 }
 
 void SprEnt(int id, int x, int y, DWORD pri, __int16 anim, __int16 anim_flg, __int16 seq, DWORD a8, WORD is_abs)
 {
-	if (id <= 11)
+	if (id <= SPID_CURSOR)
 	{
+		sprt_ent[id].is_reference = 0;
 		sprt_ent[id].self_id = id;
 		sprt_ent[id].enabled = 1;
 		sprt_ent[id].field_32 = a8;
@@ -408,33 +406,40 @@ int sub_4035DC()
 
 void SprUpdate(SPRT_ENT* s)
 {
-	unsigned int id;
-
 	if (s->is_busy)
 	{
 		if ((s->anim_flg & 0x10) != 0)
-			goto update;
-		id = s->frame_id & 0x3FFF;
-
-		if (id > 3081)
-		{
-			if (id == 3085 || (unsigned int)id - 4097 < 2 || (unsigned int)id - 4609 < 2 || (unsigned int)id - 4865 < 2)
-				goto update;
-		}
+			s->Update();
 		else
 		{
-			if (id == 3081)
-				goto update;
-			if (id <= 1089)
+			int id = s->frame_id & 0x3FFF;
+
+			switch (id)
 			{
-				if (id != 1089 && (unsigned int)id - 270 >= 2 && id != 1087)
-					return;
-update:
+			default:
+				if (id <= 0x441)
+				{
+					if (id != 0x441 && id - 0x10E >= 2 && id != 0x43F)
+						return;
+					s->Update();
+				}
+				break;
+			case 0x441:
+			case 0x43F:
+			case 0x448:
+			case 0x449:
+			case 0xC01:
+			case 0xC02:
+			case 0xC03:
+			case 0xC09:
+			case 0xC0D:
+			case 0x1001:
+			case 0x1002:
+			case 0x1301:
+			case 0x1302:
 				s->Update();
-				return;
+				break;
 			}
-			if ((unsigned int)id - 1096 < 2 || (unsigned int)id - 3073 < 3)
-				goto update;
 		}
 	}
 }
@@ -444,15 +449,9 @@ void SprSetList(SPRT_ENT* s)
 	s->SetList();
 }
 
-PATTERN_DATA *pattern_data[200];
-WORD abm_index;
-
 int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 {
-	__int16 xadd; // [esp+2F0h] [ebp-1Ch]
-	__int16 yadd; // [esp+2F2h] [ebp-1Ah]
-	WORD index; // [esp+2FAh] [ebp-12h]
-	__int16 lo_id; // [esp+30Ah] [ebp-2h]
+	int xadd, yadd;
 
 	if (!spr->updated)
 	{
@@ -461,11 +460,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		if (spr->is_busy)
 			return 1;
 	}
-	index = (id >> 8) & 0x3F;
-	if (index != abm_index)
-		abm_index = index;
 
-	lo_id = id & 0xff;
 	auto t = &tmc_alloc[SPID_GETENT(id)];
 
 	// no sprite data, assign
@@ -475,10 +470,10 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 			TmcLoad(id);
 
 		spr->seq_ptr = t->tmc.GetSeq(SPID_GETFRAME(id));
-		spr->anim_id = id & 0x3FFF;
+		spr->anim_id = SPID_GETANIM(id);
 		spr->seq_frame = -1;
 		spr->anim_count = 0;
-		spr->anim_flag_ex = id & 0xC000;
+		spr->anim_flag_ex = SPID_GETFLIPS(id);
 		spr->is_busy = 0;
 	}
 
@@ -508,7 +503,7 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 			spr->seq_pos = spr->seq_frame - 1;
 			while (!spr->seq_ptr[spr->seq_pos].cnt)
 			{
-				if ( --spr->seq_pos < 0 )
+				if (--spr->seq_pos < 0)
 				{
 					spr->seq_pos = -1;
 					break;
@@ -592,16 +587,16 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 	spr->width = e->w;
 	spr->height = e->h;
 
-	if (spr->tim)
+	if (spr->texture)
 	{
-		spr->tim->Release();
-		spr->tim = nullptr;
+		spr->texture->Release();
+		spr->texture = nullptr;
 	}
 
 	BYTE *buf = new BYTE[e->w * e->h];
 	tt->dec(&tt->pix_data[e->pos], buf, e->size);
-	spr->tim = MakeTexture();
-	spr->tim->Create(tt->clut, buf, 8, e->w, e->h);
+	spr->texture = MakeTexture();
+	spr->texture->Create(tt->clut, buf, 8, e->w, e->h);
 
 	// movement
 	if (spr->sub_frame == 0xFFFF)
@@ -633,26 +628,26 @@ int SetSpriteData(SPRT_ENT* spr, unsigned int id)
 		if ((spr->anim_flag_ex & 0x8000) == 0)
 		{
 			spr->x0 += xadd;
-			spr->x3 = spr->x0 - e->x;
+			spr->x3 = spr->x0 - e->x * 2;
 		}
 		// mirrored
 		else
 		{
 			spr->x0 -= xadd;
-			spr->x3 = spr->x0 + e->x - e->w;
+			spr->x3 = spr->x0 + e->x * 2 - spr->width * 2;
 		}
 
 		// vertical
 		if ((spr->anim_flag_ex & 0x4000) == 0)
 		{
 			spr->y0 += yadd;
-			spr->y3 = spr->y0 - e->h + e->y;
+			spr->y3 = spr->y0 + e->y * 2 - spr->height * 2;
 		}
 		// flipped
 		else
 		{
 			spr->y0 -= yadd;
-			spr->y3 = spr->y0 - e->y;
+			spr->y3 = spr->y0 - e->y * 2;
 		}
 	}
 
